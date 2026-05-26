@@ -19,6 +19,7 @@ import {
   recordPurchase, formatBranch, logRevisitFollowup, fetchRevisitFollowups,
 } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import ProductMultiSelect from '../components/ProductMultiSelect';
 
 function timeAgo(dateStr) {
   if (!dateStr) return '—';
@@ -60,6 +61,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
   const [panel,    setPanel]    = useState(null);   // 'buy' | 'close' | 'followup' | null
   const [amount,   setAmount]   = useState('');
   const [contract, setContract] = useState('');
+  const [productIds, setProductIds] = useState([]);
   const [note,     setNote]     = useState('');
   const [fuNote, setFuNote] = useState('');
 
@@ -222,7 +224,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
           )}
 
           {panel === 'buy' && (
-            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3 space-y-2">
+            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3 space-y-3">
               <div className="flex gap-2">
                 <div className="flex-1 space-y-1">
                   <label className="text-emerald-300 text-xs font-bold">مبلغ الشراء (ج.م)</label>
@@ -247,9 +249,14 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
                   />
                 </div>
               </div>
+              <ProductMultiSelect
+                selectedIds={productIds}
+                onChange={setProductIds}
+                compact
+              />
               <div className="flex gap-2 justify-end">
                 <button
-                  onClick={() => onBuy(c, amount, contract)}
+                  onClick={() => onBuy(c, amount, contract, productIds)}
                   disabled={busy}
                   className="btn-primary px-4 text-sm disabled:opacity-50"
                 >
@@ -353,7 +360,7 @@ export default function RevisitView() {
 
   const setBusyFor = (id, val) => setBusy((b) => ({ ...b, [id]: val }));
 
-  const onBuy = async (c, amount, contract) => {
+  const onBuy = async (c, amount, contract, productIds = []) => {
     setBusyFor(c.user_id, true);
     try {
       await recordPurchase({
@@ -361,6 +368,7 @@ export default function RevisitView() {
         price:           amount ? Number(amount) : null,
         branch:          c.branch || c.preferred_branch || null,
         contract_number: contract ? String(contract).trim() : undefined,
+        product_ids:     productIds.length ? productIds : undefined,
       });
       toast.success(`${c.first_name || 'العميل'} اتسجل كمشتري ✓`);
       setCustomers((prev) => prev.filter((x) => x.user_id !== c.user_id));
