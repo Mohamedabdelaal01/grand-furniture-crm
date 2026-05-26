@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat ~/.claude/settings.json 2>/dev/null || echo \"NOT FOUND\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 10 \"https://medo-backend-production.up.railway.app/api/mcp/sse\" -H \"x-mcp-key: Medo_Super_Secret_2026\")",
+      "Bash(claude mcp *)",
+      "Bash(node -c db.js)",
+      "Bash(node -c server.js)",
+      "Bash(node -e \"const fs = require\\('fs'\\); const src = fs.readFileSync\\('src/pages/LeadDetail.jsx', 'utf8'\\); console.log\\('Lines:', src.split\\('\\\\n'\\).length, '| PlatformBadge:', src.includes\\('PlatformBadge'\\) ? '✅' : '❌'\\);\")",
+      "Bash(find \"/Users/mohamed/Desktop/last project\" -maxdepth 4 -name \".git\" -type d 2>/dev/null; echo \"---\"; find /Users/mohamed -maxdepth 3 -name \".git\" -type d 2>/dev/null | head -10)",
+      "Bash(railway status *)",
+      "Bash(railway list *)",
+      "Bash(vercel --version)",
+      "Bash(railway link *)",
+      "Bash(railway up *)",
+      "Bash(git add *)"
+    ]
+  }
+}

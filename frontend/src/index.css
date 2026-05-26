@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary-glow: rgba(59, 130, 246, 0.5);
+  }
+
+  * {
+    @apply border-dark-800;
+  }
+  
+  body {
+    @apply bg-dark-950 text-dark-50 antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-dark-900/60 backdrop-blur-xl rounded-2xl border border-dark-700/50 shadow-soft relative overflow-hidden transition-all duration-500;
+  }
+  
+  .card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 transition-opacity duration-500 pointer-events-none;
+  }
+  
+  .card:hover::before {
+    @apply opacity-100;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-premium hover:shadow-primary-900/30 hover:border-primary-700/40 hover:-translate-y-1 z-10;
+  }
+  
+  .btn-primary {
+    @apply px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl transition-all duration-300 font-bold shadow-lg shadow-primary-900/30 active:scale-95 flex items-center justify-center gap-2;
+  }
+  
+  .btn-secondary {
+    @apply px-5 py-2.5 bg-dark-800/80 backdrop-blur-sm hover:bg-dark-700 text-dark-100 rounded-xl transition-all duration-300 border border-dark-700 active:scale-95 flex items-center justify-center gap-2 font-semibold;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-dark-900/50 border border-dark-700/80 rounded-xl text-dark-50 placeholder-dark-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-300;
+  }
+  
+  .badge {
+    @apply px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider;
+  }
+  
+  .badge-cold {
+    @apply bg-dark-800 text-dark-400 border border-dark-700;
+  }
+  
+  .badge-warm {
+    @apply bg-amber-500/10 text-amber-500 border border-amber-500/20;
+  }
+  
+  .badge-hot {
+    @apply bg-rose-500/10 text-rose-500 border border-rose-500/20;
+  }
+  
+  .badge-converted {
+    @apply bg-emerald-500/10 text-emerald-500 border border-emerald-500/20;
+  }
+
+  .badge-visited {
+    @apply bg-sky-500/10 text-sky-400 border border-sky-500/20;
+  }
+
+  .badge-purchased {
+    @apply bg-violet-500/10 text-violet-400 border border-violet-500/20;
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 10px var(--primary-glow);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-700/50 rounded-full hover:bg-dark-600;
+}
+
+/* Loading animation */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #0f172a 4%, #1e293b 25%, #0f172a 36%);
+  background-size: 1000px 100%;
+}
+
+/* Toast animations */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toast-progress {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.animate-toast-in {
+  animation: toast-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-toast-progress {
+  animation: toast-progress 6s linear forwards;
+}
+
+/* ── Print layout ───────────────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide shell chrome */
+  nav, aside,
+  [class*="sidebar"], [class*="Sidebar"],
+  [class*="navbar"], [class*="Navbar"] {
+    display: none !important;
+  }
+
+  .card {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .daily-call-list .card {
+    border-color: #000 !important;
+  }
+
+  .badge {
+    border: 1px solid #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Hide any animations */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Links — no underline, black */
+  a { color: #000 !important; text-decoration: none !important; }
+
+  /* Ensure rows don't split across pages */
+  tr, .daily-call-list > div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+

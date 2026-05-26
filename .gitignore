@@ -1,0 +1,24 @@
+# Root-level ignores (each subfolder also has its own .gitignore)
+node_modules/
+.DS_Store
+*.log
+.env
+.env.local
+.env.*
+!.env.example
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+data/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/

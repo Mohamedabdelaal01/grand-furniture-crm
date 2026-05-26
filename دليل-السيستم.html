@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Furniture — الدليل الكامل خطوة بخطوة</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0c0c14; --card:#15151f; --card2:#1c1c28; --bd:#2a2a3a;
+    --tx:#e6e6f0; --mut:#7a7a98; --pri:#6366f1; --prig:#818cf8;
+    --grn:#10b981; --amb:#f59e0b; --red:#ef4444; --sky:#0ea5e9;
+    --vio:#a855f7; --teal:#14b8a6;
+  }
+  body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Tahoma,Arial,sans-serif;
+       font-size:15px;line-height:1.85;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 100px}
+
+  /* hero */
+  .hero{background:linear-gradient(135deg,#1a1a35 0%,#13132a 60%,#0c0c14 100%);
+        border-bottom:1px solid var(--bd);padding:54px 20px 44px;text-align:center;margin-bottom:10px}
+  .hero .logo{font-size:52px;margin-bottom:14px}
+  .hero h1{font-size:30px;font-weight:900;color:#fff;margin-bottom:10px}
+  .hero p{color:var(--mut);font-size:15px;max-width:560px;margin:0 auto}
+  .hero .url{display:inline-flex;align-items:center;gap:8px;margin-top:18px;
+        background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.3);
+        color:#5eead4;font-family:monospace;font-size:12px;padding:7px 14px;border-radius:8px;direction:ltr}
+
+  /* table of contents */
+  .toc{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:24px 26px;margin:30px 0}
+  .toc h2{font-size:13px;color:var(--prig);font-weight:900;letter-spacing:.12em;
+          text-transform:uppercase;margin-bottom:16px}
+  .toc ol{list-style:none;counter-reset:toc;display:grid;gap:8px}
+  .toc li{counter-increment:toc;display:flex;align-items:center;gap:12px}
+  .toc li::before{content:counter(toc);width:26px;height:26px;border-radius:50%;
+        background:var(--pri);color:#fff;font-size:12px;font-weight:900;
+        display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .toc a{color:var(--tx);text-decoration:none;font-weight:600;font-size:14px}
+  .toc a:hover{color:var(--prig)}
+
+  /* step section */
+  .step{background:var(--card);border:1px solid var(--bd);border-radius:20px;
+        padding:32px 30px;margin:24px 0;scroll-margin-top:20px}
+  .step-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:22px;
+        padding-bottom:20px;border-bottom:1px solid var(--bd)}
+  .step-num{width:46px;height:46px;border-radius:14px;flex-shrink:0;
+        background:linear-gradient(135deg,var(--pri),var(--vio));color:#fff;
+        font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center}
+  .step-head h2{font-size:21px;font-weight:900;color:#fff;line-height:1.4}
+  .step-head .sub{color:var(--mut);font-size:13px;margin-top:3px;font-weight:400}
+
+  h3{font-size:16px;color:#fff;font-weight:900;margin:24px 0 10px;
+     display:flex;align-items:center;gap:8px}
+  h3 .ic{font-size:18px}
+  p{margin:10px 0;color:#cfcfe4}
+  strong{color:#fff;font-weight:800}
+  code{background:#0e0e1a;border:1px solid var(--bd);border-radius:5px;
+       padding:2px 7px;font-family:monospace;font-size:13px;color:#ffb380;direction:ltr;display:inline-block}
+
+  /* callouts */
+  .why,.tip,.warn,.ex{border-radius:14px;padding:16px 20px;margin:16px 0;font-size:14px}
+  .why{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.25)}
+  .why b{color:var(--prig)}
+  .tip{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25)}
+  .tip b{color:var(--grn)}
+  .warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.28)}
+  .warn b{color:var(--amb)}
+  .ex{background:rgba(14,165,233,.07);border:1px solid rgba(14,165,233,.25)}
+  .ex b{color:var(--sky)}
+  .callout-label{font-weight:900;display:block;margin-bottom:6px;font-size:13px}
+
+  /* numbered mini steps */
+  .ministeps{counter-reset:ms;margin:14px 0;display:grid;gap:10px}
+  .ms{counter-increment:ms;display:flex;gap:12px;align-items:flex-start}
+  .ms::before{content:counter(ms);width:24px;height:24px;border-radius:7px;
+        background:var(--card2);border:1px solid var(--bd);color:var(--prig);
+        font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;
+        flex-shrink:0;margin-top:3px}
+  .ms .mst{flex:1;font-size:14px;color:#cfcfe4}
+
+  /* code block */
+  .code{background:#0a0a14;border:1px solid var(--bd);border-radius:12px;
+        margin:14px 0;overflow:hidden}
+  .code-top{display:flex;justify-content:space-between;align-items:center;
+        padding:8px 14px;background:#12121f;border-bottom:1px solid var(--bd)}
+  .code-top span{font-size:11px;color:var(--mut);font-family:monospace}
+  .cp{background:var(--pri);color:#fff;border:none;border-radius:6px;
+      padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer}
+  .cp:hover{opacity:.85}
+  .code pre{padding:16px;font-family:monospace;font-size:12.5px;color:#a5d6ff;
+        direction:ltr;text-align:left;overflow-x:auto;line-height:1.7}
+  .k{color:#ff7b72}.s{color:#a5d6ff}.v{color:#ffa657}.c{color:#8b949e}
+
+  /* flow diagram */
+  .flow{display:flex;flex-direction:column;gap:0;margin:20px 0}
+  .fnode{background:var(--card2);border:1.5px solid var(--bd);border-radius:14px;
+        padding:14px 18px;display:flex;align-items:center;gap:14px}
+  .fnode .fi{width:38px;height:38px;border-radius:10px;flex-shrink:0;
+        display:flex;align-items:center;justify-content:center;font-size:18px}
+  .fnode .ft{flex:1}
+  .fnode .ft b{display:block;color:#fff;font-size:14px}
+  .fnode .ft span{color:var(--mut);font-size:12px}
+  .fnode .fp{font-weight:900;font-size:14px;flex-shrink:0}
+  .farrow{text-align:center;color:var(--bd);font-size:20px;padding:4px 0;line-height:1}
+
+  /* table */
+  .tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;
+       border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+  .tbl th{background:var(--card2);color:var(--mut);font-weight:900;
+       text-transform:uppercase;font-size:11px;letter-spacing:.06em;padding:11px 14px;text-align:right}
+  .tbl td{padding:11px 14px;border-top:1px solid var(--bd);color:#cfcfe4}
+  .tbl tr:hover td{background:rgba(255,255,255,.02)}
+  .pts{color:var(--grn);font-weight:900;text-align:center}
+
+  /* category pills */
+  .cats{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+  .catp{background:var(--card2);border:1px solid var(--bd);border-radius:10px;
+        padding:10px 16px;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px}
+
+  /* divider note */
+  .end{text-align:center;color:var(--mut);font-size:13px;margin:50px 0 0;
+       padding-top:30px;border-top:1px solid var(--bd)}
+
+  a.top{position:fixed;bottom:24px;left:24px;background:var(--pri);color:#fff;
+        width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
+        justify-content:center;font-size:20px;text-decoration:none;box-shadow:0 6px 20px rgba(99,102,241,.4);z-index:99}
+  ::-webkit-scrollbar{width:9px}::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:5px}
+</style>
+</head>
+<body>
+
+<div class="hero" id="top">
+  <div class="logo">🛋️</div>
+  <h1>الدليل الكامل — من الإعلان لتأكيد الزيارة</h1>
+  <p>كل خطوة بالتفصيل، بأبسط شرح ممكن. امشي عليه بالترتيب وهتفهم السيستم كله.</p>
+  <div class="url">https://medo-backend-production.up.railway.app/api/events</div>
+</div>
+
+<div class="wrap">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>محتويات الدليل</h2>
+    <ol>
+      <li><a href="#big">الصورة الكبيرة — السيستم بيشتغل إزاي؟</a></li>
+      <li><a href="#prep">تجهيز ManyChat (مرة واحدة بس)</a></li>
+      <li><a href="#attr">ربط الإعلان — نعرف العميل جه منين</a></li>
+      <li><a href="#webhook">الـ External Request — قلب السيستم</a></li>
+      <li><a href="#journey">رحلة العميل — كل الأحداث بالترتيب</a></li>
+      <li><a href="#cats">الكاتيجوريز الـ 6 — الأسماء بالظبط</a></li>
+      <li><a href="#score">نظام النقاط ومنع التكرار</a></li>
+      <li><a href="#visit">تأكيد الزيارة — برقم التليفون</a></li>
+      <li><a href="#dash">الداشبورد — تقرأ التحليلات إزاي</a></li>
+      <li><a href="#auto">الرسائل الآلية — السيستم بيكلم العميل لوحده</a></li>
+      <li><a href="#reps">شغل المندوب — التوزيع التلقائي والمهام</a></li>
+      <li><a href="#check">الـ Checklist النهائي</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. BIG PICTURE -->
+  <section class="step" id="big">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <div><h2>الصورة الكبيرة — السيستم بيشتغل إزاي؟</h2>
+      <div class="sub">قبل أي تفاصيل، افهم الفكرة في دقيقة</div></div>
+    </div>
+
+    <p>تخيّل إن عندك بائع شاطر بيقف جنب كل عميل بيكلّم صفحتك على ماسنجر، وبيسجّل كل حركة بيعملها العميل في دفتر، وبيقولك "ده عميل جاد، كلّمه دلوقتي". السيستم ده هو البائع ده — بس أوتوماتيك.</p>
+
+    <div class="flow">
+      <div class="fnode"><div class="fi" style="background:rgba(99,102,241,.15)">📣</div>
+        <div class="ft"><b>1. العميل يشوف إعلانك ويضغط عليه</b><span>على فيسبوك/انستجرام</span></div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(59,130,246,.15)">💬</div>
+        <div class="ft"><b>2. يتفتح ماسنجر و ManyChat يرد عليه</b><span>رسالة ترحيب + أزرار</span></div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(245,158,11,.15)">📡</div>
+        <div class="ft"><b>3. كل ضغطة يعملها → ManyChat يبعت "خبر" للسيستم</b><span>External Request</span></div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(168,85,247,.15)">🧮</div>
+        <div class="ft"><b>4. السيستم يحسب نقاط للعميل ويصنّفه</b><span>بارد / دافئ / ساخن</span></div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(16,185,129,.15)">📊</div>
+        <div class="ft"><b>5. كل ده يظهر في الداشبورد للمندوبين والمدير</b><span>تحليلات + تنبيهات</span></div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(20,184,166,.15)">🏬</div>
+        <div class="ft"><b>6. العميل يزور المعرض → الاستقبال يأكّد بالكود</b><span>تقفل الدائرة</span></div></div>
+    </div>
+
+    <div class="why"><span class="callout-label">🎯 ليه ده مهم؟</span>
+      الإعلانات بتجيب ناس كتير، بس مش كلهم جادين. السيستم بيفرزلك الجاد من اللي بيتفرّج بس،
+      وبيقولك كل إعلان جابلك كام عميل وصلوا لمرحلة إنهم عايزين يزوروا المعرض فعلاً.</div>
+  </section>
+
+  <!-- 2. PREP -->
+  <section class="step" id="prep">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <div><h2>تجهيز ManyChat (مرة واحدة بس)</h2>
+      <div class="sub">حاجات تعملها مرة واحدة في البداية وتنساها</div></div>
+    </div>
+
+    <h3><span class="ic">🔑</span> أ) هات الـ API Key و الـ Page ID</h3>
+    <div class="ministeps">
+      <div class="ms"><div class="mst">في ManyChat افتح <strong>Settings</strong> (الترس فوق)</div></div>
+      <div class="ms"><div class="mst">روح تاب <strong>API</strong></div></div>
+      <div class="ms"><div class="mst">انسخ <strong>API Key</strong> — وحطه في السيستم: الإعدادات ← مفاتيح API ← ManyChat API Key</div></div>
+      <div class="ms"><div class="mst">انسخ <strong>Page ID</strong> كمان وحطه في نفس المكان</div></div>
+    </div>
+    <div class="why"><span class="callout-label">🎯 ليه؟</span>
+      السيستم محتاج المفتاح ده عشان يقدر يبعت رسائل آلية للعميل (زي رسالة الترحيب بعد الزيارة).</div>
+
+    <h3><span class="ic">🏷️</span> ب) اعمل Custom Fields</h3>
+    <p>الـ Custom Fields دي خانات بتتخزن فيها معلومة عن كل عميل. اعملها كده:</p>
+    <div class="ministeps">
+      <div class="ms"><div class="mst"><strong>Settings → Custom Fields → + New Custom Field</strong></div></div>
+      <div class="ms"><div class="mst">اعمل الخانات دي واحدة واحدة:</div></div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>اسم الخانة</th><th>النوع</th><th>بتتخزن فيها إيه</th></tr></thead>
+      <tbody>
+        <tr><td><code>campaign_source</code></td><td>Text</td><td>اسم الحملة الإعلانية</td></tr>
+        <tr><td><code>ad_id</code></td><td>Text</td><td>رقم الإعلان</td></tr>
+        <tr><td><code>crm_lead_class</code></td><td>Text</td><td>تصنيف العميل (السيستم بيحدّثه تلقائي)</td></tr>
+        <tr><td><code>crm_total_score</code></td><td>Number</td><td>نقاط العميل (السيستم بيحدّثه تلقائي)</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><span class="callout-label">💡 فايدة</span>
+      <code>crm_lead_class</code> و <code>crm_total_score</code> السيستم بيرجّعهم لـ ManyChat،
+      فتقدر تعمل Segment للعملاء الـ "hot" بس وتبعتلهم عرض خاص.</div>
+  </section>
+
+  <!-- 3. ATTRIBUTION -->
+  <section class="step" id="attr">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <div><h2>ربط الإعلان — نعرف العميل جه منين</h2>
+      <div class="sub">عشان جدول "قمع الإعلانات" في التحليلات يشتغل</div></div>
+    </div>
+
+    <div class="why"><span class="callout-label">🎯 المشكلة اللي بنحلها</span>
+      عندك حملة فيها كذا إعلان. عايز تعرف <strong>كل إعلان لوحده</strong> بيجيب عملاء جادين ولا لأ —
+      عشان توقف الإعلان الفاشل وتزوّد ميزانية الإعلان الناجح. الحل: نسجّل اسم الحملة <u>و</u> رقم
+      الإعلان مع كل عميل من أول لحظة.</div>
+
+    <div class="warn"><span class="callout-label">⚠️ مهم — إعلاناتك Message Campaign</span>
+      إعلانات الـ Message (اللي بتفتح ماسنجر) <strong>مفيهاش روابط Ref URL</strong>.
+      الـ Ref URL ده للروابط العضوية بس (بايو/بوست). إعلاناتك بتشتغل بطريقة تانية أسهل ↓</div>
+
+    <h3><span class="ic">🎯</span> أ) Trigger لكل إعلان (مش روابط)</h3>
+    <p>لكل إعلان في الحملة، اعمل trigger منفصل في ManyChat:</p>
+    <div class="ministeps">
+      <div class="ms"><div class="mst">في الـ Flow اضغط <strong>+ New Trigger</strong></div></div>
+      <div class="ms"><div class="mst">اختار <strong>"User clicks a Facebook Ad"</strong></div></div>
+      <div class="ms"><div class="mst">ManyChat هيوريك قايمة إعلاناتك — اختار <strong>الإعلان المحدّد</strong> اللي عايز تتبعه</div></div>
+      <div class="ms"><div class="mst">كرّر ده: trigger لكل إعلان في الحملة (إعلان واحد = trigger واحد)</div></div>
+    </div>
+    <div class="tip"><span class="callout-label">💡 ليه trigger لكل إعلان؟</span>
+      عشان كده تقدر تحط لكل إعلان اسم الحملة ورقمه بإيدك — وبالتالي في جدول "قمع الإعلانات"
+      هتشوف كل إعلان في الحملة لوحده وتقارنهم.</div>
+
+    <h3><span class="ic">⚙️</span> ب) لكل trigger، سجّل الحملة + رقم الإعلان</h3>
+    <p>جوه كل trigger، أول حاجة قبل أي رسالة، حط الـ Actions دي:</p>
+    <div class="ministeps">
+      <div class="ms"><div class="mst"><strong>Set Custom Field</strong> → <code>campaign_source</code> → اكتب اسم الحملة (مثلاً <code>eid_2025</code>) — نفس الاسم لكل إعلانات الحملة دي</div></div>
+      <div class="ms"><div class="mst"><strong>Set Custom Field</strong> → <code>ad_id</code> → اكتب رقم/اسم الإعلان (مثلاً <code>video_a</code> أو رقم الإعلان من Meta Ads Manager) — <u>مختلف</u> لكل إعلان</div></div>
+      <div class="ms"><div class="mst">بعدها <strong>External Request</strong> بالـ JSON ده:</div></div>
+    </div>
+    <div class="code">
+      <div class="code-top"><span>POST /api/events — أول دخول من الإعلان</span><button class="cp" onclick="cp(this)">نسخ</button></div>
+<pre>{
+  <span class="k">"user_id"</span>:         <span class="v">"{{messenger user id}}"</span>,
+  <span class="k">"first_name"</span>:      <span class="v">"{{first name}}"</span>,
+  <span class="k">"event_type"</span>:      <span class="s">"entry_offer"</span>,
+  <span class="k">"campaign_source"</span>: <span class="v">"{{campaign_source}}"</span>,
+  <span class="k">"ad_id"</span>:           <span class="v">"{{ad_id}}"</span>,
+  <span class="k">"source"</span>:          <span class="s">"manychat"</span>
+}</pre>
+    </div>
+    <div class="ex"><span class="callout-label">📌 مثال — حملة فيها 3 إعلانات</span>
+      <div style="display:grid;gap:6px;margin-top:8px">
+        <div>• إعلان 1 → <code>campaign_source=eid_2025</code> ، <code>ad_id=video_a</code></div>
+        <div>• إعلان 2 → <code>campaign_source=eid_2025</code> ، <code>ad_id=photo_b</code></div>
+        <div>• إعلان 3 → <code>campaign_source=eid_2025</code> ، <code>ad_id=carousel_c</code></div>
+      </div>
+      <div style="margin-top:10px">في جدول "قمع الإعلانات" هيظهروا 3 سطور تحت نفس الحملة — كل سطر بيقولك
+      الإعلان ده وصّل كام عميل لطلب الموقع. الإعلان اللي رقمه ضعيف → اوقفه. القوي → زوّد ميزانيته.</div>
+    </div>
+
+    <div class="warn"><span class="callout-label">⚠️ أهم نقطة في الدليل كله</span>
+      <code>user_id</code> لازم يكون <code>{{messenger user id}}</code> — مش <code>{{user id}}</code>.
+      ده الرقم اللي السيستم بيعرف بيه العميل. لو غلطت فيه، العميل هيتعدّ مرتين ونقاطه متتجمعش صح.</div>
+  </section>
+
+  <!-- 4. WEBHOOK -->
+  <section class="step" id="webhook">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <div><h2>الـ External Request — قلب السيستم</h2>
+      <div class="sub">ده اللي بيوصّل خبر من ManyChat للسيستم. هتعمله كتير فاحفظه كويس</div></div>
+    </div>
+
+    <p>الـ External Request هو "تليفون" بين ManyChat والسيستم. كل ما العميل يعمل حاجة مهمة، ManyChat بيتصل بالسيستم ويقوله "العميل ده عمل كذا". بتضيفه كده:</p>
+
+    <div class="ministeps">
+      <div class="ms"><div class="mst">في أي Flow، بعد الزر أو الرسالة، اضغط <strong>+ Add Action</strong></div></div>
+      <div class="ms"><div class="mst">اختار <strong>External Request</strong></div></div>
+      <div class="ms"><div class="mst"><strong>Request Type:</strong> اختار <code>POST</code></div></div>
+      <div class="ms"><div class="mst"><strong>Request URL:</strong> الصق ده:
+        <br><code style="margin-top:6px">https://medo-backend-production.up.railway.app/api/events</code></div></div>
+      <div class="ms"><div class="mst">تاب <strong>Headers</strong>: اضغط + Request Header وحط
+        Key = <code>Content-Type</code> ، Value = <code>application/json</code></div></div>
+      <div class="ms"><div class="mst"><strong>Header تاني للأمان:</strong> Key = <code>x-webhook-secret</code> ،
+        Value = الكود اللي في السيستم (الإعدادات ← مفاتيح API ← فوق في بانر ManyChat فيه "Webhook Secret" — انسخه)</div></div>
+      <div class="ms"><div class="mst">تاب <strong>Body</strong>: اكتب الـ JSON (هتلاقي كل JSON في الخطوة الجاية)</div></div>
+      <div class="ms"><div class="mst">للـ <code>user_id</code>: امسح القيمة، اضغط <strong>{+} Add a Field</strong>، اختار <strong>Messenger User ID</strong></div></div>
+      <div class="ms"><div class="mst">حط اسمك في خانة <strong>Contact for testing</strong> واضغط <strong>Test Request</strong></div></div>
+      <div class="ms"><div class="mst">شوف تاب <strong>Response</strong> — لو لقيت <code>"success":true</code> يبقى تمام، اضغط <strong>Save</strong></div></div>
+    </div>
+
+    <div class="tip"><span class="callout-label">✅ علامة إنه شغّال</span>
+      في الـ Response هيظهرلك حاجة زي:
+      <code style="display:block;margin-top:8px">{"success":true,"new_score":20,"lead_class":"cold"}</code></div>
+
+    <div class="warn"><span class="callout-label">🔒 الـ Webhook Secret</span>
+      افتح <strong>الإعدادات ← مفاتيح API</strong> — فوق هتلاقي بانر ManyChat، جواه
+      <strong>Webhook Secret</strong>. انسخه وحطه في كل External Request كـ header اسمه
+      <code>x-webhook-secret</code>. بعد ما تحطه في كل الـ flows، فعّل
+      <code>webhook_enforce</code> من الإعدادات عشان السيستم يرفض أي طلب مزوّر.
+      <br><b>متفعّلهوش قبل ما تحط الـ header في كل الـ flows</b> وإلا هتقف عن الاستقبال.</div>
+
+    <div class="tip"><span class="callout-label">🟢 تأكيد إن ManyChat LIVE</span>
+      في نفس البانر (الإعدادات ← مفاتيح API) لازم يكون مكتوب
+      <span style="color:var(--grn)">ManyChat: LIVE ✅</span>. لو <span style="color:var(--amb)">MOCK ⚠️</span>
+      يبقى الـ API Key مش متحط — مفيش رسائل آلية هتتبعت للعملاء.</div>
+
+    <div class="ex"><span class="callout-label">📌 مثال يوضّح الفكرة</span>
+      العميل ضغط "عرض تفاصيل انتريه اليار" → ManyChat يتصل بالسيستم ويقوله
+      "العميل رقم ٥٣٧٨٠٩ شاف منتج اسمه اليار من فئة انتريهات" → السيستم يديله ٢٠ نقطة ويسجّلها.</div>
+  </section>
+
+  <!-- 5. JOURNEY -->
+  <section class="step" id="journey">
+    <div class="step-head">
+      <div class="step-num">5</div>
+      <div><h2>رحلة العميل — كل الأحداث بالترتيب</h2>
+      <div class="sub">كل خطوة بيعملها العميل = event بيتبعت بـ JSON معيّن</div></div>
+    </div>
+
+    <p>دي رحلة العميل من أول ما يدخل لحد ما يزور. كل مرحلة ليها <code>event_type</code> ونقاط:</p>
+
+    <div class="flow">
+      <div class="fnode"><div class="fi" style="background:rgba(99,102,241,.15)">📣</div>
+        <div class="ft"><b>دخل من الإعلان</b><span>entry_offer / entry_catalog</span></div>
+        <div class="fp" style="color:var(--prig)">+5</div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(168,85,247,.15)">📂</div>
+        <div class="ft"><b>اختار فئة (مثلاً غرف النوم)</b><span>category_request</span></div>
+        <div class="fp" style="color:var(--vio)">+10</div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(14,165,233,.15)">🛋️</div>
+        <div class="ft"><b>شاف تفاصيل منتج معيّن</b><span>product_details</span></div>
+        <div class="fp" style="color:var(--sky)">+20</div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(245,158,11,.15)">📍</div>
+        <div class="ft"><b>طلب موقع المعرض</b><span>location_request — أقوى إشارة!</span></div>
+        <div class="fp" style="color:var(--amb)">+40</div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(249,115,22,.15)">🏢</div>
+        <div class="ft"><b>اختار فرع معيّن</b><span>branch_selected</span></div>
+        <div class="fp" style="color:#f97316">+30</div></div>
+      <div class="farrow">↓</div>
+      <div class="fnode"><div class="fi" style="background:rgba(16,185,129,.15)">✅</div>
+        <div class="ft"><b>أكّد إنه هيزور / زار فعلاً</b><span>visit_confirmed</span></div>
+        <div class="fp" style="color:var(--grn)">+100</div></div>
+    </div>
+
+    <h3><span class="ic">①</span> دخل من الإعلان — <code>entry_offer</code></h3>
+    <p>اتشرح في الخطوة 3 فوق (مع بيانات الحملة).</p>
+
+    <h3><span class="ic">②</span> اختار فئة — <code>category_request</code></h3>
+    <p>لما يضغط "كتالوج غرف النوم" مثلاً. غيّر <code>category</code> حسب الفئة:</p>
+    <div class="code">
+      <div class="code-top"><span>POST /api/events — category_request</span><button class="cp" onclick="cp(this)">نسخ</button></div>
+<pre>{
+  <span class="k">"user_id"</span>:    <span class="v">"{{messenger user id}}"</span>,
+  <span class="k">"first_name"</span>: <span class="v">"{{first name}}"</span>,
+  <span class="k">"event_type"</span>: <span class="s">"category_request"</span>,
+  <span class="k">"category"</span>:   <span class="s">"غرف النوم"</span>,
+  <span class="k">"source"</span>:     <span class="s">"manychat"</span>
+}</pre>
+    </div>
+
+    <h3><span class="ic">③</span> شاف منتج — <code>product_details</code></h3>
+    <p>لما يضغط "عرض التفاصيل" على منتج. حط اسم الموديل وفئته:</p>
+    <div class="code">
+      <div class="code-top"><span>POST /api/events — product_details</span><button class="cp" onclick="cp(this)">نسخ</button></div>
+<pre>{
+  <span class="k">"user_id"</span>:         <span class="v">"{{messenger user id}}"</span>,
+  <span class="k">"first_name"</span>:      <span class="v">"{{first name}}"</span>,
+  <span class="k">"event_type"</span>:      <span class="s">"product_details"</span>,
+  <span class="k">"product"</span>:         <span class="s">"اليار"</span>,
+  <span class="k">"category"</span>:        <span class="s">"الانتريهات"</span>,
+  <span class="k">"campaign_source"</span>: <span class="v">"{{campaign_source}}"</span>,
+  <span class="k">"ad_id"</span>:           <span class="v">"{{ad_id}}"</span>
+}</pre>
+    </div>
+    <div class="warn"><span class="callout-label">⚠️ مهم</span>
+      كل منتج له Flow تفاصيل لوحده، فغيّر <code>"product"</code> في كل واحد (اليار / روفان / ...).
+      و<code>"category"</code> لازم تكون بالظبط زي الأسماء في الخطوة 6.</div>
+
+    <h3><span class="ic">④</span> طلب الموقع — <code>location_request</code></h3>
+    <p>لما يضغط "عايز عنوان الفرع" أو "فين الفروع". دي أقوى إشارة شراء:</p>
+    <div class="code">
+      <div class="code-top"><span>POST /api/events — location_request</span><button class="cp" onclick="cp(this)">نسخ</button></div>
+<pre>{
+  <span class="k">"user_id"</span>:         <span class="v">"{{messenger user id}}"</span>,
+  <span class="k">"first_name"</span>:      <span class="v">"{{first name}}"</span>,
+  <span class="k">"event_type"</span>:      <span class="s">"location_request"</span>,
+  <span class="k">"campaign_source"</span>: <span class="v">"{{campaign_source}}"</span>,
+  <span class="k">"ad_id"</span>:           <span class="v">"{{ad_id}}"</span>
+}</pre>
+    </div>
+    <div class="tip"><span class="callout-label">💡 ليه دي مهمة جداً</span>
+      الـ <code>location_request</code> بيدي <strong>+40 نقطة</strong> ويخلّي العميل <strong>hot</strong> على طول.
+      وده العمود اللي بيظهر في جدول "قمع الإعلانات" — كل إعلان وصّل كام عميل للخطوة دي.</div>
+
+    <h3><span class="ic">⑤</span> اختار فرع — <code>branch_selected</code></h3>
+    <p>لما العميل يختار فرع: <b>قبل ما تبعتله العنوان</b>، اطلب منه رقم تليفونه.
+    أول ما يكتبه ابعت الحدث ده ومعاه الرقم — ده اللي الاستقبال هيأكّد بيه الزيارة:</p>
+    <div class="code">
+      <div class="code-top"><span>POST /api/events — branch_selected + phone</span><button class="cp" onclick="cp(this)">نسخ</button></div>
+<pre>{
+  <span class="k">"user_id"</span>:     <span class="v">"{{messenger user id}}"</span>,
+  <span class="k">"first_name"</span>:  <span class="v">"{{first name}}"</span>,
+  <span class="k">"event_type"</span>:  <span class="s">"branch_selected"</span>,
+  <span class="k">"event_value"</span>: <span class="s">"nasr_city"</span>,
+  <span class="k">"phone"</span>:       <span class="v">"{{phone}}"</span>
+}</pre>
+    </div>
+    <p>قيم الفروع: <code>nasr_city</code> ، <code>maadi</code> ، <code>new_cairo</code> ، <code>october</code> ، <code>alexandria</code></p>
+    <div class="tip"><span class="callout-label">📱 الـ phone</span>
+      <code>{{phone}}</code> هو الرقم اللي العميل كتبه. في ManyChat ضيف خطوة
+      <strong>User Input → Phone</strong> قبل ما تبعت العنوان، واحفظه في حقل، وحطه في
+      <code>"phone"</code>. أي صيغة (01… / ‎+20…) السيستم بيظبّطها لوحده.</div>
+
+    <h3><span class="ic">⑥</span> أكّد الزيارة — <code>visit_confirmed</code></h3>
+    <p>اتشرح بالتفصيل في الخطوة 8 (تأكيد الزيارة).</p>
+  </section>
+
+  <!-- 6. CATEGORIES -->
+  <section class="step" id="cats">
+    <div class="step-head">
+      <div class="step-num">6</div>
+      <div><h2>الكاتيجوريز الـ 6 — الأسماء بالظبط</h2>
+      <div class="sub">لازم تكتبها حرفياً كده عشان التحليل يتجمّع صح</div></div>
+    </div>
+
+    <div class="warn"><span class="callout-label">⚠️ قاعدة حديدية</span>
+      لو كتبت "انتريهات" بدل "الانتريهات" — السيستم هيعتبرهم فئتين مختلفتين والتحليل هيتلخبط.
+      انسخ الاسم من الجدول ده بالظبط.</div>
+
+    <table class="tbl">
+      <thead><tr><th>الفئة</th><th>القيمة في الـ JSON (انسخها بالظبط)</th></tr></thead>
+      <tbody>
+        <tr><td>🛏️ غرف النوم</td><td><code>"category": "غرف النوم"</code></td></tr>
+        <tr><td>🪑 غرف السفرة</td><td><code>"category": "غرف السفرة"</code></td></tr>
+        <tr><td>🛋️ الانتريهات</td><td><code>"category": "الانتريهات"</code></td></tr>
+        <tr><td>🧸 غرف الأطفال</td><td><code>"category": "غرف الأطفال"</code></td></tr>
+        <tr><td>🛋️ الركنات</td><td><code>"category": "الركنات"</code></td></tr>
+        <tr><td>🪞 المنتجات الجانبية</td><td><code>"category": "المنتجات الجانبية"</code></td></tr>
+      </tbody>
+    </table>
+    <p>"المنتجات الجانبية" بتجمّع: الترابيزات + الجزامات + وحدات الشاشة.</p>
+    <div class="tip"><span class="callout-label">💡</span>
+      الـ 6 دول بيظهروا دايماً في صفحة التحليلات حتى لو فاضيين — كل واحد فيه:
+      كام عميل شاف منتجات، كام طلب الكتالوج، كام موديل، وأكتر الموديلات مشاهدةً.</div>
+  </section>
+
+  <!-- 7. SCORING -->
+  <section class="step" id="score">
+    <div class="step-head">
+      <div class="step-num">7</div>
+      <div><h2>نظام النقاط ومنع التكرار</h2>
+      <div class="sub">إزاي العميل بياخد نقط وبيتصنّف</div></div>
+    </div>
+
+    <table class="tbl">
+      <thead><tr><th>الحدث</th><th>النقط</th><th>المعنى</th></tr></thead>
+      <tbody>
+        <tr><td><code>entry_offer / entry_catalog</code></td><td class="pts">+5</td><td>دخل لأول مرة</td></tr>
+        <tr><td><code>category_request</code></td><td class="pts">+10</td><td>اختار فئة (مرة لكل فئة)</td></tr>
+        <tr><td><code>entry_location</code></td><td class="pts">+10</td><td>اهتم بالفروع</td></tr>
+        <tr><td><code>contact_request</code></td><td class="pts">+15</td><td>عايز يتواصل</td></tr>
+        <tr><td><code>product_details</code></td><td class="pts">+20</td><td>شاف منتج (مرة لكل منتج)</td></tr>
+        <tr><td><code>map_click</code></td><td class="pts">+25</td><td>ضغط على الخريطة</td></tr>
+        <tr><td><code>branch_selected</code></td><td class="pts">+30</td><td>اختار فرع → hot لو ≥40</td></tr>
+        <tr><td><code>location_request</code></td><td class="pts">+40</td><td>طلب الموقع → hot على طول</td></tr>
+        <tr><td><code>visit_confirmed</code></td><td class="pts">+100</td><td>أكّد الزيارة → visited</td></tr>
+      </tbody>
+    </table>
+
+    <h3><span class="ic">🌡️</span> التصنيفات</h3>
+    <table class="tbl">
+      <thead><tr><th>التصنيف</th><th>النقط</th><th>المعنى</th></tr></thead>
+      <tbody>
+        <tr><td>🔵 Cold (بارد)</td><td>0 – 30</td><td>بيتفرّج بس</td></tr>
+        <tr><td>🟡 Warm (دافئ)</td><td>31 – 74</td><td>مهتم</td></tr>
+        <tr><td>🔴 Hot (ساخن)</td><td>75+ أو طلب موقع بنقاط ≥40</td><td>جاد جداً — كلّمه دلوقتي</td></tr>
+        <tr><td>🏬 Visited</td><td>—</td><td>زار المعرض</td></tr>
+        <tr><td>💰 Purchased</td><td>—</td><td>اشترى (نهائي، مبيرجعش)</td></tr>
+      </tbody>
+    </table>
+
+    <h3><span class="ic">🔁</span> منع تكرار النقط (مهم تفهمه)</h3>
+    <div class="ex"><span class="callout-label">📌 مثال عملي</span>
+      <div style="display:grid;gap:6px;margin-top:8px">
+        <div>• شاف انتريه "اليار" أول مرة → <b style="color:var(--grn)">+20</b></div>
+        <div>• ضغط على "اليار" تاني مرة → <b style="color:var(--red)">+0</b> (اتسجّل بس مخدش نقط)</div>
+        <div>• شاف انتريه "روفان" (منتج تاني) → <b style="color:var(--grn)">+20</b></div>
+        <div>• اختار فئة "غرف النوم" → <b style="color:var(--grn)">+10</b></div>
+        <div>• اختار "غرف النوم" تاني → <b style="color:var(--red)">+0</b></div>
+        <div>• اختار "غرف السفرة" (فئة تانية) → <b style="color:var(--grn)">+10</b></div>
+      </div>
+    </div>
+    <div class="why"><span class="callout-label">🎯 ليه عملنا كده؟</span>
+      عشان لو العميل ضغط بالغلط على نفس المنتج 10 مرات، ميتصنّفش "ساخن" وهو مش كده.
+      كل منتج/فئة بياخد نقطه مرة واحدة بس — وده بيدّيك تصنيف حقيقي.</div>
+  </section>
+
+  <!-- 8. VISIT -->
+  <section class="step" id="visit">
+    <div class="step-head">
+      <div class="step-num">8</div>
+      <div><h2>تأكيد الزيارة — برقم التليفون</h2>
+      <div class="sub">إزاي تربط العميل الأونلاين بزيارته الفعلية للمعرض</div></div>
+    </div>
+
+    <div class="why"><span class="callout-label">🎯 الفكرة</span>
+      العميل كلّمك أونلاين وقالك هييجي. عشان تعرف إنه جه فعلاً: قبل ما تبعتله
+      عنوان الفرع، اطلب رقم تليفونه. الرقم بيتسجّل في السيستم مع حسابه، ولما
+      ييجي المعرض الاستقبال يكتب نفس الرقم ويتأكّد إنه زار.</div>
+
+    <h3><span class="ic">①</span> اطلب الرقم قبل العنوان في ManyChat</h3>
+    <div class="ministeps">
+      <div class="ms"><div class="mst">في الـ Flow اللي العميل اختار فيه الفرع، <strong>قبل</strong> رسالة العنوان ضيف خطوة <strong>User Input → Phone</strong> ("ابعتلنا رقم تليفونك عشان نجهّزلك زيارتك 📱")</div></div>
+      <div class="ms"><div class="mst">احفظ الرقم في حقل (مثلاً الحقل الجاهز <code>{{phone}}</code> في ManyChat)</div></div>
+      <div class="ms"><div class="mst">ضيف <strong>External Request</strong> (حدث <code>branch_selected</code>) ومعاه <code>"phone": "{{phone}}"</code> — زي المثال في الخطوة 5</div></div>
+      <div class="ms"><div class="mst">بعد كده ابعتله رسالة العنوان عادي</div></div>
+    </div>
+    <div class="tip"><span class="callout-label">💡</span>
+      مش لازم صيغة معيّنة للرقم. العميل يكتب <code>01012345678</code> أو
+      <code>+20…</code> — السيستم بيوحّدهم تلقائياً عشان الاستقبال يلاقيه.</div>
+
+    <h3><span class="ic">②</span> الاستقبال يأكّد بالرقم</h3>
+    <div class="ministeps">
+      <div class="ms"><div class="mst">العميل يوصل المعرض، موظف الاستقبال يسأله عن رقم تليفونه</div></div>
+      <div class="ms"><div class="mst">يفتح في السيستم تاب <strong>الاستقبال</strong></div></div>
+      <div class="ms"><div class="mst">يكتب رقم العميل ويضغط <strong>تأكيد</strong></div></div>
+      <div class="ms"><div class="mst">السيستم يلاقي العميل بالرقم ويحوّله لـ <strong>visited</strong> تلقائياً</div></div>
+    </div>
+    <div class="tip"><span class="callout-label">💡 بونص</span>
+      أول ما الاستقبال يأكّد، السيستم بيبعت تلقائياً رسالة ترحيب للعميل على ماسنجر
+      (الـ Visit Flow اللي مظبوط في الإعدادات).</div>
+  </section>
+
+  <!-- 9. DASHBOARD -->
+  <section class="step" id="dash">
+    <div class="step-head">
+      <div class="step-num">9</div>
+      <div><h2>الداشبورد — تقرأ التحليلات إزاي</h2>
+      <div class="sub">إيه اللي بيظهرلك بعد ما الداتا تيجي</div></div>
+    </div>
+
+    <h3><span class="ic">📊</span> صفحة التحليلات فيها:</h3>
+    <div class="ministeps">
+      <div class="ms"><div class="mst"><strong>الكروت العلوية:</strong> إجمالي العملاء، الساخنين، الزيارات، المشتريات</div></div>
+      <div class="ms"><div class="mst"><strong>تحليل الفئات:</strong> الـ 6 كاتيجوريز — كل واحدة كام عميل وكام موديل. اضغط أي فئة تشوف موديلاتها</div></div>
+      <div class="ms"><div class="mst"><strong>قمع الإعلانات:</strong> كل إعلان وصّل كام عميل لحد طلب الموقع (اللي إنت طلبته)</div></div>
+      <div class="ms"><div class="mst"><strong>أكثر المنتجات مشاهدةً:</strong> الموديلات الأكثر طلباً في كل الفئات</div></div>
+    </div>
+
+    <div class="ex"><span class="callout-label">📌 إزاي تقرأ "قمع الإعلانات"</span>
+      <div style="margin-top:8px">سطر زي ده:</div>
+      <div style="background:#0e0e1a;border:1px solid var(--bd);border-radius:8px;padding:12px;margin-top:8px;font-size:13px">
+        حملة "عيد 2025" — 100 عميل → 60 شافوا منتجات → <b style="color:var(--amb)">25 طلبوا الموقع</b> → 8 زاروا → 3 اشتروا — <b style="color:var(--grn)">25%</b>
+      </div>
+      <div style="margin-top:8px">معناه: الإعلان ده كفاءته 25% (ربع اللي جابهم وصلوا لمرحلة إنهم عايزين العنوان).
+      قارن الإعلانات ببعض وحط فلوسك في اللي نسبته أعلى.</div>
+    </div>
+
+    <h3><span class="ic">👥</span> الداشبورد بيختلف حسب المستخدم</h3>
+    <div class="ministeps">
+      <div class="ms"><div class="mst"><strong>المدير (admin):</strong> يشوف كل حاجة — التحليلات، كل العملاء، الإعدادات، دليل ManyChat</div></div>
+      <div class="ms"><div class="mst"><strong>المندوب (rep):</strong> يشوف بس عملاءه المعيّنين — تابات: <strong>مكالمات اليوم / مهامي / عملائي / إنجازاتي / الاستقبال</strong></div></div>
+    </div>
+    <div class="tip"><span class="callout-label">💡</span>
+      اعمل مستخدمي المندوبين من <strong>الإعدادات ← المستخدمون ← إضافة مستخدم</strong> (الدور = "مندوب مبيعات").
+      اسم المستخدم لازم يطابق الاسم اللي بيظهر في تعيين العملاء.</div>
+  </section>
+
+  <!-- 10. AUTO MESSAGES -->
+  <section class="step" id="auto">
+    <div class="step-head">
+      <div class="step-num">10</div>
+      <div><h2>الرسائل الآلية — السيستم بيكلم العميل لوحده</h2>
+      <div class="sub">4 رسائل بيبعتهم السيستم من غير تدخّل منك</div></div>
+    </div>
+
+    <p>اعمل 4 Flows في ManyChat، وحط الـ ID بتاع كل واحد في: <strong>الإعدادات ← مفاتيح API</strong></p>
+    <table class="tbl">
+      <thead><tr><th>الخانة في الإعدادات</th><th>بيتبعت لمين؟</th></tr></thead>
+      <tbody>
+        <tr><td><code>manychat_flow_immediate</code></td><td>عميل ساخن نشط آخر 6 ساعات</td></tr>
+        <tr><td><code>manychat_flow_branch_info</code></td><td>طلب الموقع أو زار</td></tr>
+        <tr><td><code>manychat_flow_offer</code></td><td>شاف منتج مؤخراً</td></tr>
+        <tr><td><code>manychat_flow_reengage</code></td><td>غايب أكتر من 3 أيام</td></tr>
+      </tbody>
+    </table>
+    <div class="ministeps">
+      <div class="ms"><div class="mst">اعمل الـ Flow في ManyChat واكتب رسالته</div></div>
+      <div class="ms"><div class="mst">افتح الـ Flow، انسخ الـ ID من رابط المتصفح</div></div>
+      <div class="ms"><div class="mst">حطّه في السيستم في الخانة المناسبة من الجدول فوق</div></div>
+    </div>
+  </section>
+
+  <!-- 11. REP WORKFLOW -->
+  <section class="step" id="reps">
+    <div class="step-head">
+      <div class="step-num">11</div>
+      <div><h2>شغل المندوب — التوزيع التلقائي والمهام</h2>
+      <div class="sub">إزاي العميل يوصل للمندوب الصح وميضيعش</div></div>
+    </div>
+
+    <h3><span class="ic">🎯</span> التوزيع التلقائي للعملاء</h3>
+    <p>مفيش توزيع يدوي. أول ما عميل يوصل تصنيف <strong>Warm</strong> (أو يقفز لـ Hot)
+    والسيستم يلاقيه لسه مش معيّن لحد → بيوزّعه <strong>تلقائياً على المندوب الأقل عملاء نشطين</strong>.</p>
+    <div class="ministeps">
+      <div class="ms"><div class="mst">العميل يبقى Warm → السيستم يدّيه للمندوب اللي عنده أقل عدد عملاء</div></div>
+      <div class="ms"><div class="mst">المندوب يلاقيه فوراً في تاب <strong>"عملائي"</strong> (مش محتاج حد يعمل حاجة)</div></div>
+      <div class="ms"><div class="mst">للتحكم: الإعدادات فيها <code>auto_assign_enabled</code> (شغّال افتراضياً — خلّيه <code>false</code> لو عايز توزيع يدوي)</div></div>
+    </div>
+    <div class="why"><span class="callout-label">🎯 ليه Warm مش Hot؟</span>
+      عشان المندوب يمسك العميل وهو لسه بيهتم — مايستناش لما يبقى ساخن جداً ويكون اتأخر.
+      والتوزيع بالعدالة (الأقل عملاء) عشان مفيش مندوب يتزنق والباقي فاضي.</div>
+
+    <h3><span class="ic">🔔</span> المهام والتذكيرات</h3>
+    <p>عشان مفيش عميل قال "كلّمني بعدين" ويضيع — فيه نظام مهام كامل:</p>
+    <div class="ministeps">
+      <div class="ms"><div class="mst"><strong>تلقائي من المكالمة:</strong> في جلسة المكالمة يضغط المندوب <strong>"اتصل لاحقاً"</strong> → يظهر اختيار تاريخ + ملاحظة → تتعمل مهمة لوحدها</div></div>
+      <div class="ms"><div class="mst"><strong>مانيوال من صفحة العميل:</strong> في ملف أي عميل → قسم <strong>"المهام والتذكيرات"</strong> → "أضف تذكير" (تاريخ + ملاحظة)</div></div>
+      <div class="ms"><div class="mst"><strong>تاب "مهامي":</strong> المندوب يشوف كل مهامه — <span style="color:var(--red)">🔴 متأخرة</span> / <span style="color:var(--amb)">🟡 النهاردة</span> / عادية — وزرار "تم" يقفلها</div></div>
+    </div>
+    <div class="tip"><span class="callout-label">💡 الفايدة</span>
+      المندوب يفتح تاب "مهامي" الصبح يلاقي قايمة مرتّبة بكل اللي لازم يكلّمهم النهاردة —
+      المتأخر فوق بالأحمر. مفيش عميل بيقع من الشبكة.</div>
+  </section>
+
+  <!-- 12. CHECKLIST -->
+  <section class="step" id="check">
+    <div class="step-head">
+      <div class="step-num">12</div>
+      <div><h2>الـ Checklist النهائي</h2>
+      <div class="sub">امشي عليه بالترتيب وتبقى خلّصت</div></div>
+    </div>
+    <div class="ministeps">
+      <div class="ms"><div class="mst">حطيت ManyChat API Key + Page ID في الإعدادات</div></div>
+      <div class="ms"><div class="mst">عملت الـ 4 Custom Fields (campaign_source, ad_id, crm_lead_class, crm_total_score)</div></div>
+      <div class="ms"><div class="mst">عملت Trigger "User clicks a Facebook Ad" لكل إعلان + Set Custom Field للحملة ورقم الإعلان</div></div>
+      <div class="ms"><div class="mst">كل Flow فيه External Request بالـ URL الصح و <code>{{messenger user id}}</code></div></div>
+      <div class="ms"><div class="mst">حطيت <code>x-webhook-secret</code> header في كل External Request (الكود من بانر الإعدادات)</div></div>
+      <div class="ms"><div class="mst">الكاتيجوريز مكتوبة بالظبط زي الجدول (الـ 6)</div></div>
+      <div class="ms"><div class="mst">عملت Test Request وشُفت <code>"success":true</code></div></div>
+      <div class="ms"><div class="mst">بانر الإعدادات بيقول <span style="color:var(--grn)">ManyChat: LIVE ✅</span></div></div>
+      <div class="ms"><div class="mst">عملت الـ 4 System Flows وحطيت الـ IDs في الإعدادات</div></div>
+      <div class="ms"><div class="mst">عملت مستخدمين للمندوبين (الإعدادات ← المستخدمون)</div></div>
+      <div class="ms"><div class="mst">عملت <strong>Set Live</strong> على كل الـ Flows</div></div>
+      <div class="ms"><div class="mst">بعد ما تحط الـ secret في كل الـ flows: فعّلت <code>webhook_enforce</code></div></div>
+      <div class="ms"><div class="mst">جربت رحلة كاملة بنفسك من الإعلان لحد طلب الموقع وشُفتها في الداشبورد</div></div>
+    </div>
+    <div class="tip"><span class="callout-label">🎉 خلصت!</span>
+      دلوقتي كل عميل بيكلّمك بيتسجّل، بياخد نقط، بيتصنّف، وبيظهر في التحليلات —
+      وانت تقدر تعرف أي إعلان بيجيب عملاء جادين فعلاً.</div>
+  </section>
+
+  <div class="end">الدليل ده مرجع محلي عندك — افتحه أي وقت تحتاج تفتكر خطوة.</div>
+</div>
+
+<a href="#top" class="top">↑</a>
+
+<script>
+function cp(btn){
+  const pre = btn.closest('.code').querySelector('pre');
+  const txt = pre.innerText;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const o = btn.textContent; btn.textContent='✓ تم';
+    setTimeout(()=>btn.textContent=o,1500);
+  });
+}
+</script>
+</body>
+</html>
