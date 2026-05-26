@@ -49,7 +49,9 @@
       "Bash(curl -s \"https://portal.grandfurnitureeg.com/\" --max-time 10)",
       "Bash(curl -s \"https://portal.grandfurnitureeg.com/assets/index-BaiSkv1x.js\" --max-time 30)",
       "Bash(curl -s -X PATCH https://api.vercel.com/v9/projects/prj_bWkeG6eMDX6ytmFIALb9AwPHXGiM?teamId=team_pVB6QTbRkcZjFgXN3zJsjwPe -H 'Authorization: Bearer vca_4FdDB1Q5jE0Yq65noKjiH1OOcTxt1h0qPiejrJDmR3DMWIWyC93rsX1Y' -H 'Content-Type: application/json' -d '{\"rootDirectory\": \"frontend\"}')",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(xargs -I{} curl -s \"https://portal.grandfurnitureeg.com/{}\" --max-time 30)",
+      "Bash(railway run --service=medo-backend node -e ' *)"
     ]
   }
 }

@@ -294,6 +294,62 @@ function initializeDatabase(dbPath = DB_PATH) {
     CREATE INDEX IF NOT EXISTS idx_purchase_items_product  ON purchase_items(product_id);
   `);
 
+  // ── One-time seed: backfill catalog from historical events ───────────────
+  // The events table has been tracking (category, event_value=product name)
+  // pairs from ManyChat product views for months — that's the merchant's
+  // implicit catalog. Hydrate the new explicit tables from it on first run
+  // so the admin doesn't have to retype everything. Idempotent: only inserts
+  // names that aren't already there.
+  const catalogIsEmpty = db.prepare(`SELECT COUNT(*) AS n FROM product_categories`).get().n === 0;
+  if (catalogIsEmpty) {
+    const distinctCats = db.prepare(`
+      SELECT category, COUNT(*) AS n
+      FROM events
+      WHERE event_type IN ('product_details', 'category_request')
+        AND category IS NOT NULL AND category != ''
+      GROUP BY category
+      ORDER BY n DESC
+    `).all();
+
+    const seed = db.transaction(() => {
+      const insertCat = db.prepare(`
+        INSERT INTO product_categories (name, sort_order) VALUES (?, ?)
+      `);
+      const insertProd = db.prepare(`
+        INSERT INTO products (category_id, name) VALUES (?, ?)
+      `);
+
+      let totalCats = 0, totalProducts = 0;
+      let sortOrder = 0;
+      for (const { category } of distinctCats) {
+        const catResult = insertCat.run(category, sortOrder++);
+        totalCats++;
+        const catId = catResult.lastInsertRowid;
+
+        const products = db.prepare(`
+          SELECT event_value, COUNT(*) AS n
+          FROM events
+          WHERE event_type = 'product_details'
+            AND category = ?
+            AND event_value IS NOT NULL AND event_value != ''
+          GROUP BY event_value
+          ORDER BY n DESC
+        `).all(category);
+
+        for (const { event_value } of products) {
+          insertProd.run(catId, event_value);
+          totalProducts++;
+        }
+      }
+      return { totalCats, totalProducts };
+    });
+
+    const { totalCats, totalProducts } = seed();
+    if (totalCats > 0) {
+      console.log(`✅ Catalog seed: ${totalCats} categories + ${totalProducts} products imported from events history`);
+    }
+  }
+
   // ── Intelligence layer — additive tables ─────────────────────────────────
   // messages_sent: every ManyChat flow we trigger is recorded here for audit
   // and to drive the weekly send counter. Joined back to lead_profiles by user_id.
