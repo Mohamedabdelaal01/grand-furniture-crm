@@ -13,7 +13,27 @@
       "Bash(vercel --version)",
       "Bash(railway link *)",
       "Bash(railway up *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git config *)",
+      "Bash(git commit -m ' *)",
+      "Bash(railway logs *)",
+      "Bash(security find-internet-password *)",
+      "Bash(brew install *)",
+      "Bash(gh repo *)",
+      "Bash(npm install *)",
+      "Bash(vercel whoami *)",
+      "Bash(vercel telemetry *)",
+      "Bash(vercel project *)",
+      "Bash(vercel link *)",
+      "Bash(vercel --prod --yes)",
+      "Bash(vercel ls *)",
+      "Bash(vercel git *)",
+      "Bash(curl -s -X PATCH https://api.vercel.com/v9/projects/prj_6oVBTfiapzAzHuCDWp8ORqEAHOy4?teamId=team_pVB6QTbRkcZjFgXN3zJsjwPe -H 'Authorization: Bearer vca_4FdDB1Q5jE0Yq65noKjiH1OOcTxt1h0qPiejrJDmR3DMWIWyC93rsX1Y' -H 'Content-Type: application/json' -d '{\"rootDirectory\": \"frontend\"}')",
+      "Bash(curl -s -o /dev/null -w \"Backend status: %{http_code}\\\\n\" \"https://medo-backend-production.up.railway.app/api/health\" --max-time 10)",
+      "Bash(curl -s -o /dev/null -w \"Frontend status: %{http_code}\\\\n\" \"https://dashboard-frontend-mohamedabdelaal01s-projects.vercel.app\" --max-time 10)",
+      "Bash(curl -s -o /dev/null -w \"Backend root: %{http_code}\\\\n\" \"https://medo-backend-production.up.railway.app/\" --max-time 10)",
+      "Bash(curl -s -o /dev/null -w \"Frontend prod: %{http_code}\\\\n\" \"https://dashboard-frontend-6kkrbaa71-mohamedabdelaal01s-projects.vercel.app\" --max-time 10)",
+      "Bash(awk -F: '$1 > 3370 && $1 < 3500 {print}')"
     ]
   }
 }

@@ -119,6 +119,7 @@ export default function Analytics() {
   const eventTypes  = getEventTypes(data?.eventsSeries || []);
   const topProducts = data?.topProducts || [];
   const branches    = data?.branches    || [];
+  const platforms   = data?.platforms   || [];
   const rawCategories = data?.categories  || [];
   const productsByCategory = data?.productsByCategory || {};
   const adFunnel    = data?.adFunnel    || [];
@@ -451,6 +452,70 @@ export default function Analytics() {
               <Bar dataKey="views" fill="#0ea5e9" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Platform performance — Instagram vs Facebook */}
+      {platforms.length > 0 && (
+        <div className="card p-6">
+          <h3 className="text-white font-black text-lg mb-6 flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-primary-400" />
+            أداء المنصات
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {platforms.map((p) => {
+              const conversion = p.leads
+                ? ((p.purchases / p.leads) * 100).toFixed(1)
+                : '0.0';
+              const visitRate = p.leads
+                ? ((p.visits / p.leads) * 100).toFixed(1)
+                : '0.0';
+              const isInsta = p.platform === 'instagram';
+              const headerBg = isInsta
+                ? 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)'
+                : '#1877F2';
+              const label = isInsta ? 'Instagram' : 'Facebook';
+              return (
+                <div
+                  key={p.platform}
+                  className="rounded-2xl overflow-hidden border border-dark-800 bg-dark-900/40"
+                >
+                  <div
+                    className="px-5 py-3 flex items-center justify-between text-white"
+                    style={{ background: headerBg }}
+                  >
+                    <span className="font-black text-base">{label}</span>
+                    <span className="text-xs font-bold opacity-90">
+                      {p.leads.toLocaleString('ar-EG')} عميل
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 p-5">
+                    <div>
+                      <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+                        زيارات
+                      </p>
+                      <p className="text-white font-black text-xl">{p.visits}</p>
+                      <p className="text-dark-400 text-xs font-bold">{visitRate}%</p>
+                    </div>
+                    <div>
+                      <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+                        مبيعات
+                      </p>
+                      <p className="text-emerald-400 font-black text-xl">{p.purchases}</p>
+                      <p className="text-dark-400 text-xs font-bold">{conversion}%</p>
+                    </div>
+                    <div>
+                      <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+                        تحويل لزيارة
+                      </p>
+                      <p className="text-primary-300 font-black text-xl">{visitRate}%</p>
+                      <p className="text-dark-400 text-xs font-bold">من العملاء</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

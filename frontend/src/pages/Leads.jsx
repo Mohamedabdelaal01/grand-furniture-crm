@@ -73,6 +73,7 @@ export default function Leads() {
   const branch       = searchParams.get('branch')       || '';
   const hasPhone     = searchParams.get('has_phone')    || '';
   const registration = searchParams.get('registration') || '';
+  const platform     = searchParams.get('platform')     || '';
   const page         = parseInt(searchParams.get('page')  || '1', 10);
   const limit        = parseInt(searchParams.get('limit') || '50', 10);
 
@@ -104,6 +105,7 @@ export default function Leads() {
         branch:       branch       || undefined,
         has_phone:    hasPhone     || undefined,
         registration: registration || undefined,
+        platform:     platform     || undefined,
         page,
         limit,
       });
@@ -113,7 +115,7 @@ export default function Leads() {
     } finally {
       setLoading(false);
     }
-  }, [search, leadClass, branch, hasPhone, registration, page, limit]);
+  }, [search, leadClass, branch, hasPhone, registration, platform, page, limit]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -255,6 +257,17 @@ export default function Leads() {
           <option value="">كل طرق التسجيل</option>
           <option value="online">تسجيل أونلاين</option>
           <option value="manual">تسجيل يدوي (استقبال)</option>
+        </select>
+
+        {/* Platform filter — ManyChat source channel */}
+        <select
+          value={platform}
+          onChange={(e) => setParam('platform', e.target.value)}
+          className="input-field text-sm py-2 pr-3 min-w-[150px]"
+        >
+          <option value="">كل المنصات</option>
+          <option value="facebook">Facebook</option>
+          <option value="instagram">Instagram</option>
         </select>
 
         {/* Page size */}

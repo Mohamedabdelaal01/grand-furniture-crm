@@ -978,6 +978,7 @@ app.get('/api/leads', requireAuth, (req, res) => {
     branch,
     has_phone,        // 'yes' → left a phone | 'no' → never left one
     registration,     // 'manual' → reception walk-in | 'online' → via ManyChat
+    platform,         // 'instagram' | 'facebook' — ManyChat source channel
     limit  = 50,
     page   = 1,
     search = '',
@@ -1045,6 +1046,11 @@ app.get('/api/leads', requireAuth, (req, res) => {
     where += ` AND manychat_source = 'walkin'`;
   } else if (registration === 'online') {
     where += ` AND (manychat_source IS NULL OR manychat_source != 'walkin')`;
+  }
+  // Filter by ManyChat source channel — Instagram vs Facebook flow.
+  if (platform === 'instagram' || platform === 'facebook') {
+    where += ` AND platform = ?`;
+    params.push(platform);
   }
 
   // Total count for pagination metadata
@@ -3379,6 +3385,22 @@ app.get('/api/analytics', requireAuth, requireRole('admin'), (req, res) => {
     ORDER BY leads DESC
   `).all(fromDate, toDate, ...campaignParam);
 
+  // Platform breakdown — Instagram vs Facebook performance side-by-side.
+  // Only counts leads with a known platform (legacy walk-ins are excluded).
+  const platforms = db.prepare(`
+    SELECT
+      lp.platform                                                                            AS platform,
+      COUNT(DISTINCT lp.user_id)                                                             AS leads,
+      SUM(CASE WHEN lp.lead_class IN ('visited','purchased','converted') THEN 1 ELSE 0 END) AS visits,
+      SUM(CASE WHEN lp.lead_class = 'purchased'                          THEN 1 ELSE 0 END) AS purchases
+    FROM lead_profiles lp
+    WHERE lp.platform IN ('instagram','facebook')
+      AND date(lp.created_at) BETWEEN ? AND ?
+      ${branchClause} ${campaignClause}
+    GROUP BY lp.platform
+    ORDER BY leads DESC
+  `).all(fromDate, toDate, ...branchParam, ...campaignParam);
+
   return res.json({
     eventsSeries,
     funnel:      funnel || { total_leads: 0, hot: 0, visited: 0, purchased: 0 },
@@ -3388,6 +3410,7 @@ app.get('/api/analytics', requireAuth, requireRole('admin'), (req, res) => {
     campaigns,
     adFunnel,
     branches,
+    platforms,
     meta: { from: fromDate, to: toDate, branch: branch || null, campaign: campaign || null },
   });
 });
