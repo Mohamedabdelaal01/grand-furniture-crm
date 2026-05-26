@@ -40,7 +40,8 @@ const Sidebar = () => {
     {
       title: '🏬 إدارة التشغيل',
       items: [
-        { path: '/leads', icon: Users, label: 'قاعدة العملاء' },
+        { path: '/leads',   icon: Users,   label: 'قاعدة العملاء' },
+        { path: '/catalog', icon: Package, label: 'إدارة المنتجات' },
       ],
     },
     {
@@ -97,6 +98,7 @@ const Sidebar = () => {
       items: [
         { path: '/branch/pending?registration=manual', icon: Phone, label: 'عملاء الاستقبال' },
         contractsLink,
+        { path: '/catalog',         icon: Package,  label: 'إدارة المنتجات' },
         { path: '/branch/settings', icon: Settings, label: 'إعدادات الفرع' },
       ],
     },

@@ -16,6 +16,7 @@ import Contracts            from './pages/Contracts';
 import AuditLedger          from './pages/AuditLedger';
 import Analytics            from './pages/Analytics';
 import Settings             from './pages/Settings';
+import Products             from './pages/Products';
 import SystemGuide          from './pages/SystemGuide';
 import McpGuide             from './pages/McpGuide';
 import ManyChatGuide        from './pages/ManyChatGuide';
@@ -89,6 +90,9 @@ function App() {
 
               {/* Contracts — admin / branch manager / sales / rep (scoped server-side) */}
               <Route path="contracts" element={<ProtectedRoute allowedRoles={['admin','branch_manager','sales','rep']}><Contracts /></ProtectedRoute>} />
+
+              {/* Product catalog management — admin + branch manager */}
+              <Route path="catalog" element={<ProtectedRoute allowedRoles={['admin','branch_manager']}><Products /></ProtectedRoute>} />
 
               {/* Audit ledger — admin only */}
               <Route path="audit-logs" element={<ProtectedRoute allowedRoles={['admin']}><AuditLedger /></ProtectedRoute>} />

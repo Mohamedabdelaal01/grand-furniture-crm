@@ -33,7 +33,23 @@
       "Bash(curl -s -o /dev/null -w \"Frontend status: %{http_code}\\\\n\" \"https://dashboard-frontend-mohamedabdelaal01s-projects.vercel.app\" --max-time 10)",
       "Bash(curl -s -o /dev/null -w \"Backend root: %{http_code}\\\\n\" \"https://medo-backend-production.up.railway.app/\" --max-time 10)",
       "Bash(curl -s -o /dev/null -w \"Frontend prod: %{http_code}\\\\n\" \"https://dashboard-frontend-6kkrbaa71-mohamedabdelaal01s-projects.vercel.app\" --max-time 10)",
-      "Bash(awk -F: '$1 > 3370 && $1 < 3500 {print}')"
+      "Bash(awk -F: '$1 > 3370 && $1 < 3500 {print}')",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "Bash(vercel inspect *)",
+      "Bash(vercel domains *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://grandfurnitureeg.com\" --max-time 10)",
+      "Bash(curl -sI \"https://grandfurnitureeg.com\" --max-time 10)",
+      "Bash(curl -s \"https://grandfurnitureeg.com\" --max-time 10)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://dashboard-frontend-smoky-sigma.vercel.app\" --max-time 10)",
+      "Bash(curl -s \"https://dashboard-frontend-smoky-sigma.vercel.app\" --max-time 10)",
+      "Bash(curl -sI \"https://portal.grandfurnitureeg.com/\" --max-time 10)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"https://portal.grandfurnitureeg.com/\" --max-time 10)",
+      "Bash(curl -s https://api.vercel.com/v9/projects/dashboard-frontend/domains?teamId=team_pVB6QTbRkcZjFgXN3zJsjwPe -H 'Authorization: Bearer vca_4FdDB1Q5jE0Yq65noKjiH1OOcTxt1h0qPiejrJDmR3DMWIWyC93rsX1Y')",
+      "Bash(curl -s \"https://portal.grandfurnitureeg.com/\" --max-time 10)",
+      "Bash(curl -s \"https://portal.grandfurnitureeg.com/assets/index-BaiSkv1x.js\" --max-time 30)",
+      "Bash(curl -s -X PATCH https://api.vercel.com/v9/projects/prj_bWkeG6eMDX6ytmFIALb9AwPHXGiM?teamId=team_pVB6QTbRkcZjFgXN3zJsjwPe -H 'Authorization: Bearer vca_4FdDB1Q5jE0Yq65noKjiH1OOcTxt1h0qPiejrJDmR3DMWIWyC93rsX1Y' -H 'Content-Type: application/json' -d '{\"rootDirectory\": \"frontend\"}')",
+      "Bash(node -e ' *)"
     ]
   }
 }

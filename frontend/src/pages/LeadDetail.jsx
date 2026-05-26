@@ -10,6 +10,7 @@ import { ar } from 'date-fns/locale';
 import {
   fetchLeadDetail, fetchLeadPurchases, recordPurchase, deleteLead,
   formatLeadClass, getLeadBadgeClass, formatBranch, formatEventType,
+  fetchProducts,
 } from '../services/api';
 import LeadTasks from '../components/LeadTasks';
 import { useAuth } from '../contexts/AuthContext';
@@ -57,9 +58,38 @@ const PlatformBadge = ({ platform }) => {
 
 // ── Purchase Modal ─────────────────────────────────────────────────────────
 const PurchaseModal = ({ userId, onClose, onSuccess }) => {
-  const [form, setForm]     = useState({ product_id: '', price: '', branch: '', notes: '', contract_number: '' });
-  const [busy, setBusy]     = useState(false);
-  const [error, setError]   = useState(null);
+  const [form, setForm]               = useState({ price: '', branch: '', notes: '', contract_number: '' });
+  const [busy, setBusy]               = useState(false);
+  const [error, setError]             = useState(null);
+  const [catalog, setCatalog]         = useState([]);     // [{id, name, category_name}]
+  const [selectedIds, setSelectedIds] = useState([]);     // chosen product ids
+  const [catalogQuery, setCatalogQuery] = useState('');
+
+  // Load catalog once when the modal opens
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await fetchProducts();
+        setCatalog(data.products || []);
+      } catch (_) {
+        // Non-fatal: rep can still record a purchase without picking items
+      }
+    })();
+  }, []);
+
+  const toggleProduct = (id) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+
+  // Group products by category for a friendlier dropdown UX
+  const grouped = catalog.reduce((acc, p) => {
+    if (catalogQuery && !p.name.toLowerCase().includes(catalogQuery.toLowerCase())) return acc;
+    if (!acc[p.category_name]) acc[p.category_name] = [];
+    acc[p.category_name].push(p);
+    return acc;
+  }, {});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +98,7 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
     try {
       await recordPurchase({
         user_id:         userId,
-        product_id:      form.product_id || undefined,
+        product_ids:     selectedIds.length ? selectedIds : undefined,
         price:           form.price ? parseFloat(form.price) : undefined,
         branch:          form.branch || undefined,
         notes:           form.notes || undefined,
@@ -84,7 +114,7 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="card w-full max-w-md p-6 space-y-5">
+      <div className="card w-full max-w-lg p-6 space-y-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-black text-white flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-violet-400" />
@@ -96,15 +126,94 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* ── Multi-select products ────────────────────────────── */}
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1.5">المنتج</label>
-            <input
-              value={form.product_id}
-              onChange={(e) => setForm((f) => ({ ...f, product_id: e.target.value }))}
-              placeholder="e.g. sofa_berlin"
-              className="input-field w-full"
-            />
+            <label className="block text-dark-400 text-xs font-bold mb-1.5">
+              المنتجات في العقد
+              {selectedIds.length > 0 && (
+                <span className="text-primary-300 mr-2">({selectedIds.length} مختار)</span>
+              )}
+            </label>
+
+            {catalog.length === 0 ? (
+              <p className="text-dark-500 text-xs p-3 rounded-xl bg-dark-900/40 border border-dark-800">
+                لسه مفيش منتجات في الكاتالوج. الأدمن لازم يضيفها من صفحة "إدارة المنتجات".
+              </p>
+            ) : (
+              <>
+                {/* Selected chips */}
+                {selectedIds.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {selectedIds.map(id => {
+                      const p = catalog.find(x => x.id === id);
+                      if (!p) return null;
+                      return (
+                        <span
+                          key={id}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-primary-500/15 border border-primary-500/30 text-primary-200 text-xs font-bold"
+                        >
+                          {p.name}
+                          <button
+                            type="button"
+                            onClick={() => toggleProduct(id)}
+                            className="hover:text-white"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Search */}
+                <input
+                  value={catalogQuery}
+                  onChange={(e) => setCatalogQuery(e.target.value)}
+                  placeholder="🔎 ابحث عن منتج…"
+                  className="input-field w-full text-sm mb-2"
+                />
+
+                {/* Grouped picker */}
+                <div className="max-h-56 overflow-y-auto rounded-xl border border-dark-800 bg-dark-900/40 p-2 space-y-2">
+                  {Object.keys(grouped).length === 0 ? (
+                    <p className="text-dark-500 text-xs text-center py-4">مفيش نتائج</p>
+                  ) : (
+                    Object.entries(grouped).map(([catName, items]) => (
+                      <div key={catName}>
+                        <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold px-2 mb-1">
+                          {catName}
+                        </p>
+                        <div className="grid grid-cols-1 gap-1">
+                          {items.map(p => {
+                            const checked = selectedIds.includes(p.id);
+                            return (
+                              <label
+                                key={p.id}
+                                className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-colors
+                                  ${checked
+                                    ? 'bg-primary-500/15 text-primary-200'
+                                    : 'hover:bg-dark-800/60 text-dark-200'}`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() => toggleProduct(p.id)}
+                                  className="w-3.5 h-3.5 accent-primary-500"
+                                />
+                                <span className="flex-1">{p.name}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
           </div>
+
           <div>
             <label className="block text-dark-400 text-xs font-bold mb-1.5">السعر (جنيه)</label>
             <input
@@ -515,25 +624,43 @@ const LeadDetail = () => {
           </h3>
           <div className="space-y-3">
             {purchases.map((p) => (
-              <div key={p.id} className="flex items-center justify-between py-3 border-b border-dark-800 last:border-0">
-                <div>
-                  <p className="text-white font-bold">
-                    {p.product_id ? p.product_id.replace(/_/g, ' ') : 'منتج غير محدد'}
-                  </p>
-                  <p className="text-dark-400 text-xs">
-                    {p.branch ? formatBranch(p.branch) : ''}{p.rep ? ` • ${p.rep}` : ''}
-                  </p>
-                </div>
-                <div className="text-left">
-                  {p.price && (
-                    <p className="text-violet-400 font-black tabular-nums">
-                      {p.price.toLocaleString()} ج
+              <div key={p.id} className="py-3 border-b border-dark-800 last:border-0">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="text-white font-bold">
+                      {p.items?.length
+                        ? `${p.items.length} منتج`
+                        : (p.product_id ? p.product_id.replace(/_/g, ' ') : 'منتج غير محدد')}
                     </p>
-                  )}
-                  <p className="text-dark-500 text-xs">
-                    {format(parseSqliteDate(p.created_at), 'd MMM yyyy', { locale: ar })}
-                  </p>
+                    <p className="text-dark-400 text-xs">
+                      {p.branch ? formatBranch(p.branch) : ''}{p.rep ? ` • ${p.rep}` : ''}
+                      {p.contract_number ? ` • عقد ${p.contract_number}` : ''}
+                    </p>
+                  </div>
+                  <div className="text-left">
+                    {p.price && (
+                      <p className="text-violet-400 font-black tabular-nums">
+                        {p.price.toLocaleString()} ج
+                      </p>
+                    )}
+                    <p className="text-dark-500 text-xs">
+                      {format(parseSqliteDate(p.created_at), 'd MMM yyyy', { locale: ar })}
+                    </p>
+                  </div>
                 </div>
+                {p.items?.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {p.items.map(it => (
+                      <span
+                        key={it.id}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-violet-500/10 border border-violet-500/30 text-violet-300 text-[11px] font-bold"
+                        title={it.category_name}
+                      >
+                        {it.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

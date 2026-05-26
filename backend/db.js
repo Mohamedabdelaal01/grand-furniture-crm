@@ -259,6 +259,41 @@ function initializeDatabase(dbPath = DB_PATH) {
     if (!e.message.includes('duplicate column name')) throw e;
   }
 
+  // ── Product catalog — categories + products + per-purchase line items ────
+  // The catalog is admin/branch-manager managed. Sales reps pick from it when
+  // recording a purchase. A single contract can include multiple products, so
+  // purchase_items is a many-to-many join between purchases and products.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS product_categories (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      name        TEXT NOT NULL,
+      sort_order  INTEGER NOT NULL DEFAULT 0,
+      active      INTEGER NOT NULL DEFAULT 1,
+      created_at  DATETIME NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS products (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      category_id  INTEGER NOT NULL,
+      name         TEXT NOT NULL,
+      active       INTEGER NOT NULL DEFAULT 1,
+      created_at   DATETIME NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (category_id) REFERENCES product_categories(id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
+
+    CREATE TABLE IF NOT EXISTS purchase_items (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      purchase_id   INTEGER NOT NULL,
+      product_id    INTEGER NOT NULL,
+      created_at    DATETIME NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
+      FOREIGN KEY (product_id)  REFERENCES products(id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_purchase_items_purchase ON purchase_items(purchase_id);
+    CREATE INDEX IF NOT EXISTS idx_purchase_items_product  ON purchase_items(product_id);
+  `);
+
   // ── Intelligence layer — additive tables ─────────────────────────────────
   // messages_sent: every ManyChat flow we trigger is recorded here for audit
   // and to drive the weekly send counter. Joined back to lead_profiles by user_id.

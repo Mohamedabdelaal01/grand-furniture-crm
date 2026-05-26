@@ -2737,7 +2737,7 @@ app.patch('/api/branch/users/:id/toggle-active', requireAuth, authorizeRoles('ad
 // Returns: { ok, purchase_id, lead_class }
 // ════════════════════════════════════════════════════════════════════════════
 app.post('/api/purchases', requireAuth, (req, res) => {
-  const { user_id, product_id, price, branch, notes, contract_number } = req.body || {};
+  const { user_id, product_id, product_ids, price, branch, notes, contract_number } = req.body || {};
   if (!user_id || typeof user_id !== 'string') {
     return res.status(400).json({ error: 'user_id is required' });
   }
@@ -2747,11 +2747,35 @@ app.post('/api/purchases', requireAuth, (req, res) => {
   const lead = db.prepare(`SELECT user_id FROM lead_profiles WHERE user_id = ?`).get(user_id);
   if (!lead) return res.status(404).json({ error: 'lead_not_found' });
 
+  // Normalize product_ids: accept array of numeric IDs from the new catalog.
+  const productIds = Array.isArray(product_ids)
+    ? product_ids.map(v => parseInt(v, 10)).filter(n => Number.isFinite(n) && n > 0)
+    : [];
+
+  // Legacy product_id text field is kept for backward compat; for new flows
+  // we store the first selected product's name there so old reports still work.
+  let legacyProductLabel = product_id || null;
+  if (!legacyProductLabel && productIds.length) {
+    const firstProduct = db.prepare(`SELECT name FROM products WHERE id = ?`).get(productIds[0]);
+    if (firstProduct) legacyProductLabel = firstProduct.name;
+  }
+
   const result = db.prepare(`
     INSERT INTO purchases (user_id, product_id, price, branch, notes, rep, contract_number)
     VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(user_id, product_id || null, price || null, branch || null, notes || null, rep,
+  `).run(user_id, legacyProductLabel, price || null, branch || null, notes || null, rep,
          (contract_number && String(contract_number).trim()) || null);
+
+  // Link the catalog products to this purchase (many-to-many).
+  if (productIds.length) {
+    const insertItem = db.prepare(`
+      INSERT INTO purchase_items (purchase_id, product_id) VALUES (?, ?)
+    `);
+    const insertMany = db.transaction((ids) => {
+      for (const pid of ids) insertItem.run(result.lastInsertRowid, pid);
+    });
+    insertMany(productIds);
+  }
 
   // Mark lead as purchased (terminal state — won't be overridden by scoring)
   db.prepare(`
@@ -3028,6 +3052,25 @@ app.get('/api/leads/:user_id/purchases', requireAuth, (req, res) => {
   const purchases = db.prepare(`
     SELECT * FROM purchases WHERE user_id = ? ORDER BY created_at DESC
   `).all(req.params.user_id);
+
+  // Attach catalog items to each purchase (may be empty for legacy rows).
+  if (purchases.length) {
+    const itemsByPurchase = db.prepare(`
+      SELECT pi.purchase_id, p.id, p.name, c.name AS category_name
+      FROM purchase_items pi
+      JOIN products p             ON p.id = pi.product_id
+      JOIN product_categories c   ON c.id = p.category_id
+      WHERE pi.purchase_id IN (${purchases.map(() => '?').join(',')})
+      ORDER BY c.sort_order, p.name
+    `).all(...purchases.map(p => p.id));
+    const grouped = {};
+    for (const it of itemsByPurchase) {
+      if (!grouped[it.purchase_id]) grouped[it.purchase_id] = [];
+      grouped[it.purchase_id].push({ id: it.id, name: it.name, category_name: it.category_name });
+    }
+    for (const p of purchases) p.items = grouped[p.id] || [];
+  }
+
   return res.json({ purchases });
 });
 
@@ -4376,6 +4419,133 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     version:   BUILD_VERSION,
   });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// Product catalog — categories & products
+// Read endpoints are open to any authenticated user (sales reps need to see
+// the catalog when recording a purchase). Write endpoints are restricted to
+// admin and branch_manager.
+// ════════════════════════════════════════════════════════════════════════════
+const canEditCatalog = authorizeRoles('admin', 'branch_manager');
+
+// ─── Categories ─────────────────────────────────────────────────────────────
+app.get('/api/products/categories', requireAuth, (_req, res) => {
+  const db = getDb();
+  const rows = db.prepare(`
+    SELECT c.id, c.name, c.sort_order, c.active,
+           (SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.active = 1) AS product_count
+    FROM product_categories c
+    WHERE c.active = 1
+    ORDER BY c.sort_order, c.name
+  `).all();
+  return res.json({ categories: rows });
+});
+
+app.post('/api/products/categories', requireAuth, canEditCatalog, (req, res) => {
+  const name = (req.body?.name || '').trim();
+  if (!name) return res.status(400).json({ error: 'name_required' });
+  const db = getDb();
+  const result = db.prepare(`
+    INSERT INTO product_categories (name) VALUES (?)
+  `).run(name);
+  return res.json({ ok: true, id: result.lastInsertRowid, name });
+});
+
+app.put('/api/products/categories/:id', requireAuth, canEditCatalog, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const name = (req.body?.name || '').trim();
+  if (!id || !name) return res.status(400).json({ error: 'id_and_name_required' });
+  const db = getDb();
+  const result = db.prepare(`
+    UPDATE product_categories SET name = ? WHERE id = ? AND active = 1
+  `).run(name, id);
+  if (result.changes === 0) return res.status(404).json({ error: 'category_not_found' });
+  return res.json({ ok: true });
+});
+
+app.delete('/api/products/categories/:id', requireAuth, canEditCatalog, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!id) return res.status(400).json({ error: 'id_required' });
+  const db = getDb();
+  // Soft-delete: archive the category AND archive its products so historical
+  // purchase_items references stay intact (no FK cascade pain).
+  const tx = db.transaction(() => {
+    db.prepare(`UPDATE product_categories SET active = 0 WHERE id = ?`).run(id);
+    db.prepare(`UPDATE products SET active = 0 WHERE category_id = ?`).run(id);
+  });
+  tx();
+  return res.json({ ok: true });
+});
+
+// ─── Products ───────────────────────────────────────────────────────────────
+app.get('/api/products', requireAuth, (req, res) => {
+  const db = getDb();
+  const categoryId = req.query.category_id ? parseInt(req.query.category_id, 10) : null;
+  let where = `WHERE p.active = 1 AND c.active = 1`;
+  const params = [];
+  if (categoryId) {
+    where += ` AND p.category_id = ?`;
+    params.push(categoryId);
+  }
+  const rows = db.prepare(`
+    SELECT p.id, p.name, p.category_id, c.name AS category_name
+    FROM products p
+    JOIN product_categories c ON c.id = p.category_id
+    ${where}
+    ORDER BY c.sort_order, c.name, p.name
+  `).all(...params);
+  return res.json({ products: rows });
+});
+
+app.post('/api/products', requireAuth, canEditCatalog, (req, res) => {
+  const { category_id, name } = req.body || {};
+  const catId = parseInt(category_id, 10);
+  const trimmed = (name || '').trim();
+  if (!catId || !trimmed) return res.status(400).json({ error: 'category_id_and_name_required' });
+  const db = getDb();
+  const cat = db.prepare(`SELECT id FROM product_categories WHERE id = ? AND active = 1`).get(catId);
+  if (!cat) return res.status(404).json({ error: 'category_not_found' });
+  const result = db.prepare(`
+    INSERT INTO products (category_id, name) VALUES (?, ?)
+  `).run(catId, trimmed);
+  return res.json({ ok: true, id: result.lastInsertRowid });
+});
+
+app.put('/api/products/:id', requireAuth, canEditCatalog, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { name, category_id } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'id_required' });
+  const db = getDb();
+  const sets = [];
+  const params = [];
+  if (typeof name === 'string' && name.trim()) {
+    sets.push('name = ?');
+    params.push(name.trim());
+  }
+  if (category_id) {
+    const catId = parseInt(category_id, 10);
+    if (catId) {
+      sets.push('category_id = ?');
+      params.push(catId);
+    }
+  }
+  if (!sets.length) return res.status(400).json({ error: 'nothing_to_update' });
+  params.push(id);
+  const result = db.prepare(
+    `UPDATE products SET ${sets.join(', ')} WHERE id = ? AND active = 1`
+  ).run(...params);
+  if (result.changes === 0) return res.status(404).json({ error: 'product_not_found' });
+  return res.json({ ok: true });
+});
+
+app.delete('/api/products/:id', requireAuth, canEditCatalog, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!id) return res.status(400).json({ error: 'id_required' });
+  const db = getDb();
+  // Soft-delete keeps historical purchase_items links intact.
+  db.prepare(`UPDATE products SET active = 0 WHERE id = ?`).run(id);
+  return res.json({ ok: true });
 });
 
 // ── Background Jobs ───────────────────────────────────────────────────────

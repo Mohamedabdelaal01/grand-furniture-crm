@@ -248,14 +248,49 @@ export const deleteBranchSales = async (id) => {
 };
 
 /** Sales rep records an offline purchase for a lead. */
-export const recordPurchase = async ({ user_id, product_id, price, branch, notes, contract_number } = {}) => {
-  const response = await api.post('/api/purchases', { user_id, product_id, price, branch, notes, contract_number });
+export const recordPurchase = async ({ user_id, product_id, product_ids, price, branch, notes, contract_number } = {}) => {
+  const response = await api.post('/api/purchases', { user_id, product_id, product_ids, price, branch, notes, contract_number });
   return response.data;
 };
 
 /** Fetch purchase history for a single lead. */
 export const fetchLeadPurchases = async (userId) => {
   const response = await api.get(`/api/leads/${userId}/purchases`);
+  return response.data;
+};
+
+// ── Product catalog ─────────────────────────────────────────────────────────
+export const fetchProductCategories = async () => {
+  const response = await api.get('/api/products/categories');
+  return response.data;
+};
+export const createProductCategory = async (name) => {
+  const response = await api.post('/api/products/categories', { name });
+  return response.data;
+};
+export const updateProductCategory = async (id, name) => {
+  const response = await api.put(`/api/products/categories/${id}`, { name });
+  return response.data;
+};
+export const deleteProductCategory = async (id) => {
+  const response = await api.delete(`/api/products/categories/${id}`);
+  return response.data;
+};
+export const fetchProducts = async (categoryId) => {
+  const params = categoryId ? { category_id: categoryId } : {};
+  const response = await api.get('/api/products', { params });
+  return response.data;
+};
+export const createProduct = async ({ category_id, name }) => {
+  const response = await api.post('/api/products', { category_id, name });
+  return response.data;
+};
+export const updateProduct = async (id, { name, category_id } = {}) => {
+  const response = await api.put(`/api/products/${id}`, { name, category_id });
+  return response.data;
+};
+export const deleteProduct = async (id) => {
+  const response = await api.delete(`/api/products/${id}`);
   return response.data;
 };
 
