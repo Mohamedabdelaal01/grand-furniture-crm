@@ -3895,6 +3895,8 @@ function seedDemoData(db) {
   const month    = NOW.toISOString().slice(0, 7);  // YYYY-MM
 
   // ── wipe previous demo seed rows (safe for re-runs) ────────────────────
+  // Order matters: purchase_items has FK → purchases, so clear children first.
+  db.prepare(`DELETE FROM purchase_items WHERE purchase_id IN (SELECT id FROM purchases WHERE user_id LIKE '${PREFIX}%')`).run();
   db.prepare(`DELETE FROM events             WHERE user_id LIKE '${PREFIX}%'`).run();
   db.prepare(`DELETE FROM lead_profiles      WHERE user_id LIKE '${PREFIX}%'`).run();
   db.prepare(`DELETE FROM lead_phones        WHERE user_id LIKE '${PREFIX}%'`).run();
@@ -3939,9 +3941,18 @@ function seedDemoData(db) {
     INSERT OR REPLACE INTO lead_profiles
       (user_id, first_name, total_score, lead_class, preferred_branch,
        last_product, last_category, product_view_count, session_count,
-       campaign_source, last_activity, created_at)
-    VALUES (?,?,?,?,?, ?,?,?,?, ?,?,?)
+       campaign_source, platform, last_activity, created_at)
+    VALUES (?,?,?,?,?, ?,?,?,?, ?,?,?,?)
   `);
+
+  // Map the demo's Arabic src label to the canonical platform column value.
+  // TikTok stays NULL because the platform field only tracks the ManyChat
+  // channels (Instagram/Facebook) where DMs come in.
+  const srcToPlatform = (src) => {
+    if (src === 'فيسبوك')   return 'facebook';
+    if (src === 'إنستجرام') return 'instagram';
+    return null;
+  };
   const insPhone = db.prepare(`
     INSERT OR IGNORE INTO lead_phones (user_id, phone, created_at)
     VALUES (?,?,?)
@@ -3960,7 +3971,7 @@ function seedDemoData(db) {
       insLead.run(
         l.id, l.name, l.score, l.cls, BRANCH,
         l.product, l.cat, l.views, l.sessions,
-        l.src,
+        l.src, srcToPlatform(l.src),
         iso(daysAgo(actAgo)),
         iso(daysAgo(createdAgo))
       );
@@ -4013,10 +4024,27 @@ function seedDemoData(db) {
     INSERT INTO purchases (user_id, price, branch, notes, rep, created_at, contract_number)
     VALUES (?,?,?,?,?,?,?)
   `);
+  const insPurchaseItem = db.prepare(`
+    INSERT INTO purchase_items (purchase_id, product_id) VALUES (?, ?)
+  `);
+  // Pick a couple of real catalog products per demo contract so the new
+  // multi-select UI on the lead profile shows realistic items.
+  const pickRandomProducts = (n) => {
+    const rows = db.prepare(`SELECT id FROM products WHERE active = 1`).all();
+    if (!rows.length) return [];
+    const shuffled = rows.slice().sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(n, rows.length)).map(r => r.id);
+  };
   db.transaction(() => {
     purchaseData.forEach((p) => {
       const pDate = iso(daysAgo(p.daysAgoN));
-      insPurchase.run(p.uid, p.price, BRANCH, p.note, SALES, pDate, p.contract);
+      const result = insPurchase.run(p.uid, p.price, BRANCH, p.note, SALES, pDate, p.contract);
+      const purchaseId = result.lastInsertRowid;
+
+      // 1–3 random catalog products per demo contract
+      const productIds = pickRandomProducts(1 + Math.floor(Math.random() * 3));
+      for (const pid of productIds) insPurchaseItem.run(purchaseId, pid);
+
       // set purchased_at so the "اشتروا" tab in revisit works
       db.prepare(`
         UPDATE lead_profiles SET purchased_at = ? WHERE user_id = ?

@@ -51,7 +51,19 @@
       "Bash(curl -s -X PATCH https://api.vercel.com/v9/projects/prj_bWkeG6eMDX6ytmFIALb9AwPHXGiM?teamId=team_pVB6QTbRkcZjFgXN3zJsjwPe -H 'Authorization: Bearer vca_4FdDB1Q5jE0Yq65noKjiH1OOcTxt1h0qPiejrJDmR3DMWIWyC93rsX1Y' -H 'Content-Type: application/json' -d '{\"rootDirectory\": \"frontend\"}')",
       "Bash(node -e ' *)",
       "Bash(xargs -I{} curl -s \"https://portal.grandfurnitureeg.com/{}\" --max-time 30)",
-      "Bash(railway run --service=medo-backend node -e ' *)"
+      "Bash(railway run --service=medo-backend node -e ' *)",
+      "Bash(curl -s \"https://medo-backend-production.up.railway.app/api/products/categories\" -H \"x-mcp-key: Medo_Super_Secret_2026\" --max-time 15)",
+      "Bash(railway ssh *)",
+      "Bash(ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N \"\")",
+      "Bash(ssh-keyscan -t ed25519 ssh.railway.com)",
+      "Bash(curl -s https://api.vercel.com/v9/projects/__TRACKED_VAR__/domains?teamId=team_pVB6QTbRkcZjFgXN3zJsjwPe -H 'Authorization: Bearer vca_4FdDB1Q5jE0Yq65noKjiH1OOcTxt1h0qPiejrJDmR3DMWIWyC93rsX1Y')",
+      "Bash(curl -s -X DELETE https://api.vercel.com/v9/projects/__TRACKED_VAR__?teamId=team_pVB6QTbRkcZjFgXN3zJsjwPe -H 'Authorization: Bearer vca_4FdDB1Q5jE0Yq65noKjiH1OOcTxt1h0qPiejrJDmR3DMWIWyC93rsX1Y' -w 'HTTP %{http_code}\\\\n')",
+      "Bash(railway environment *)",
+      "Bash(railway service *)",
+      "Bash(curl -s https://api.vercel.com/v9/projects/dashboard-frontend-last?teamId=team_pVB6QTbRkcZjFgXN3zJsjwPe -H 'Authorization: Bearer vca_4FdDB1Q5jE0Yq65noKjiH1OOcTxt1h0qPiejrJDmR3DMWIWyC93rsX1Y')",
+      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H 'Authorization: Bearer 51a169d6-d6dc-415c-872c-d3a64bcf2a1c' -H 'Content-Type: application/json' -d '{\"query\":\"query{project\\(id:\\\\\"64725a51-046a-4a42-a6ba-419a9267eac5\\\\\"\\){environments{edges{node{name}}}}}\"}')",
+      "Bash(awk -F: '$1 > 3880 && $1 < 4100 {print}')",
+      "Bash(awk 'NR>=3880 && NR<=4080 && /platform|product_ids|INSERT INTO/' \"/Users/mohamed/Desktop/last project/backend/server.js\")"
     ]
   }
 }
