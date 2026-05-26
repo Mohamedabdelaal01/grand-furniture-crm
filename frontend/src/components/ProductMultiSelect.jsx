@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { X, ChevronDown } from 'lucide-react';
 import { fetchProducts } from '../services/api';
 
 // Reusable multi-select for the product catalog.
-// Loads /api/products once on mount, groups by category, supports search,
-// and renders selected items as removable chips.
+// Loads /api/products once on mount, then renders an accordion: categories
+// are collapsed by default; clicking one expands its products. A search box
+// is also provided — typing auto-expands matching categories.
 //
 // Props:
 //   selectedIds (number[])              — controlled value
@@ -15,6 +16,7 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
   const [catalog, setCatalog] = useState([]);
   const [query, setQuery]     = useState('');
   const [loaded, setLoaded]   = useState(false);
+  const [openCats, setOpenCats] = useState(() => new Set());
 
   useEffect(() => {
     fetchProducts()
@@ -30,14 +32,41 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
     onChange?.(next);
   };
 
-  const grouped = catalog.reduce((acc, p) => {
-    if (query && !p.name.toLowerCase().includes(query.toLowerCase())) return acc;
-    if (!acc[p.category_name]) acc[p.category_name] = [];
-    acc[p.category_name].push(p);
-    return acc;
-  }, {});
+  const toggleCat = (catName) => {
+    setOpenCats(prev => {
+      const next = new Set(prev);
+      if (next.has(catName)) next.delete(catName); else next.add(catName);
+      return next;
+    });
+  };
 
-  const pickerHeight = compact ? 'max-h-40' : 'max-h-56';
+  // Group products by category, applying the search filter (if any).
+  const grouped = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return catalog.reduce((acc, p) => {
+      if (q && !p.name.toLowerCase().includes(q)) return acc;
+      if (!acc[p.category_name]) acc[p.category_name] = [];
+      acc[p.category_name].push(p);
+      return acc;
+    }, {});
+  }, [catalog, query]);
+
+  // Count of selected products per category for the badge in the header.
+  const selectedByCat = useMemo(() => {
+    const map = {};
+    for (const id of selectedIds) {
+      const p = catalog.find(x => x.id === id);
+      if (!p) continue;
+      map[p.category_name] = (map[p.category_name] || 0) + 1;
+    }
+    return map;
+  }, [selectedIds, catalog]);
+
+  // When searching, auto-expand every category that has a match. Otherwise
+  // respect the user's manual open/close state.
+  const isOpen = (catName) => (query.trim() ? true : openCats.has(catName));
+
+  const pickerHeight = compact ? 'max-h-56' : 'max-h-80';
 
   if (loaded && catalog.length === 0) {
     return (
@@ -92,41 +121,65 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
         className="input-field w-full text-sm mb-2"
       />
 
-      <div className={`${pickerHeight} overflow-y-auto rounded-xl border border-dark-800 bg-dark-900/40 p-2 space-y-2`}>
+      <div className={`${pickerHeight} overflow-y-auto rounded-xl border border-dark-800 bg-dark-900/40 p-1.5 space-y-1`}>
         {Object.keys(grouped).length === 0 ? (
           <p className="text-dark-500 text-xs text-center py-4">
             {loaded ? 'مفيش نتائج' : 'جاري التحميل…'}
           </p>
         ) : (
-          Object.entries(grouped).map(([catName, items]) => (
-            <div key={catName}>
-              <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold px-2 mb-1">
-                {catName}
-              </p>
-              <div className="grid grid-cols-1 gap-1">
-                {items.map(p => {
-                  const checked = selectedIds.includes(p.id);
-                  return (
-                    <label
-                      key={p.id}
-                      className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-colors
-                        ${checked
-                          ? 'bg-primary-500/15 text-primary-200'
-                          : 'hover:bg-dark-800/60 text-dark-200'}`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggle(p.id)}
-                        className="w-3.5 h-3.5 accent-primary-500"
-                      />
-                      <span className="flex-1">{p.name}</span>
-                    </label>
-                  );
-                })}
+          Object.entries(grouped).map(([catName, items]) => {
+            const open = isOpen(catName);
+            const selectedCount = selectedByCat[catName] || 0;
+            return (
+              <div key={catName} className="rounded-lg overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => toggleCat(catName)}
+                  className="w-full flex items-center gap-2 px-2.5 py-2 bg-dark-800/40 hover:bg-dark-800/70 transition-colors"
+                >
+                  <ChevronDown
+                    className={`w-4 h-4 text-dark-400 transition-transform ${open ? '' : '-rotate-90'}`}
+                  />
+                  <span className="flex-1 text-right text-white text-sm font-bold">
+                    {catName}
+                  </span>
+                  {selectedCount > 0 && (
+                    <span className="text-[10px] font-bold bg-primary-500/20 text-primary-300 px-1.5 py-0.5 rounded">
+                      {selectedCount}
+                    </span>
+                  )}
+                  <span className="text-dark-500 text-[10px] font-bold">
+                    {items.length}
+                  </span>
+                </button>
+
+                {open && (
+                  <div className="grid grid-cols-1 gap-0.5 px-1 py-1.5">
+                    {items.map(p => {
+                      const checked = selectedIds.includes(p.id);
+                      return (
+                        <label
+                          key={p.id}
+                          className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer text-sm transition-colors
+                            ${checked
+                              ? 'bg-primary-500/15 text-primary-200'
+                              : 'hover:bg-dark-800/60 text-dark-200'}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggle(p.id)}
+                            className="w-3.5 h-3.5 accent-primary-500"
+                          />
+                          <span className="flex-1">{p.name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
