@@ -591,7 +591,7 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
               مدير فرع · {viewLabel}
             </span>
           </div>
-          <h1 className="text-3xl font-black text-white flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2">
             <Building2 className="w-7 h-7 text-primary-400" />
             فرع {formatBranch(branch)}
           </h1>

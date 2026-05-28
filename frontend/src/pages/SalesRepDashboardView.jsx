@@ -224,7 +224,7 @@ const SalesRepDashboardView = () => {
               Sales Rep Dashboard
             </span>
           </div>
-          <h1 className="text-4xl font-black text-white">أهلاً، {repName}</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">أهلاً، {repName}</h1>
           <p className="text-dark-400 mt-1">
             Level <span className="text-primary-400 font-bold">{gamification.level.level}</span>
             {' • '}
