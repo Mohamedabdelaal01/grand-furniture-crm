@@ -4,10 +4,11 @@ import {
   LogOut, BookOpen, Phone, Trophy, ShieldCheck, ShoppingBag,
   CheckCircle2, UserPlus, PhoneCall, MapPinned, FileText,
   TrendingUp, Megaphone, MapPin, Package, Headset, Building2, ScrollText, Bot,
+  X,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
   const location       = useLocation();
   const navigate       = useNavigate();
   const { user, logout } = useAuth();
@@ -176,17 +177,36 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 bg-dark-900 border-l border-dark-800 flex flex-col h-full z-20">
-      {/* Logo */}
+    /*
+     * Desktop (lg+): static sidebar always visible — `relative` in the flex row.
+     * Mobile (<lg):  fixed drawer that slides in from the right.
+     *   • Hidden  → translate-x-full  (pushed off-screen to the right)
+     *   • Visible → translate-x-0     (slides in, sits above the backdrop)
+     */
+    <aside className={`
+      w-64 bg-dark-900 border-l border-dark-800 flex flex-col h-full z-50
+      fixed inset-y-0 right-0 transition-transform duration-300 ease-in-out
+      lg:relative lg:translate-x-0 lg:z-20
+      ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+    `}>
+      {/* Logo + mobile close button */}
       <div className="h-20 flex items-center px-6 border-b border-dark-800">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-1">
           <div className="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-lg shadow-primary-900/20">
             <Sofa className="w-6 h-6 text-white" />
           </div>
-          <div className="text-right">
+          <div className="text-right flex-1">
             <h1 className="text-lg font-bold text-white tracking-tight leading-none">جراند للأثاث</h1>
             <p className="text-[10px] text-dark-400 font-medium uppercase tracking-widest mt-1">Grand Furniture</p>
           </div>
+          {/* Close button — mobile only */}
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1.5 rounded-lg text-dark-400 hover:text-white hover:bg-dark-800 transition-colors"
+            aria-label="إغلاق القائمة"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
@@ -207,6 +227,7 @@ const Sidebar = () => {
                   <Link
                     key={item.path}
                     to={item.path}
+                    onClick={onClose}
                     className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group
                       ${active
                         ? 'bg-primary-600/10 text-primary-500 border border-primary-600/20'

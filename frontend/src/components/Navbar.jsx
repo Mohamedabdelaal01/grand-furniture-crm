@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation }    from 'react-router-dom';
-import { Bell, Search, RefreshCw, Calendar as CalendarIcon, LogOut, ChevronDown, User } from 'lucide-react';
+import { Bell, Search, RefreshCw, Calendar as CalendarIcon, LogOut, ChevronDown, User, Menu } from 'lucide-react';
 import { format }         from 'date-fns';
 import { ar }             from 'date-fns/locale';
 import { useAuth }        from '../contexts/AuthContext';
 import { useAlerts }      from '../contexts/AlertsContext';
 
-const Navbar = () => {
+const Navbar = ({ onMenuToggle }) => {
   const navigate              = useNavigate();
   const location              = useLocation();
   const { user, logout }      = useAuth();
@@ -66,7 +66,16 @@ const Navbar = () => {
     : 'GF';
 
   return (
-    <header className="h-20 bg-dark-900/50 backdrop-blur-md border-b border-dark-800 flex items-center justify-between px-8 sticky top-0 z-10">
+    <header className="h-16 md:h-20 bg-dark-900/50 backdrop-blur-md border-b border-dark-800 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 gap-3">
+      {/* Hamburger — mobile only */}
+      <button
+        onClick={onMenuToggle}
+        className="lg:hidden p-2 rounded-xl bg-dark-800/50 hover:bg-dark-700 text-dark-400 hover:text-white border border-dark-700/50 transition-all active:scale-95 flex-shrink-0"
+        aria-label="فتح القائمة"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
       {/* Search */}
       <div className="flex-1 max-w-xl">
         <div className="relative group">
