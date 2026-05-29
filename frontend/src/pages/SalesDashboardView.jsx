@@ -265,7 +265,7 @@ export default function SalesDashboardView({ view = 'home' }) {
               مبيعات · {viewLabel}
             </span>
           </div>
-          <h1 className="text-3xl font-black text-white">أهلاً، {user?.name || 'سيلز'}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-white">أهلاً، {user?.name || 'سيلز'}</h1>
           {user?.branch && (
             <p className="text-dark-400 text-sm mt-1">فرع {formatBranch(user.branch)}</p>
           )}

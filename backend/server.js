@@ -2552,8 +2552,12 @@ app.patch('/api/branch/customers/:userId/followup', requireAuth, authorizeRoles(
 app.get('/api/sales/followups', requireAuth, authorizeRoles('sales'), (req, res) => {
   const me     = req.user.name;
   const branch = req.user.branch || null;
-  if (!branch) return res.status(400).json({ error: 'branch_required' });
 
+  // A rep's customers are identified by WHO they're assigned to (assigned_sales),
+  // NOT by the rep's current branch string. Matching on the rep's branch used to
+  // silently hide customers whenever the branch was stored with a slightly
+  // different spelling (e.g. "المعادي" vs "المعادى") on the rep vs the assignment
+  // row. The `visited` flag is correlated to each row's OWN branch instead.
   const db = getDb();
   const customers = db.prepare(`
     SELECT
@@ -2569,34 +2573,35 @@ app.get('/api/sales/followups', requireAuth, authorizeRoles('sales'), (req, res)
       f.assigned_at,
       (SELECT GROUP_CONCAT(ph.phone, ' ، ') FROM lead_phones ph
          WHERE ph.user_id = f.user_id)                              AS phones,
-      CASE WHEN lv.user_id IS NOT NULL THEN 1 ELSE 0 END            AS visited
+      CASE WHEN EXISTS (
+        SELECT 1 FROM lead_visits v
+         WHERE v.user_id = f.user_id AND v.branch = f.branch
+      ) THEN 1 ELSE 0 END                                          AS visited
     FROM branch_customer_followups f
     LEFT JOIN lead_profiles lp ON lp.user_id = f.user_id
-    LEFT JOIN (
-      SELECT DISTINCT user_id FROM lead_visits WHERE branch = ?
-    ) lv ON lv.user_id = f.user_id
-    WHERE f.branch = ? AND f.assigned_sales = ?
+    WHERE f.assigned_sales = ?
     ORDER BY f.followed_up ASC, f.assigned_at DESC
-  `).all(branch, branch, me);
+  `).all(me);
 
   return res.json({ branch, customers });
 });
 
 app.patch('/api/sales/followups/:userId', requireAuth, authorizeRoles('sales'), (req, res) => {
   const me     = req.user.name;
-  const branch = req.user.branch || null;
-  if (!branch) return res.status(400).json({ error: 'branch_required' });
 
   const { userId } = req.params;
   const { followed_up, call_summary } = req.body || {};
   const newVal = followed_up ? 1 : 0;
 
+  // Match by assignee (resilient to branch-spelling drift); take the branch from
+  // the matched row itself for the follow-up log.
   const db  = getDb();
   const own = db.prepare(`
-    SELECT id FROM branch_customer_followups
-    WHERE branch = ? AND user_id = ? AND assigned_sales = ?
-  `).get(branch, userId, me);
+    SELECT branch FROM branch_customer_followups
+    WHERE user_id = ? AND assigned_sales = ?
+  `).get(userId, me);
   if (!own) return res.status(404).json({ error: 'العميل ده مش مسنود ليك' });
+  const branch = own.branch;
 
   const summary = newVal ? (call_summary && String(call_summary).trim()) || null : null;
   db.prepare(`
@@ -2605,8 +2610,8 @@ app.patch('/api/sales/followups/:userId', requireAuth, authorizeRoles('sales'), 
       followed_up_at = ?,
       followed_up_by = ?,
       call_summary   = ?
-    WHERE branch = ? AND user_id = ?
-  `).run(newVal, newVal ? new Date().toISOString() : null, newVal ? me : null, summary, branch, userId);
+    WHERE user_id = ? AND assigned_sales = ?
+  `).run(newVal, newVal ? new Date().toISOString() : null, newVal ? me : null, summary, userId, me);
 
   if (newVal) logFollowup(db, branch, userId, me, summary);
 
@@ -2676,6 +2681,7 @@ app.put('/api/branch/sales/:id', requireAuth, (req, res) => {
   if (!loadOwnedSales(db, req.params.id, scope.branch)) {
     return res.status(404).json({ error: 'الحساب مش موجود في فرعك' });
   }
+  const cur = db.prepare(`SELECT name FROM users WHERE id = ?`).get(req.params.id);
   const { name, email, password, active } = req.body || {};
   const updates = [];
   const params  = [];
@@ -2686,7 +2692,11 @@ app.put('/api/branch/sales/:id', requireAuth, (req, res) => {
   if (!updates.length) return res.status(400).json({ error: 'مفيش حاجة تتعدّل' });
   params.push(req.params.id);
   try {
-    db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+    // Renaming a rep must carry their assignments with them, or they orphan.
+    db.transaction(() => {
+      db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+      if (name && cur && name !== cur.name) renameRepReferences(db, cur.name, name);
+    })();
   } catch (e) {
     if (e.message.includes('UNIQUE')) {
       return res.status(409).json({ error: 'البريد الإلكتروني مستخدم مسبقاً' });
@@ -3666,8 +3676,13 @@ app.put('/api/users/:id', requireAuth, requireRole('admin'), (req, res) => {
   if (!updates.length) {
     return res.status(400).json({ error: 'Nothing to update' });
   }
+  const cur = db.prepare(`SELECT name FROM users WHERE id = ?`).get(req.params.id);
   params.push(req.params.id);
-  db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+  // Renaming a rep must carry their assignments/history with them, or they orphan.
+  db.transaction(() => {
+    db.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+    if (name && cur && name !== cur.name) renameRepReferences(db, cur.name, name);
+  })();
   return res.json({ ok: true });
 });
 
@@ -3685,6 +3700,25 @@ function scrubRepReferences(db, name) {
   db.prepare(`DELETE FROM followup_log      WHERE sales = ?`).run(name);
   db.prepare(`DELETE FROM revisit_followups WHERE followed_up_by = ?`).run(name);
   db.prepare(`DELETE FROM sales_targets WHERE scope_type = 'sales_rep' AND scope_name = ?`).run(name);
+}
+
+// Cascade a sales / call-rep RENAME across every table that references the rep
+// by their display name. Without this, renaming an account ORPHANS all of that
+// rep's work: the rows keep the old name while the rep now logs in under the new
+// one, so they suddenly "lose" every assigned customer. Mirrors the table set in
+// scrubRepReferences (history-carrying columns updated too, not deleted).
+function renameRepReferences(db, oldName, newName) {
+  if (!oldName || !newName || oldName === newName) return;
+  db.prepare(`UPDATE lead_profiles SET assigned_rep = ? WHERE assigned_rep = ?`).run(newName, oldName);
+  db.prepare(`UPDATE lead_visits   SET sales_rep = ?    WHERE sales_rep = ?`).run(newName, oldName);
+  db.prepare(`UPDATE lead_visits   SET pre_visit_rep = ? WHERE pre_visit_rep = ?`).run(newName, oldName);
+  db.prepare(`UPDATE branch_customer_followups SET assigned_sales = ? WHERE assigned_sales = ?`).run(newName, oldName);
+  db.prepare(`UPDATE branch_customer_followups SET assigned_by = ?    WHERE assigned_by = ?`).run(newName, oldName);
+  db.prepare(`UPDATE branch_customer_followups SET followed_up_by = ? WHERE followed_up_by = ?`).run(newName, oldName);
+  db.prepare(`UPDATE purchases SET rep = ? WHERE rep = ?`).run(newName, oldName);
+  db.prepare(`UPDATE followup_log SET sales = ? WHERE sales = ?`).run(newName, oldName);
+  db.prepare(`UPDATE revisit_followups SET followed_up_by = ? WHERE followed_up_by = ?`).run(newName, oldName);
+  db.prepare(`UPDATE sales_targets SET scope_name = ? WHERE scope_type = 'sales_rep' AND scope_name = ?`).run(newName, oldName);
 }
 
 // DELETE /api/users/:id — admin removes a user account permanently.

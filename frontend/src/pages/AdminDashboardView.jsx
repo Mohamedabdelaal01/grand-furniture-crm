@@ -668,7 +668,7 @@ const AdminDashboardView = ({ view = 'overview' }) => {
               Admin — {VIEW_LABELS[view] || 'لوحة التحكم'}
             </span>
           </div>
-          <h1 className="text-4xl font-black text-white">{VIEW_LABELS[view] || 'لوحة التحكم'}</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">{VIEW_LABELS[view] || 'لوحة التحكم'}</h1>
           <p className="text-dark-400 mt-2">
             <span className="text-emerald-400 font-bold">{user?.name || 'مدير النظام'}</span>
             {' • '}مدير النظام
@@ -765,14 +765,16 @@ const AdminDashboardView = ({ view = 'overview' }) => {
                 ? Array.from({ length: 3 }).map((_, i) => <KPICardSkeleton key={i} />)
                 : (
                   <>
-                    <div>
-                      <KPICard
-                        icon={ShoppingBag}
-                        label="إجمالي المبيعات"
-                        value={`${fmtNum(kpiData.total_revenue)} ج.م`}
-                        subtitle="مجموع قيمة التعاقدات"
-                        color="success"
-                      />
+                    <div className="h-full flex flex-col gap-3">
+                      <div className="flex-1">
+                        <KPICard
+                          icon={ShoppingBag}
+                          label="إجمالي المبيعات"
+                          value={`${fmtNum(kpiData.total_revenue)} ج.م`}
+                          subtitle="مجموع قيمة التعاقدات"
+                          color="success"
+                        />
+                      </div>
                       <TargetProgress target={kpiData.target} percent={kpiData.percent_achieved} />
                     </div>
                     <KPICard
