@@ -8,7 +8,7 @@ import {
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import {
-  fetchLeadDetail, fetchLeadPurchases, recordPurchase, deleteLead,
+  fetchLeadDetail, fetchLeadPurchases, recordPurchase, deleteLead, fetchCustomerJourney,
   formatLeadClass, getLeadBadgeClass, formatBranch, formatEventType,
 } from '../services/api';
 import LeadTasks from '../components/LeadTasks';
@@ -71,7 +71,6 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
       await recordPurchase({
         user_id:         userId,
         product_ids:     selectedIds.length ? selectedIds : undefined,
-        price:           form.price ? parseFloat(form.price) : undefined,
         branch:          form.branch || undefined,
         notes:           form.notes || undefined,
         contract_number: form.contract_number ? form.contract_number.trim() : undefined,
@@ -101,20 +100,14 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
           <ProductMultiSelect
             selectedIds={selectedIds}
             onChange={setSelectedIds}
+            label="المنتجات المباعة (مطلوب)"
           />
+          {selectedIds.length === 0 && (
+            <p className="text-amber-400/90 text-[11px] font-bold -mt-2">
+              اختار المنتج/المنتجات اللي اشتراها العميل عشان تحليل الأكثر مبيعاً يبقى دقيق
+            </p>
+          )}
 
-          <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1.5">السعر (جنيه)</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.price}
-              onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-              placeholder="0.00"
-              className="input-field w-full"
-            />
-          </div>
           <div>
             <label className="block text-dark-400 text-xs font-bold mb-1.5">الفرع</label>
             <select
@@ -161,8 +154,8 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              disabled={busy}
-              className="btn-primary flex-1 flex items-center justify-center gap-2"
+              disabled={busy || selectedIds.length === 0}
+              className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {busy ? (
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -190,6 +183,7 @@ const LeadDetail = () => {
 
   const [data,      setData]      = useState(null);
   const [purchases, setPurchases] = useState([]);
+  const [journey,   setJourney]   = useState(null);
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -210,12 +204,14 @@ const LeadDetail = () => {
   const load = async () => {
     try {
       setLoading(true);
-      const [leadData, purchaseData] = await Promise.all([
+      const [leadData, purchaseData, journeyData] = await Promise.all([
         fetchLeadDetail(userId),
         fetchLeadPurchases(userId).catch(() => ({ purchases: [] })),
+        fetchCustomerJourney(userId).catch(() => null),
       ]);
       setData(leadData);
       setPurchases(purchaseData.purchases || []);
+      setJourney(journeyData);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -504,6 +500,57 @@ const LeadDetail = () => {
         </div>
       </div>
 
+      {/* ── Cross-branch journey ───────────────────────────────────────── */}
+      {journey && (journey.visits?.length > 0 || journey.purchases?.length > 0) && (
+        <div className={`card p-8 ${journey.multi_branch ? 'border-amber-500/30 bg-amber-500/[0.03]' : ''}`}>
+          <h3 className="text-xl font-black text-white mb-1 flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-amber-400" />
+            رحلة العميل عبر الفروع
+          </h3>
+          {journey.multi_branch ? (
+            <p className="text-amber-300/90 text-xs font-bold mb-5">
+              🔀 العميل قارن بين {journey.branches.length} فروع — العمولة والملكية للسيلز اللي قفّل البيعة.
+            </p>
+          ) : (
+            <p className="text-dark-500 text-xs mb-5">كل تعاملات العميل في المعرض.</p>
+          )}
+
+          {journey.owner && (
+            <div className="mb-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
+              <span className="text-emerald-300 text-xs font-black">المالك الحالي:</span>
+              <span className="text-white text-xs font-bold">
+                {journey.owner.rep || '—'} · {formatBranch(journey.owner.branch)}
+              </span>
+              <span className="text-dark-500 text-[10px]">
+                ({journey.owner.via === 'purchase' ? 'اشترى منه' : 'آخر زيارة'})
+              </span>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            {[
+              ...journey.visits.map(v => ({ kind: 'visit', branch: v.branch, who: v.sales_rep, at: v.visited_at })),
+              ...journey.purchases.map(p => ({ kind: 'purchase', branch: p.branch, who: p.rep, price: p.price, at: p.created_at })),
+            ]
+              .sort((a, b) => new Date(a.at || 0) - new Date(b.at || 0))
+              .map((item, i) => (
+                <div key={i} className="flex items-start gap-3 py-2 border-b border-dark-800/60 last:border-0">
+                  <span className="text-lg mt-0.5">{item.kind === 'purchase' ? '🛒' : '🏬'}</span>
+                  <div className="flex-1">
+                    <p className="text-white text-sm font-bold">
+                      {item.kind === 'purchase' ? 'اشترى من' : 'زار'} فرع {item.branch ? formatBranch(item.branch) : '—'}
+                    </p>
+                    <p className="text-dark-400 text-xs">
+                      {item.who ? `وقف مع ${item.who}` : 'سيلز غير محدد'}
+                      {item.at ? ` · ${new Date(item.at).toLocaleDateString('ar-EG')}` : ''}
+                    </p>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Purchases ──────────────────────────────────────────────────── */}
       {purchases.length > 0 && (
         <div className="card p-8">
@@ -527,11 +574,6 @@ const LeadDetail = () => {
                     </p>
                   </div>
                   <div className="text-left">
-                    {p.price && (
-                      <p className="text-violet-400 font-black tabular-nums">
-                        {p.price.toLocaleString()} ج
-                      </p>
-                    )}
                     <p className="text-dark-500 text-xs">
                       {format(parseSqliteDate(p.created_at), 'd MMM yyyy', { locale: ar })}
                     </p>

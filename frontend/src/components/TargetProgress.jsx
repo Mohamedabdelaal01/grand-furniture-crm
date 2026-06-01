@@ -25,7 +25,7 @@ export default function TargetProgress({ target = 0, percent = 0, label }) {
   return (
     <div className="mt-3 space-y-1.5">
       <div className="flex items-center justify-between text-[11px] font-bold gap-2">
-        <span className="text-dark-400">{effectiveLabel}: {fmt(target)} ج.م</span>
+        <span className="text-dark-400">{effectiveLabel}: {fmt(target)} تعاقد</span>
         <span className={pct >= 100 ? 'text-emerald-400' : 'text-white'}>
           تم تحقيق: {pct}%
         </span>

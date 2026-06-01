@@ -308,6 +308,27 @@ export default function ReceptionDesk({ lockedBranch = null }) {
             </div>
           )}
 
+          {/* Cross-branch heads-up — the customer already compared other branches.
+              Reception/sales see it so they handle a comparer right and nobody
+              fights over "whose customer" this is. */}
+          {result.prior_activity?.multi_branch && (
+            <div className="rounded-xl border-2 border-amber-500/50 bg-amber-500/10 px-4 py-3 space-y-1.5">
+              <p className="text-amber-300 font-black text-sm">🔀 العميل ده اتعامل مع فرع تاني قبل كده</p>
+              {result.prior_activity.other_purchase && (
+                <p className="text-amber-100 text-xs font-bold">
+                  🛒 اشترى من فرع {formatBranch(result.prior_activity.other_purchase.branch)}
+                  {result.prior_activity.other_purchase.rep ? ` — مع ${result.prior_activity.other_purchase.rep}` : ''}
+                </p>
+              )}
+              {(result.prior_activity.other_visits || []).map((v, i) => (
+                <p key={i} className="text-amber-100/90 text-xs">
+                  🏬 زار فرع {formatBranch(v.branch)}{v.sales_rep ? ` — وقف مع ${v.sales_rep}` : ''}
+                </p>
+              ))}
+              <p className="text-amber-400/70 text-[11px]">العميل بيقارن بين الفروع — خد باله من تاريخه وظبط العرض.</p>
+            </div>
+          )}
+
           {/* Sales-rep assignment — who will serve this customer */}
           <div className="border-t border-emerald-500/20 pt-4">
             {salesSaved ? (
@@ -325,6 +346,7 @@ export default function ReceptionDesk({ lockedBranch = null }) {
                 <label className="text-dark-300 text-xs font-bold mb-2 flex items-center gap-1.5">
                   <Users className="w-3.5 h-3.5 text-primary-400" />
                   مين السيلز اللي هيقف مع العميل؟
+                  <span className="text-rose-400">(مطلوب)</span>
                 </label>
                 <div className="flex gap-3">
                   <select
@@ -362,9 +384,20 @@ export default function ReceptionDesk({ lockedBranch = null }) {
             )}
           </div>
 
+          {/* Assigning the showroom rep is REQUIRED: the receptionist can't move on
+              to the next visit until they pick who stood with this customer — so no
+              visit is ever left unattributed (that rep owns the post-visit follow-up
+              + the commission). If the branch has no sales reps yet, we don't trap
+              the receptionist (the message above tells them to add reps first). */}
+          {!salesSaved && salesReps.length > 0 && (
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-amber-300 text-xs font-bold text-center">
+              ⚠️ حدّد السيلز اللي هيقف مع العميل قبل ما تكمّل — عشان العميل مايضيعش
+            </div>
+          )}
           <button
             onClick={reset}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors"
+            disabled={!salesSaved && salesReps.length > 0}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-dark-800/60 disabled:hover:text-dark-300"
           >
             <RotateCcw className="w-4 h-4" />
             تسجيل زيارة أخرى

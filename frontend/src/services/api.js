@@ -187,9 +187,9 @@ export const fetchBranchOverview = async (branch) => {
 /** Branch manager: customers who requested their branch + follow-up status. */
 export const fetchBranchCustomers = async (branch) => {
   const response = await api.get('/api/branch/customers', {
-    params: branch ? { branch } : {},
+    params: { ...(branch ? { branch } : {}), limit: 1000 },
   });
-  return response.data; // { branch, customers[] }
+  return response.data; // { branch, customers[], total, limit }
 };
 
 /** Branch manager: marks follow-up done himself (optional call summary). */
@@ -218,6 +218,30 @@ export const fetchSalesFollowups = async () => {
 /** Sales rep: mark an assigned follow-up done + call summary. */
 export const submitSalesFollowup = async (userId, followed_up, call_summary) => {
   const response = await api.patch(`/api/sales/followups/${userId}`, { followed_up, call_summary });
+  return response.data;
+};
+
+/** Sales: tick/untick "بعت" (sent the first outreach message) on a pre-visit lead. */
+export const setSalesFollowupSent = async (userId, sent) => {
+  const response = await api.patch(`/api/sales/followups/${userId}/sent`, { sent });
+  return response.data;
+};
+
+/** A customer's full cross-branch journey (visits + purchases + derived owner). */
+export const fetchCustomerJourney = async (userId) => {
+  const response = await api.get(`/api/customers/${userId}/journey`);
+  return response.data; // { first_name, visits[], purchases[], branches[], multi_branch, owner }
+};
+
+/** Sales: full pre-visit follow-up history (multiple updates over time). */
+export const fetchSalesFollowupLog = async (userId) => {
+  const response = await api.get(`/api/sales/followups/${userId}/log`);
+  return response.data; // { log: [{ id, sales, call_summary, followed_up_at }] }
+};
+
+/** Sales: append a new pre-visit follow-up update. */
+export const addSalesFollowupLog = async (userId, note) => {
+  const response = await api.post(`/api/sales/followups/${userId}/log`, { note });
   return response.data;
 };
 
@@ -329,6 +353,12 @@ export const fetchRevisitFollowups = async (userId) => {
 export const fetchRevisitAnalytics = async () => {
   const response = await api.get('/api/revisit/analytics');
   return response.data; // { summary, byBranch, bySales }
+};
+
+/** Admin: per-rep follow-up monitor (pre-visit + post-visit, separated). */
+export const fetchSalesFollowupMonitor = async () => {
+  const response = await api.get('/api/admin/sales-followup-monitor');
+  return response.data.reps || []; // [{ sales_rep, branch, pre:{...}, post:{...} }]
 };
 
 // ── Contracts (purchases) ────────────────────────────────────────────────────

@@ -41,8 +41,9 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
     {
       title: '🏬 إدارة التشغيل',
       items: [
-        { path: '/leads',   icon: Users,   label: 'قاعدة العملاء' },
-        { path: '/catalog', icon: Package, label: 'إدارة المنتجات' },
+        { path: '/leads',            icon: Users,   label: 'قاعدة العملاء' },
+        { path: '/followup-monitor', icon: Headset, label: 'متابعات السيلز' },
+        { path: '/catalog',          icon: Package, label: 'إدارة المنتجات' },
       ],
     },
     {

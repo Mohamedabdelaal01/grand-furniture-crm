@@ -1276,7 +1276,7 @@ function TargetsTab() {
       <div>
         <h3 className="text-white font-black text-lg">🎯 إدارة المستهدفات البيعية</h3>
         <p className="text-dark-500 text-xs mt-1">
-          حدّد مستهدف المبيعات لكل فرع ولكل سيلز — لكل شهر على حدة.
+          حدّد مستهدف عدد التعاقدات لكل فرع ولكل سيلز — لكل شهر على حدة.
         </p>
       </div>
 
@@ -1310,11 +1310,11 @@ function TargetsTab() {
               <span className="text-white font-bold text-sm flex-1 min-w-[120px]">{b.name}</span>
               {targets[key] != null && (
                 <span className="text-emerald-400 text-[11px] font-bold">
-                  الحالي: {fmtNum(targets[key])} ج.م
+                  الحالي: {fmtNum(targets[key])} تعاقد
                 </span>
               )}
               <input
-                type="number" dir="ltr" placeholder="المبلغ بالجنيه"
+                type="number" dir="ltr" placeholder="عدد التعاقدات"
                 value={branchInputs[b.id] ?? (targets[key] ?? '')}
                 onChange={(e) => setBranchInputs(p => ({ ...p, [b.id]: e.target.value }))}
                 className="input-field text-sm py-1.5 w-40"
@@ -1356,7 +1356,7 @@ function TargetsTab() {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-dark-400 text-[10px] font-black uppercase">المستهدف (ج.م)</label>
+            <label className="text-dark-400 text-[10px] font-black uppercase">المستهدف (تعاقد)</label>
             <input
               type="number" dir="ltr" placeholder="المبلغ"
               value={repInput}
@@ -1390,7 +1390,7 @@ function TargetsTab() {
                     <td className="py-2.5 px-4 text-white font-bold">{r.name}</td>
                     <td className="py-2.5 px-4 text-dark-400">{r.branch ? formatBranch(r.branch) : '—'}</td>
                     <td className="py-2.5 px-4 text-center text-emerald-400 font-black">
-                      {fmtNum(targets[`sales_rep:${r.name}`])} ج.م
+                      {fmtNum(targets[`sales_rep:${r.name}`])} تعاقد
                     </td>
                   </tr>
                 ))}

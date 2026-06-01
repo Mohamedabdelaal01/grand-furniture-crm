@@ -101,7 +101,7 @@ export default function SalesAnalytics() {
                 <th className="py-3 px-4 text-center">تمت متابعتهم</th>
                 <th className="py-3 px-4 text-center">تابع + زار</th>
                 <th className="py-3 px-4 text-center">تابع + لسه</th>
-                <th className="py-3 px-4 text-center">إجمالي المبيعات</th>
+                <th className="py-3 px-4 text-center">عدد التعاقدات</th>
               </tr>
             </thead>
             <tbody>
@@ -122,7 +122,7 @@ export default function SalesAnalytics() {
                   <td className="py-3 px-4 text-center text-primary-400 font-bold">{r.followed_up || 0}</td>
                   <td className="py-3 px-4 text-center text-emerald-400 font-bold">{r.fu_visited || 0}</td>
                   <td className="py-3 px-4 text-center text-amber-400 font-bold">{r.fu_not_visited || 0}</td>
-                  <td className="py-3 px-4 text-center text-primary-400 font-black">{fmt(r.total_sales)} ج.م</td>
+                  <td className="py-3 px-4 text-center text-primary-400 font-black">{r.contracts || 0}</td>
                 </tr>
               ))}
             </tbody>

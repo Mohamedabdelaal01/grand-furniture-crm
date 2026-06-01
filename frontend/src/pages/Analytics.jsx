@@ -91,7 +91,8 @@ export default function Analytics() {
   const [data,    setData]    = useState(null);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
-  const [activeCat, setActiveCat] = useState(null);  // selected category drill-down
+  const [activeCat, setActiveCat] = useState(null);  // selected category drill-down (views)
+  const [activeSalesCat, setActiveSalesCat] = useState(null); // selected category drill-down (sales)
 
   const { branches: branchList } = useBranches();
   const BRANCH_OPTIONS = [
@@ -144,6 +145,25 @@ export default function Analytics() {
   // Category drill-down: products of the currently selected category
   const selectedCat = activeCat || categories[0]?.category || null;
   const catProducts = (productsByCategory[selectedCat] || []).slice(0, 50);
+
+  // ── SALES (best-selling) — mirrors the views analysis but from real purchases.
+  const topSelling        = data?.topSelling        || [];
+  const sellingByCategory = data?.sellingByCategory || {};
+  const rawSalesByCat     = data?.salesByCategory   || [];
+  // Use the REAL category names from the sales data (not the canonical view-side
+  // list — those names don't always match the catalog's, which would create
+  // duplicate/empty cards). Best-selling-per-category only makes sense for
+  // categories that actually sold. Emoji is looked up when the name matches.
+  const salesCategories = rawSalesByCat.map((d) => ({
+    category: d.category,
+    emoji: (CATEGORIES.find(c => c.key === d.category) || {}).emoji || '📦',
+    units: d.units || 0, products_sold: d.products_sold || 0, buyers: d.buyers || 0,
+  }));
+  const totalUnitsSold = salesCategories.reduce((s, c) => s + c.units, 0);
+  const selectedSalesCat = activeSalesCat
+    || salesCategories.find(c => c.units > 0)?.category
+    || salesCategories[0]?.category || null;
+  const catSelling = (sellingByCategory[selectedSalesCat] || []).slice(0, 50);
 
   // Build CampaignPerformance-compatible data shape
   const campaignData = (data?.campaigns || []).map(c => ({
@@ -454,6 +474,117 @@ export default function Analytics() {
           </ResponsiveContainer>
         </div>
       )}
+
+      {/* ── SALES: best-selling products (overall + per category) ───────────── */}
+      <div className="card p-6">
+        <h3 className="text-white font-black text-lg mb-1 flex items-center gap-2">
+          <ShoppingBag className="w-5 h-5 text-emerald-400" />
+          أكثر المنتجات مبيعاً
+        </h3>
+        <p className="text-dark-500 text-xs mb-6">
+          من المبيعات الفعلية المسجّلة (المنتجات اللي اتباعت في العقود) — العدد = قطع مباعة. اضغط فئة لتفصيلها.
+        </p>
+
+        {totalUnitsSold === 0 ? (
+          <div className="py-12 text-center">
+            <ShoppingBag className="w-10 h-10 text-dark-700 mx-auto mb-3" />
+            <p className="text-dark-400 text-sm font-bold">لسه مفيش مبيعات مسجّلة بمنتجات في الفترة دي</p>
+            <p className="text-dark-600 text-xs mt-1">
+              هتظهر هنا أول ما السيلز يسجّل بيعة ويختار المنتج المباع
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Best-selling overall */}
+            {topSelling.length > 0 && (
+              <div className="mb-6">
+                <p className="text-dark-400 text-xs font-bold mb-4">الأكثر مبيعاً (كل الفئات)</p>
+                <ResponsiveContainer width="100%" height={Math.max(180, topSelling.length * 36)}>
+                  <BarChart data={topSelling} layout="vertical" margin={{ right: 20, left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
+                    <XAxis type="number" tick={{ fill: '#475569', fontSize: 10 }} tickLine={false} axisLine={false} allowDecimals={false} />
+                    <YAxis type="category" dataKey="product" width={150} tick={{ fill: '#94a3b8', fontSize: 11 }} tickLine={false} />
+                    <Tooltip
+                      formatter={(v, n) => [v, n === 'units' ? 'قطع مباعة' : 'عملاء']}
+                      contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 12 }}
+                      labelStyle={{ color: '#94a3b8' }}
+                    />
+                    <Bar dataKey="units" fill="#10b981" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Sales per category (clickable cards) */}
+            <div className="pt-6 border-t border-dark-800">
+              <p className="text-dark-400 text-xs font-bold mb-4">المبيعات حسب الفئة</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {salesCategories.map((c) => {
+                  const active = selectedSalesCat === c.category;
+                  return (
+                    <button
+                      key={c.category}
+                      onClick={() => setActiveSalesCat(c.category)}
+                      className={`text-right p-4 rounded-2xl border transition-all ${
+                        active ? 'bg-emerald-500/10 border-emerald-500/40' : 'bg-dark-800/40 border-dark-700 hover:border-dark-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-2xl">{c.emoji}</span>
+                        {c.units === 0 && (
+                          <span className="text-[10px] text-dark-600 bg-dark-800 px-2 py-0.5 rounded-full">مفيش مبيعات</span>
+                        )}
+                      </div>
+                      <p className="text-white font-black text-sm">{c.category}</p>
+                      <div className="grid grid-cols-3 gap-2 mt-3">
+                        <div>
+                          <p className="text-emerald-400 font-black text-lg leading-none">{c.units}</p>
+                          <p className="text-dark-500 text-[10px] mt-1">قطع مباعة</p>
+                        </div>
+                        <div>
+                          <p className="text-sky-400 font-black text-lg leading-none">{c.products_sold}</p>
+                          <p className="text-dark-500 text-[10px] mt-1">منتجات</p>
+                        </div>
+                        <div>
+                          <p className="text-primary-400 font-black text-lg leading-none">{c.buyers}</p>
+                          <p className="text-dark-500 text-[10px] mt-1">عملاء</p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Best-selling within the selected category */}
+            {selectedSalesCat && (
+              <div className="mt-6 pt-6 border-t border-dark-800">
+                <p className="text-dark-300 text-sm font-black mb-4 flex items-center gap-2">
+                  <Package className="w-4 h-4 text-emerald-400" />
+                  الأكثر مبيعاً في: <span className="text-emerald-400">{selectedSalesCat}</span>
+                </p>
+                {catSelling.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={Math.max(160, catSelling.length * 34)}>
+                    <BarChart data={catSelling} layout="vertical" margin={{ right: 20, left: 20 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
+                      <XAxis type="number" tick={{ fill: '#475569', fontSize: 10 }} tickLine={false} axisLine={false} allowDecimals={false} />
+                      <YAxis type="category" dataKey="product" width={150} tick={{ fill: '#94a3b8', fontSize: 11 }} tickLine={false} />
+                      <Tooltip
+                        formatter={(v, n) => [v, n === 'units' ? 'قطع مباعة' : 'عملاء']}
+                        contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: 12 }}
+                        labelStyle={{ color: '#94a3b8' }}
+                      />
+                      <Bar dataKey="units" fill="#10b981" radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="py-8 text-center text-dark-500 text-sm">مفيش مبيعات في فئة "{selectedSalesCat}" في الفترة دي</p>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Platform performance — Instagram vs Facebook */}
       {platforms.length > 0 && (

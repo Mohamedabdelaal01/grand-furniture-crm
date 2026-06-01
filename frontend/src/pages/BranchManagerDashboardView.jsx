@@ -12,13 +12,14 @@ import {
   Building2, RefreshCw, Users, MapPin, ShoppingBag, Percent, Wallet, UserCheck,
   CheckCircle2, Star, Clock, RotateCcw, Plus, Pencil, Trash2, X,
   Power, ShieldCheck, UserPlus, PhoneCall, BarChart3, TrendingUp, SlidersHorizontal,
-  Sparkles,
+  Sparkles, ChevronRight, ChevronLeft,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import SectionHeader from '../components/SectionHeader';
 import RevisitAnalytics from '../components/RevisitAnalytics';
 import TargetProgress, { arabicMonthLabel } from '../components/TargetProgress';
+import CrossBranchTags from '../components/CrossBranchTags';
 import {
   fetchBranchOverview, fetchBranchCustomers, updateCustomerFollowup,
   assignCustomerToSales,
@@ -104,6 +105,7 @@ function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-white font-bold text-sm truncate">{c.first_name || c.user_id}</span>
+          <CrossBranchTags c={c} />
           <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-dark-700'} ${leadClassColor[c.lead_class] || 'text-dark-400'}`}>
             {leadClassLabel[c.lead_class] || c.lead_class}
           </span>
@@ -193,6 +195,7 @@ function DoneRow({ c, busy, onRevert }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-white font-bold text-sm truncate">{c.first_name || c.user_id}</span>
+          <CrossBranchTags c={c} />
           <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-dark-700'} ${leadClassColor[c.lead_class] || 'text-dark-400'}`}>
             {leadClassLabel[c.lead_class] || c.lead_class}
           </span>
@@ -221,8 +224,47 @@ function DoneRow({ c, busy, onRevert }) {
   );
 }
 
+// Client-side paginator over an already-loaded list. Keeps the tab counts and
+// filters working on the full set while only rendering one page at a time.
+const PAGE_SIZE = 50;
+function usePaged(rows) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  // Clamp when the list shrinks (e.g. a customer gets followed up / filtered out).
+  useEffect(() => { if (page > totalPages) setPage(totalPages); }, [totalPages, page]);
+  const start = (page - 1) * PAGE_SIZE;
+  return { page, setPage, totalPages, pageRows: rows.slice(start, start + PAGE_SIZE), start };
+}
+
+function Pager({ page, totalPages, setPage, start, count }) {
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between gap-3 p-3 border-t border-dark-800 text-xs">
+      <button
+        onClick={() => setPage(page - 1)}
+        disabled={page <= 1}
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-800/60 border border-dark-700 text-dark-300 hover:text-white hover:bg-dark-800 disabled:opacity-40 disabled:cursor-not-allowed font-bold transition-colors"
+      >
+        <ChevronRight className="w-4 h-4" /> السابق
+      </button>
+      <span className="text-dark-400 font-bold">
+        صفحة <b className="text-white">{page}</b> من {totalPages}
+        <span className="text-dark-600"> · عرض {start + 1}–{start + count}</span>
+      </span>
+      <button
+        onClick={() => setPage(page + 1)}
+        disabled={page >= totalPages}
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-800/60 border border-dark-700 text-dark-300 hover:text-white hover:bg-dark-800 disabled:opacity-40 disabled:cursor-not-allowed font-bold transition-colors"
+      >
+        التالي <ChevronLeft className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
 function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFollow }) {
   const rows = customers.filter(c => !c.followed_up);
+  const { page, setPage, totalPages, pageRows, start } = usePaged(rows);
   return (
     <div className="card overflow-hidden">
       <div className="p-4 flex items-center gap-2 border-b border-dark-800">
@@ -241,18 +283,21 @@ function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFol
       ) : rows.length === 0 ? (
         <p className="text-center text-dark-500 text-sm py-16">مفيش عملاء مستنيين توزيع 🎉</p>
       ) : (
-        <div className="divide-y divide-dark-800/60">
-          {rows.map(c => (
-            <AssignRow
-              key={c.user_id}
-              c={c}
-              salesNames={salesNames}
-              busy={!!busy[c.user_id]}
-              onAssign={onAssign}
-              onSelfFollow={onSelfFollow}
-            />
-          ))}
-        </div>
+        <>
+          <div className="divide-y divide-dark-800/60">
+            {pageRows.map(c => (
+              <AssignRow
+                key={c.user_id}
+                c={c}
+                salesNames={salesNames}
+                busy={!!busy[c.user_id]}
+                onAssign={onAssign}
+                onSelfFollow={onSelfFollow}
+              />
+            ))}
+          </div>
+          <Pager page={page} totalPages={totalPages} setPage={setPage} start={start} count={pageRows.length} />
+        </>
       )}
     </div>
   );
@@ -260,6 +305,7 @@ function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFol
 
 function DoneView({ customers, loading, busy, onRevert }) {
   const rows = customers.filter(c => !!c.followed_up);
+  const { page, setPage, totalPages, pageRows, start } = usePaged(rows);
   return (
     <div className="card overflow-hidden">
       <div className="p-4 flex items-center gap-2 border-b border-dark-800">
@@ -274,11 +320,14 @@ function DoneView({ customers, loading, busy, onRevert }) {
       ) : rows.length === 0 ? (
         <p className="text-center text-dark-500 text-sm py-16">لسه محدش اتمتابع</p>
       ) : (
-        <div className="divide-y divide-dark-800/60">
-          {rows.map(c => (
-            <DoneRow key={c.user_id} c={c} busy={!!busy[c.user_id]} onRevert={onRevert} />
-          ))}
-        </div>
+        <>
+          <div className="divide-y divide-dark-800/60">
+            {pageRows.map(c => (
+              <DoneRow key={c.user_id} c={c} busy={!!busy[c.user_id]} onRevert={onRevert} />
+            ))}
+          </div>
+          <Pager page={page} totalPages={totalPages} setPage={setPage} start={start} count={pageRows.length} />
+        </>
       )}
     </div>
   );
@@ -448,6 +497,7 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
   const [searchParams] = useSearchParams();
   const [data, setData]           = useState(null);
   const [customers, setCustomers] = useState([]);
+  const [customerTotal, setCustomerTotal] = useState(0);
   const [sales, setSales]         = useState([]);
   const [loading, setLoading]     = useState(true);
   const [custLoading, setCustLoading] = useState(true);
@@ -479,6 +529,7 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
     try {
       const res = await fetchBranchCustomers();
       setCustomers(res.customers || []);
+      setCustomerTotal(res.total ?? (res.customers || []).length);
     } catch (_) {
       setCustomers([]);
     } finally {
@@ -644,8 +695,8 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
                       <Wallet className="w-5 h-5" />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-white">{fmt(k.total_sales)}</p>
-                  <p className="text-dark-500 text-xs mt-1">مبيعات الفرع (ج.م)</p>
+                  <p className="text-2xl font-black text-white">{fmt(k.contracts_count)}</p>
+                  <p className="text-dark-500 text-xs mt-1">عدد تعاقدات الفرع</p>
                   <TargetProgress
                     target={k.target}
                     percent={k.target_pct}
@@ -668,23 +719,32 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
                   <thead>
                     <tr className="bg-dark-800/60 text-dark-400 text-right font-black uppercase tracking-wider">
                       <th className="py-3 px-4">السيلز</th>
+                      <th className="py-3 px-4 text-center">مسنود له</th>
+                      <th className="py-3 px-4 text-center">تمت متابعتهم</th>
+                      <th className="py-3 px-4 text-center">نسبة المتابعة</th>
                       <th className="py-3 px-4 text-center">وقف مع</th>
                       <th className="py-3 px-4 text-center">اشترى</th>
                       <th className="py-3 px-4 text-center">نسبة التقفيل</th>
-                      <th className="py-3 px-4 text-center">تمت متابعتهم</th>
                       <th className="py-3 px-4 text-center">تابع + زار</th>
                       <th className="py-3 px-4 text-center">تابع + لسه</th>
-                      <th className="py-3 px-4 text-center">إجمالي المبيعات</th>
+                      <th className="py-3 px-4 text-center">عدد التعاقدات</th>
                       <th className="py-3 px-4 text-center">المستهدف</th>
                       <th className="py-3 px-4 text-center">نسبة التحقيق</th>
                     </tr>
                   </thead>
                   <tbody>
                     {bySales.length === 0 ? (
-                      <tr><td colSpan={10} className="py-10 text-center text-dark-500">لسه مفيش بيانات سيلز للفرع ده</td></tr>
+                      <tr><td colSpan={12} className="py-10 text-center text-dark-500">لسه مفيش بيانات سيلز للفرع ده</td></tr>
                     ) : bySales.map((r, i) => (
                       <tr key={`${r.sales_rep}-${i}`} className="border-t border-dark-800/60 hover:bg-dark-800/20">
                         <td className="py-3 px-4 text-white font-bold">{r.sales_rep}</td>
+                        <td className="py-3 px-4 text-center text-sky-400 font-black">{r.assigned || 0}</td>
+                        <td className="py-3 px-4 text-center text-primary-400 font-bold">{r.followed_up || 0}</td>
+                        <td className="py-3 px-4 text-center">
+                          <span className={`font-black ${r.followup_rate >= 70 ? 'text-emerald-400' : r.followup_rate >= 40 ? 'text-amber-400' : 'text-rose-400'}`}>
+                            {r.followup_rate || 0}%
+                          </span>
+                        </td>
                         <td className="py-3 px-4 text-center text-dark-200 font-bold">{r.served}</td>
                         <td className="py-3 px-4 text-center text-emerald-400 font-bold">{r.bought}</td>
                         <td className="py-3 px-4 text-center">
@@ -692,12 +752,11 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
                             {r.close_rate}%
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-center text-primary-400 font-bold">{r.followed_up || 0}</td>
                         <td className="py-3 px-4 text-center text-emerald-400 font-bold">{r.fu_visited || 0}</td>
                         <td className="py-3 px-4 text-center text-amber-400 font-bold">{r.fu_not_visited || 0}</td>
-                        <td className="py-3 px-4 text-center text-primary-400 font-black">{fmt(r.total_sales)} ج.م</td>
+                        <td className="py-3 px-4 text-center text-primary-400 font-black">{r.contracts || 0}</td>
                         <td className="py-3 px-4 text-center text-dark-300 font-bold">
-                          {r.target ? `${fmt(r.target)} ج.م` : '—'}
+                          {r.target ? `${fmt(r.target)} تعاقد` : '—'}
                         </td>
                         <td className="py-3 px-4 text-center">
                           {r.target ? (
@@ -757,6 +816,9 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
           </select>
           <span className="text-dark-500 text-xs font-bold mr-auto">
             {filteredCustomers.length} من {customers.length} عميل
+            {customerTotal > customers.length && (
+              <span className="text-amber-400"> · إجمالي الفرع {customerTotal} (بيتعرض أحدث {customers.length})</span>
+            )}
           </span>
         </div>
       )}

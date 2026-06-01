@@ -20,6 +20,7 @@ import {
 } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ProductMultiSelect from '../components/ProductMultiSelect';
+import CrossBranchTags from '../components/CrossBranchTags';
 
 function timeAgo(dateStr) {
   if (!dateStr) return '—';
@@ -59,7 +60,6 @@ const TAB_ORDER = ['pending', 'bought', 'lost'];
 function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup }) {
   const navigate = useNavigate();
   const [panel,    setPanel]    = useState(null);   // 'buy' | 'close' | 'followup' | null
-  const [amount,   setAmount]   = useState('');
   const [contract, setContract] = useState('');
   const [productIds, setProductIds] = useState([]);
   const [note,     setNote]     = useState('');
@@ -100,6 +100,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
             {c.first_name || c.user_id}
           </button>
           <div className="flex items-center gap-3 mt-1 text-[11px] text-dark-400 flex-wrap">
+            <CrossBranchTags c={c} />
             {c.phone && (
               <span dir="ltr" className="font-mono font-bold text-emerald-400">📱 {c.phone}</span>
             )}
@@ -227,18 +228,6 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
             <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3 space-y-3">
               <div className="flex gap-2">
                 <div className="flex-1 space-y-1">
-                  <label className="text-emerald-300 text-xs font-bold">مبلغ الشراء (ج.م)</label>
-                  <input
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="0"
-                    dir="ltr"
-                    className="input-field w-full text-sm py-2"
-                  />
-                </div>
-                <div className="flex-1 space-y-1">
                   <label className="text-emerald-300 text-xs font-bold">رقم العقد</label>
                   <input
                     value={contract}
@@ -253,12 +242,18 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
                 selectedIds={productIds}
                 onChange={setProductIds}
                 compact
+                label="المنتجات المباعة (مطلوب)"
               />
+              {productIds.length === 0 && (
+                <p className="text-amber-400/90 text-[11px] font-bold">
+                  اختار المنتج المباع — مطلوب عشان تحليل الأكثر مبيعاً
+                </p>
+              )}
               <div className="flex gap-2 justify-end">
                 <button
-                  onClick={() => onBuy(c, amount, contract, productIds)}
-                  disabled={busy}
-                  className="btn-primary px-4 text-sm disabled:opacity-50"
+                  onClick={() => onBuy(c, contract, productIds)}
+                  disabled={busy || productIds.length === 0}
+                  className="btn-primary px-4 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Check className="w-4 h-4" /> تأكيد
                 </button>
@@ -303,7 +298,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
                 <PhoneCall className="w-4 h-4" /> سجّل متابعة
               </button>
               <button
-                onClick={() => { setAmount(''); setPanel('buy'); }}
+                onClick={() => setPanel('buy')}
                 className="flex-1 min-w-[90px] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-sm font-bold transition-colors"
               >
                 <ShoppingBag className="w-4 h-4" /> اشترى
@@ -360,12 +355,11 @@ export default function RevisitView() {
 
   const setBusyFor = (id, val) => setBusy((b) => ({ ...b, [id]: val }));
 
-  const onBuy = async (c, amount, contract, productIds = []) => {
+  const onBuy = async (c, contract, productIds = []) => {
     setBusyFor(c.user_id, true);
     try {
       await recordPurchase({
         user_id:         c.user_id,
-        price:           amount ? Number(amount) : null,
         branch:          c.branch || c.preferred_branch || null,
         contract_number: contract ? String(contract).trim() : undefined,
         product_ids:     productIds.length ? productIds : undefined,

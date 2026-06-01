@@ -304,9 +304,9 @@ const SalesRepDashboardView = () => {
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-1">
             <Target className="w-4 h-4 text-primary-400" />
-            <span className="text-white font-black text-sm">مبيعاتي</span>
+            <span className="text-white font-black text-sm">تعاقداتي</span>
             <span className="text-emerald-400 font-black text-sm mr-auto">
-              {new Intl.NumberFormat('en-US').format(Math.round(myTarget?.revenue || 0))} ج.م
+              {myTarget?.contracts ?? 0} تعاقد
             </span>
           </div>
           <TargetProgress

@@ -769,9 +769,9 @@ const AdminDashboardView = ({ view = 'overview' }) => {
                       <div className="flex-1">
                         <KPICard
                           icon={ShoppingBag}
-                          label="إجمالي المبيعات"
-                          value={`${fmtNum(kpiData.total_revenue)} ج.م`}
-                          subtitle="مجموع قيمة التعاقدات"
+                          label="عدد التعاقدات"
+                          value={fmtNum(kpiData.contracts_count)}
+                          subtitle="إجمالي عدد العقود المسجّلة"
                           color="success"
                         />
                       </div>

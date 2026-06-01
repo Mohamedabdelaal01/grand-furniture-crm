@@ -20,6 +20,7 @@ import Products             from './pages/Products';
 import SystemGuide          from './pages/SystemGuide';
 import McpGuide             from './pages/McpGuide';
 import ManyChatGuide        from './pages/ManyChatGuide';
+import SalesFollowupMonitor from './pages/SalesFollowupMonitor';
 import NotFound             from './pages/NotFound';
 
 function App() {
@@ -122,6 +123,7 @@ function App() {
               <Route path="gamification"      element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardView view="gamify"   /></ProtectedRoute>} />
               <Route path="reception"         element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardView view="reception"/></ProtectedRoute>} />
               <Route path="sales-performance" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardView view="salesperf"/></ProtectedRoute>} />
+              <Route path="followup-monitor"  element={<ProtectedRoute allowedRoles={['admin']}><SalesFollowupMonitor /></ProtectedRoute>} />
             </Route>
 
             {/* Fallback — explicit 404, not a silent redirect */}

@@ -1400,6 +1400,13 @@ app.post('/api/visits/confirm', requireAuth, (req, res) => {
     ORDER BY visited_at DESC LIMIT 1
   `).get(lead.user_id);
 
+  // Cross-branch heads-up: did this customer already visit / buy in a DIFFERENT
+  // branch? If so reception (and the sales rep) should know they're a comparer —
+  // it prevents "you stole my customer" fights and helps them tailor the offer.
+  const journey = customerJourney(db, lead.user_id);
+  const otherVisits   = journey.visits.filter(v => v.branch && v.branch !== visitBranch);
+  const otherPurchase = journey.purchases.find(p => p.branch && p.branch !== visitBranch) || null;
+
   return res.json({
     ok:                   true,
     user_id:              lead.user_id,
@@ -1410,7 +1417,25 @@ app.post('/api/visits/confirm', requireAuth, (req, res) => {
     pre_visit_rep:        preVisitRow?.assigned_sales || null,
     last_showroom_rep:    lastShowroomRow?.sales_rep || null,
     was_lost_and_returned: wasLostAndReturned,
+    prior_activity: {
+      multi_branch:   otherVisits.length > 0 || !!otherPurchase,
+      other_visits:   otherVisits,      // [{ branch, sales_rep, visited_at }]
+      other_purchase: otherPurchase,    // { branch, rep, price, ... } | null
+    },
   });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// GET /api/customers/:userId/journey — the customer's full cross-branch journey
+// (every visit + purchase + who served them) so everyone understands what
+// happened when a customer compares branches. Visible to all staff roles.
+// ════════════════════════════════════════════════════════════════════════════
+app.get('/api/customers/:userId/journey', requireAuth,
+  authorizeRoles('admin', 'branch_manager', 'sales', 'rep', 'reception'), (req, res) => {
+  const db = getDb();
+  const lead = db.prepare(`SELECT first_name FROM lead_profiles WHERE user_id = ?`).get(req.params.userId);
+  if (!lead) return res.status(404).json({ error: 'lead_not_found' });
+  return res.json({ first_name: lead.first_name || null, ...customerJourney(db, req.params.userId) });
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -1679,11 +1704,22 @@ app.post('/api/reception/walkin', requireAuth, authorizeRoles('reception', 'admi
 // GET /api/sales/my — a salesperson's own customers + this-month KPIs.
 // ════════════════════════════════════════════════════════════════════════════
 app.get('/api/sales/my', requireAuth, authorizeRoles('sales'), (req, res) => {
-  const me    = req.user.name;
-  const today = req.query.today === '1';
-  const db    = getDb();
+  const me       = req.user.name;
+  const myBranch = req.user.branch || null;
+  const today    = req.query.today === '1';
+  const db       = getDb();
 
   const todayFilter = today ? `AND date(v.visited_at) = date('now')` : '';
+
+  // Only customers whose "owner branch" (where they closed their latest
+  // interaction — purchase branch if bought, else most-recent visit) is THIS
+  // rep's branch. Without it, a customer who bought in another branch but had a
+  // stray visit logged here would leak into this rep's "عملائي" list too.
+  const ownerBranchFilter = myBranch ? `
+    AND COALESCE(
+      (SELECT pu.branch FROM purchases pu WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+      (SELECT vv.branch FROM lead_visits vv WHERE vv.user_id = lp.user_id ORDER BY vv.visited_at DESC LIMIT 1)
+    ) = ?` : '';
 
   const customers = db.prepare(`
     SELECT
@@ -1694,13 +1730,15 @@ app.get('/api/sales/my', requireAuth, authorizeRoles('sales'), (req, res) => {
       (SELECT COUNT(*)        FROM purchases p
          WHERE p.user_id = lp.user_id AND p.rep = ?)                      AS my_purchases,
       (SELECT COALESCE(SUM(p.price),0) FROM purchases p
-         WHERE p.user_id = lp.user_id AND p.rep = ?)                      AS my_sales_total
+         WHERE p.user_id = lp.user_id AND p.rep = ?)                      AS my_sales_total,
+      ${crossBranchCols('lp.user_id')}
     FROM lead_visits v
     JOIN lead_profiles lp ON lp.user_id = v.user_id
     WHERE v.sales_rep = ?
+      ${ownerBranchFilter}
       ${todayFilter}
     ORDER BY (my_purchases > 0) ASC, v.visited_at DESC
-  `).all(me, me, me);
+  `).all(me, me, me, ...(myBranch ? [myBranch] : []));
 
   // This-month performance
   const servedMonth = db.prepare(`
@@ -1750,7 +1788,8 @@ app.get('/api/sales/analytics', requireAuth, requireRole('admin'), (req, res) =>
       v.branch    AS branch,
       COUNT(DISTINCT v.user_id) AS served,
       COUNT(DISTINCT CASE WHEN p.user_id IS NOT NULL THEN v.user_id END) AS bought,
-      COALESCE(SUM(DISTINCT_PRICE.amount),0) AS total_sales
+      COALESCE(SUM(DISTINCT_PRICE.amount),0) AS total_sales,
+      (SELECT COUNT(*) FROM purchases pu WHERE pu.rep = v.sales_rep AND pu.branch = v.branch) AS contracts
     FROM lead_visits v
     LEFT JOIN purchases p
       ON p.user_id = v.user_id AND p.rep = v.sales_rep
@@ -2248,7 +2287,8 @@ app.get('/api/branch/overview', requireAuth, authorizeRoles('branch_manager', 'a
       v.sales_rep AS sales_rep,
       COUNT(DISTINCT v.user_id) AS served,
       COUNT(DISTINCT CASE WHEN p.user_id IS NOT NULL THEN v.user_id END) AS bought,
-      COALESCE(SUM(DP.amount),0) AS total_sales
+      COALESCE(SUM(DP.amount),0) AS total_sales,
+      (SELECT COUNT(*) FROM purchases pu WHERE pu.rep = v.sales_rep AND pu.branch = v.branch) AS contracts
     FROM lead_visits v
     LEFT JOIN purchases p ON p.user_id = v.user_id AND p.rep = v.sales_rep
     LEFT JOIN (
@@ -2261,6 +2301,7 @@ app.get('/api/branch/overview', requireAuth, authorizeRoles('branch_manager', 'a
     ...r,
     not_bought: r.served - r.bought,
     close_rate: r.served ? Math.round((r.bought / r.served) * 100) : 0,
+    assigned: 0, followup_rate: 0,
     followed_up: 0, fu_visited: 0, fu_not_visited: 0,
   }));
 
@@ -2279,31 +2320,57 @@ app.get('/api/branch/overview', requireAuth, authorizeRoles('branch_manager', 'a
     GROUP BY f.assigned_sales
   `).all(branch, branch);
 
+  const blankRow = (name) => ({
+    sales_rep: name, served: 0, bought: 0, not_bought: 0,
+    close_rate: 0, total_sales: 0, assigned: 0, followup_rate: 0,
+    followed_up: 0, fu_visited: 0, fu_not_visited: 0,
+  });
+
   const byName = new Map(bySales.map(r => [r.sales_rep, r]));
   for (const s of fuStats) {
-    const row = byName.get(s.sales_rep) || {
-      sales_rep: s.sales_rep, served: 0, bought: 0, not_bought: 0,
-      close_rate: 0, total_sales: 0, followed_up: 0, fu_visited: 0, fu_not_visited: 0,
-    };
+    const row = byName.get(s.sales_rep) || blankRow(s.sales_rep);
     row.followed_up    = s.followed_up;
     row.fu_visited     = s.fu_visited;
     row.fu_not_visited = s.followed_up - s.fu_visited;
     if (!byName.has(s.sales_rep)) { byName.set(s.sales_rep, row); bySales.push(row); }
   }
 
-  // Attach each rep's CURRENT-MONTH target + achievement (revenue this month).
+  // Total customers ASSIGNED to each rep (regardless of follow-up). This is what
+  // lets the manager see, per rep: "assigned N → followed up M (rate %)". Reps
+  // with assignments but no visit/follow-up yet still surface here. TRIM keeps it
+  // resilient to any stray whitespace in the stored name.
+  const assignedStats = db.prepare(`
+    SELECT TRIM(assigned_sales) AS sales_rep, COUNT(*) AS assigned
+    FROM branch_customer_followups
+    WHERE branch = ? AND assigned_sales IS NOT NULL AND TRIM(assigned_sales) <> ''
+    GROUP BY TRIM(assigned_sales)
+  `).all(branch);
+  for (const a of assignedStats) {
+    const row = byName.get(a.sales_rep) || blankRow(a.sales_rep);
+    row.assigned = a.assigned;
+    if (!byName.has(a.sales_rep)) { byName.set(a.sales_rep, row); bySales.push(row); }
+  }
+
+  // Attach each rep's CURRENT-MONTH target + achievement (revenue this month),
+  // and the follow-up rate (followed-up ÷ assigned).
   for (const r of bySales) {
-    r.target     = getTarget(db, 'sales_rep', r.sales_rep);
-    r.target_pct = pctAchieved(monthRevenue(db, { rep: r.sales_rep }), r.target);
+    r.contracts    = r.contracts || 0;
+    r.target       = getTarget(db, 'sales_rep', r.sales_rep);   // a CONTRACTS target now
+    r.target_pct   = pctAchieved(monthContracts(db, { rep: r.sales_rep, branch }), r.target);
+    r.followup_rate = r.assigned ? Math.round((r.followed_up / r.assigned) * 100) : 0;
   }
 
   const served      = bySales.reduce((s, r) => s + r.served, 0);
   const bought      = bySales.reduce((s, r) => s + r.bought, 0);
   const totalSales  = bySales.reduce((s, r) => s + r.total_sales, 0);
+  // Total contracts for the branch (count of purchase rows in this branch).
+  const contractsCount = db.prepare(
+    `SELECT COUNT(*) AS c FROM purchases WHERE branch = ?`
+  ).get(branch).c || 0;
 
-  // Branch target progress — current month's target vs this month's revenue.
+  // Branch target progress — current month's target vs this month's CONTRACTS.
   const branchTarget = getTarget(db, 'branch', branch);
-  const branchMonthRevenue = monthRevenue(db, { branch });
+  const branchMonthContracts = monthContracts(db, { branch });
 
   return res.json({
     branch,
@@ -2312,11 +2379,12 @@ app.get('/api/branch/overview', requireAuth, authorizeRoles('branch_manager', 'a
       requested,
       visited,
       bought,
-      total_sales: totalSales,
+      total_sales: totalSales,        // kept for backward-compat
+      contracts_count: contractsCount, // headline metric now
       close_rate: served ? Math.round((bought / served) * 100) : 0,
-      target:        branchTarget,
-      month_revenue: branchMonthRevenue,
-      target_pct:    pctAchieved(branchMonthRevenue, branchTarget),
+      target:          branchTarget,
+      month_contracts: branchMonthContracts,
+      target_pct:      pctAchieved(branchMonthContracts, branchTarget),
     },
     bySales,
   });
@@ -2334,6 +2402,22 @@ app.get('/api/branch/customers', requireAuth, authorizeRoles('branch_manager', '
   if (!branch) return res.status(400).json({ error: 'branch_required' });
 
   const db = getDb();
+
+  // Page size. Generous default so big branches (e.g. Nasr City with 500+)
+  // aren't silently truncated at 200; clamped so one request can't pull tens of
+  // thousands. The frontend paginates client-side over what it gets.
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 1000, 1), 2000);
+
+  // Total cohort size (ignores the page limit) so the UI can tell the manager
+  // how many there really are.
+  const total = db.prepare(`
+    SELECT COUNT(*) AS n FROM (
+      SELECT DISTINCT e.user_id FROM events e
+      WHERE e.event_type = 'branch_selected'
+        AND (e.event_value = ? OR e.branch = ?)
+        AND EXISTS (SELECT 1 FROM lead_phones ph WHERE ph.user_id = e.user_id)
+    )
+  `).get(branch, branch).n;
 
   // Driven by events (same universe as the "عملاء طلبوا الفرع" KPI) so the
   // count matches it. lead_profiles is LEFT JOINed — a customer with a
@@ -2363,7 +2447,8 @@ app.get('/api/branch/customers', requireAuth, authorizeRoles('branch_manager', '
       f.call_summary,
       COALESCE(f.auto_assigned, 0) AS auto_assigned,
       CASE WHEN lv.user_id IS NOT NULL THEN 1 ELSE 0 END AS visited,
-      lv.sales_rep AS showroom_rep
+      lv.sales_rep AS showroom_rep,
+      ${crossBranchCols('req.user_id')}
     FROM (
       SELECT DISTINCT e.user_id
       FROM events e
@@ -2377,11 +2462,14 @@ app.get('/api/branch/customers', requireAuth, authorizeRoles('branch_manager', '
     LEFT JOIN (
       SELECT user_id, sales_rep FROM lead_visits WHERE branch = ?
     ) lv ON lv.user_id = req.user_id
-    ORDER BY COALESCE(lp.total_score, 0) DESC, lp.last_activity DESC
-    LIMIT 200
-  `).all(branch, branch, branch, branch);
+    -- Newest-activity first (by time), not by score. SQLite sorts NULLs last in
+    -- DESC, so leads without a profile row fall to the bottom. Score is only a
+    -- tie-breaker now.
+    ORDER BY lp.last_activity DESC, COALESCE(lp.total_score, 0) DESC
+    LIMIT ?
+  `).all(branch, branch, branch, branch, limit);
 
-  return res.json({ branch, customers });
+  return res.json({ branch, customers, total, limit });
 });
 
 // Records a completed follow-up in the append-only log (history survives
@@ -2392,6 +2480,58 @@ function logFollowup(db, branch, userId, sales, summary) {
     VALUES (?, ?, ?, ?, datetime('now'))
   `).run(branch, userId, sales || null, (summary && String(summary).trim()) || null);
 }
+
+// Full cross-branch journey of a customer: every visit (which branch, which rep)
+// and every purchase, plus the derived current "owner" (the rep/branch that gets
+// the customer per our rule — purchase wins, else most-recent visit). This is the
+// transparency layer so reception, sales and management all SEE what happened when
+// a customer compares branches — and nobody fights over who owns whom.
+function customerJourney(db, userId) {
+  const visits = db.prepare(`
+    SELECT branch, sales_rep, pre_visit_rep, visited_at
+    FROM lead_visits WHERE user_id = ? ORDER BY visited_at ASC, id ASC
+  `).all(userId);
+  const purchases = db.prepare(`
+    SELECT branch, rep, price, contract_number, created_at
+    FROM purchases WHERE user_id = ? ORDER BY created_at ASC, id ASC
+  `).all(userId);
+  const branches = [...new Set([
+    ...visits.map(v => v.branch),
+    ...purchases.map(p => p.branch),
+  ].filter(Boolean))];
+  const lastPurchase = purchases.length ? purchases[purchases.length - 1] : null;
+  const lastVisit    = visits.length    ? visits[visits.length - 1]       : null;
+  const owner = lastPurchase
+    ? { branch: lastPurchase.branch, rep: lastPurchase.rep, via: 'purchase' }
+    : lastVisit
+      ? { branch: lastVisit.branch, rep: lastVisit.sales_rep, via: 'visit' }
+      : null;
+  return { visits, purchases, branches, multi_branch: branches.length > 1, owner };
+}
+
+// Compact cross-branch SELECT columns for customer LISTS, so a rep sees a
+// "قارن فروع" tag right on the card without opening the profile. `uid` is the
+// row's user_id column reference (e.g. 'f.user_id'). Returns:
+//   branches_count — distinct branches the customer visited/bought in.
+//   bought_branch  — the branch of their latest purchase (null if none).
+const crossBranchCols = (uid) => `
+  (SELECT COUNT(*) FROM (
+     SELECT branch FROM lead_visits WHERE user_id = ${uid} AND branch IS NOT NULL
+     UNION SELECT branch FROM purchases  WHERE user_id = ${uid} AND branch IS NOT NULL
+  ))                                                                  AS branches_count,
+  (SELECT branch FROM purchases WHERE user_id = ${uid}
+     ORDER BY created_at DESC, id DESC LIMIT 1)                       AS bought_branch`;
+
+// The "owner" branch/rep of a visited customer (purchase wins, else most-recent
+// visit). Used for BOTH who-sees-them (RBAC) and how-they're-shown/grouped, so a
+// customer who bought in Maadi shows under Maadi/their seller — not under the
+// Nasr City rep they merely passed by. Assumes the row aliases lead_profiles `lp`.
+const OWNER_BRANCH_SQL = `COALESCE(
+  (SELECT pu.branch FROM purchases pu  WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+  (SELECT v.branch  FROM lead_visits v WHERE v.user_id  = lp.user_id ORDER BY v.visited_at DESC LIMIT 1))`;
+const OWNER_REP_SQL = `COALESCE(
+  (SELECT pu.rep      FROM purchases pu  WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+  (SELECT v.sales_rep FROM lead_visits v WHERE v.user_id  = lp.user_id ORDER BY v.visited_at DESC LIMIT 1))`;
 
 // Records an admin/manager action in the undo ledger. `oldState` describes how
 // to restore the affected row: { table, where: {...}, row: {...}|null }.
@@ -2443,6 +2583,19 @@ function monthRevenue(db, { branch, rep, month } = {}) {
   return db.prepare(
     `SELECT COALESCE(SUM(price), 0) AS r FROM purchases WHERE ${where}`
   ).get(...params).r || 0;
+}
+
+// Count of CONTRACTS (purchases) recorded WITHIN a calendar month, optionally
+// scoped to a branch or rep. This replaces revenue as the headline metric — the
+// business tracks number of contracts, not money. `month` defaults to current.
+function monthContracts(db, { branch, rep, month } = {}) {
+  let where = `strftime('%Y-%m', created_at) = ?`;
+  const params = [month || currentMonth()];
+  if (branch) { where += ` AND branch = ?`; params.push(branch); }
+  if (rep)    { where += ` AND rep = ?`;    params.push(rep); }
+  return db.prepare(
+    `SELECT COUNT(*) AS c FROM purchases WHERE ${where}`
+  ).get(...params).c || 0;
 }
 
 function pctAchieved(actual, target) {
@@ -2557,7 +2710,13 @@ app.get('/api/sales/followups', requireAuth, authorizeRoles('sales'), (req, res)
   // NOT by the rep's current branch string. Matching on the rep's branch used to
   // silently hide customers whenever the branch was stored with a slightly
   // different spelling (e.g. "المعادي" vs "المعادى") on the rep vs the assignment
-  // row. The `visited` flag is correlated to each row's OWN branch instead.
+  // row.
+  //
+  // This is the PRE-visit list: it only holds customers who have NOT visited yet
+  // (visit_confirmed = 0). Once a customer visits, visit_confirmed flips to 1 and
+  // they move out of here into the post-visit "متابعة بعد الزيارة" (revisit) flow
+  // — which selects on exactly the same `visit_confirmed = 1`, so the two lists
+  // are clean complements and no customer ever shows in both.
   const db = getDb();
   const customers = db.prepare(`
     SELECT
@@ -2571,15 +2730,19 @@ app.get('/api/sales/followups', requireAuth, authorizeRoles('sales'), (req, res)
       f.followed_up_at,
       f.call_summary,
       f.assigned_at,
+      f.sent,
+      f.sent_at,
       (SELECT GROUP_CONCAT(ph.phone, ' ، ') FROM lead_phones ph
          WHERE ph.user_id = f.user_id)                              AS phones,
       CASE WHEN EXISTS (
         SELECT 1 FROM lead_visits v
          WHERE v.user_id = f.user_id AND v.branch = f.branch
-      ) THEN 1 ELSE 0 END                                          AS visited
+      ) THEN 1 ELSE 0 END                                          AS visited,
+      ${crossBranchCols('f.user_id')}
     FROM branch_customer_followups f
     LEFT JOIN lead_profiles lp ON lp.user_id = f.user_id
-    WHERE f.assigned_sales = ?
+    WHERE TRIM(f.assigned_sales) = TRIM(?)
+      AND COALESCE(lp.visit_confirmed, 0) = 0
     ORDER BY f.followed_up ASC, f.assigned_at DESC
   `).all(me);
 
@@ -2598,7 +2761,7 @@ app.patch('/api/sales/followups/:userId', requireAuth, authorizeRoles('sales'), 
   const db  = getDb();
   const own = db.prepare(`
     SELECT branch FROM branch_customer_followups
-    WHERE user_id = ? AND assigned_sales = ?
+    WHERE user_id = ? AND TRIM(assigned_sales) = TRIM(?)
   `).get(userId, me);
   if (!own) return res.status(404).json({ error: 'العميل ده مش مسنود ليك' });
   const branch = own.branch;
@@ -2610,12 +2773,86 @@ app.patch('/api/sales/followups/:userId', requireAuth, authorizeRoles('sales'), 
       followed_up_at = ?,
       followed_up_by = ?,
       call_summary   = ?
-    WHERE user_id = ? AND assigned_sales = ?
+    WHERE user_id = ? AND TRIM(assigned_sales) = TRIM(?)
   `).run(newVal, newVal ? new Date().toISOString() : null, newVal ? me : null, summary, userId, me);
 
   if (newVal) logFollowup(db, branch, userId, me, summary);
 
   return res.json({ ok: true, followed_up: newVal });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// PATCH /api/sales/followups/:userId/sent — the rep ticks/unticks "بعت" (sent the
+// first outreach message). A lightweight marker, separate from followed_up, so
+// the rep can track who they've already messaged. Matched by assignee (TRIM) so
+// branch-spelling drift doesn't hide it.
+// ════════════════════════════════════════════════════════════════════════════
+app.patch('/api/sales/followups/:userId/sent', requireAuth, authorizeRoles('sales'), (req, res) => {
+  const me        = req.user.name;
+  const { userId } = req.params;
+  const sent      = req.body?.sent ? 1 : 0;
+
+  const db  = getDb();
+  const own = db.prepare(`
+    SELECT 1 FROM branch_customer_followups
+    WHERE user_id = ? AND TRIM(assigned_sales) = TRIM(?)
+  `).get(userId, me);
+  if (!own) return res.status(404).json({ error: 'العميل ده مش مسنود ليك' });
+
+  db.prepare(`
+    UPDATE branch_customer_followups
+       SET sent = ?, sent_at = ?
+     WHERE user_id = ? AND TRIM(assigned_sales) = TRIM(?)
+  `).run(sent, sent ? new Date().toISOString() : null, userId, me);
+
+  return res.json({ ok: true, sent });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// Pre-visit follow-up LOG — the rep can record SEVERAL follow-ups over time for
+// a customer who hasn't visited yet (updates/timeline), not just one. Append-only
+// (followup_log), scoped to the rep the customer is assigned to.
+// ════════════════════════════════════════════════════════════════════════════
+app.get('/api/sales/followups/:userId/log', requireAuth, authorizeRoles('sales'), (req, res) => {
+  const me = req.user.name;
+  const { userId } = req.params;
+  const db = getDb();
+  const own = db.prepare(`
+    SELECT 1 FROM branch_customer_followups
+    WHERE user_id = ? AND TRIM(assigned_sales) = TRIM(?)
+  `).get(userId, me);
+  if (!own) return res.status(404).json({ error: 'العميل ده مش مسنود ليك' });
+  const log = db.prepare(`
+    SELECT id, sales, call_summary, followed_up_at
+    FROM followup_log WHERE user_id = ?
+    ORDER BY followed_up_at DESC, id DESC
+  `).all(userId);
+  return res.json({ log });
+});
+
+app.post('/api/sales/followups/:userId/log', requireAuth, authorizeRoles('sales'), (req, res) => {
+  const me   = req.user.name;
+  const { userId } = req.params;
+  const note = (req.body?.note && String(req.body.note).trim()) || null;
+  if (!note) return res.status(400).json({ error: 'اكتب نص المتابعة' });
+
+  const db  = getDb();
+  const own = db.prepare(`
+    SELECT branch FROM branch_customer_followups
+    WHERE user_id = ? AND TRIM(assigned_sales) = TRIM(?)
+  `).get(userId, me);
+  if (!own) return res.status(404).json({ error: 'العميل ده مش مسنود ليك' });
+
+  // Keep the customer in the followed-up list and surface the latest note on the
+  // row, while appending this update to the permanent history.
+  db.prepare(`
+    UPDATE branch_customer_followups
+       SET followed_up = 1, followed_up_at = ?, followed_up_by = ?, call_summary = ?
+     WHERE user_id = ? AND TRIM(assigned_sales) = TRIM(?)
+  `).run(new Date().toISOString(), me, note, userId, me);
+  logFollowup(db, own.branch, userId, me, note);
+
+  return res.json({ ok: true });
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -2648,10 +2885,14 @@ app.get('/api/branch/sales', requireAuth, (req, res) => {
 app.post('/api/branch/sales', requireAuth, (req, res) => {
   const scope = resolveBranchScope(req);
   if (scope.error) return res.status(scope.error === 'forbidden' ? 403 : 400).json({ error: scope.error });
-  const { name, email, password } = req.body || {};
+  let { name, email, password } = req.body || {};
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'الاسم والإيميل والباسورد مطلوبين' });
   }
+  // Trim the name — a trailing/leading space silently breaks every name-based
+  // match later (assignments store the trimmed value, so a padded users.name
+  // would never equal it and the rep "loses" all their customers).
+  name = String(name).trim();
   const db = getDb();
   try {
     const result = db.prepare(
@@ -2682,7 +2923,8 @@ app.put('/api/branch/sales/:id', requireAuth, (req, res) => {
     return res.status(404).json({ error: 'الحساب مش موجود في فرعك' });
   }
   const cur = db.prepare(`SELECT name FROM users WHERE id = ?`).get(req.params.id);
-  const { name, email, password, active } = req.body || {};
+  let { name, email, password, active } = req.body || {};
+  if (name != null) name = String(name).trim();
   const updates = [];
   const params  = [];
   if (name)               { updates.push('name = ?');          params.push(name); }
@@ -2770,6 +3012,12 @@ app.post('/api/purchases', requireAuth, (req, res) => {
     if (firstProduct) legacyProductLabel = firstProduct.name;
   }
 
+  // A sale must record WHAT was sold — otherwise best-selling analytics are
+  // blind. Require at least one product (catalog selection preferred).
+  if (!productIds.length && !legacyProductLabel) {
+    return res.status(400).json({ error: 'اختار المنتج اللي اشتراه العميل قبل ما تسجّل البيعة' });
+  }
+
   const result = db.prepare(`
     INSERT INTO purchases (user_id, product_id, price, branch, notes, rep, contract_number)
     VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -2846,27 +3094,49 @@ app.get('/api/revisit/customers', requireAuth, authorizeRoles('admin', 'branch_m
   if (role === 'branch_manager') {
     const b = req.user.branch || null;
     if (!b) return res.status(400).json({ error: 'branch_required' });
-    rbacWhere = `(lp.preferred_branch = ?
-      OR lp.user_id IN (SELECT user_id FROM lead_visits WHERE branch = ?))`;
-    params.push(b, b);
+    // A visited customer belongs to the branch where they closed their LATEST
+    // interaction (purchase branch if bought, else most-recent visit branch), so
+    // a customer who bought in another branch never shows for this manager.
+    rbacWhere = `COALESCE(
+      (SELECT pu.branch FROM purchases pu WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+      (SELECT v.branch FROM lead_visits v WHERE v.user_id = lp.user_id ORDER BY v.visited_at DESC LIMIT 1)
+    ) = ?`;
+    params.push(b);
   } else if (role === 'sales' || role === 'rep') {
-    const me = req.user.name;
-    rbacWhere = `(lp.assigned_rep = ?
-      OR lp.user_id IN (SELECT user_id FROM lead_visits WHERE sales_rep = ?))`;
-    params.push(me, me);
+    const me       = req.user.name;
+    const myBranch = req.user.branch || null;
+    // A visited customer's post-visit OWNER is whoever closed their LATEST
+    // showroom interaction: the purchase's rep if they bought, otherwise their
+    // most-recent visit's sales_rep — scoped to that owner's branch. This stops a
+    // customer who bought in one branch from appearing for a rep in another branch
+    // just because a stray visit got logged there, and supersedes the old
+    // assigned_rep / any-visit matching that leaked across reps and branches.
+    rbacWhere = `
+      TRIM(COALESCE(
+        (SELECT pu.rep FROM purchases pu WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+        (SELECT v.sales_rep FROM lead_visits v WHERE v.user_id = lp.user_id ORDER BY v.visited_at DESC LIMIT 1)
+      )) = TRIM(?)${myBranch ? ` AND COALESCE(
+        (SELECT pu.branch FROM purchases pu WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+        (SELECT v.branch FROM lead_visits v WHERE v.user_id = lp.user_id ORDER BY v.visited_at DESC LIMIT 1)
+      ) = ?` : ''}`;
+    params.push(me);
+    if (myBranch) params.push(myBranch);
   }
 
   const customers = db.prepare(`
     SELECT
-      lp.user_id, lp.first_name, lp.phone, lp.total_score, lp.lead_class,
+      lp.user_id, lp.first_name,
+      -- The phone usually lives in lead_phones, not lp.phone — fall back to it
+      -- so the number actually shows (the branch manager couldn't see it before).
+      COALESCE(lp.phone, (SELECT ph.phone FROM lead_phones ph
+                          WHERE ph.user_id = lp.user_id ORDER BY ph.id LIMIT 1)) AS phone,
+      lp.total_score, lp.lead_class,
       lp.last_product, lp.last_category, lp.last_activity, lp.visit_at,
       lp.campaign_source, lp.manychat_source, lp.preferred_branch,
       lp.revisit_status, lp.revisit_note, lp.revisit_updated_by, lp.revisit_updated_at,
       lp.purchased_at,
-      (SELECT v.branch    FROM lead_visits v WHERE v.user_id = lp.user_id
-         ORDER BY v.visited_at DESC LIMIT 1) AS branch,
-      (SELECT v.sales_rep FROM lead_visits v WHERE v.user_id = lp.user_id
-         ORDER BY v.visited_at DESC LIMIT 1) AS sales_rep,
+      ${OWNER_BRANCH_SQL} AS branch,
+      ${OWNER_REP_SQL}    AS sales_rep,
       (SELECT COALESCE(SUM(p.price), 0) FROM purchases p
          WHERE p.user_id = lp.user_id)       AS purchase_total,
       (SELECT COUNT(*) FROM revisit_followups rf
@@ -2879,7 +3149,8 @@ app.get('/api/revisit/customers', requireAuth, authorizeRoles('admin', 'branch_m
          ORDER BY rf.created_at DESC LIMIT 1) AS last_followup_by,
       (SELECT rf.note FROM revisit_followups rf
          WHERE rf.user_id = lp.user_id
-         ORDER BY rf.created_at DESC LIMIT 1) AS last_followup_note
+         ORDER BY rf.created_at DESC LIMIT 1) AS last_followup_note,
+      ${crossBranchCols('lp.user_id')}
     FROM lead_profiles lp
     WHERE lp.visit_confirmed = 1
       AND ${statusWhere}
@@ -2986,24 +3257,41 @@ app.get('/api/revisit/analytics', requireAuth, authorizeRoles('admin', 'branch_m
   if (role === 'branch_manager') {
     const b = req.user.branch || null;
     if (!b) return res.status(400).json({ error: 'branch_required' });
-    rbacWhere = `(lp.preferred_branch = ?
-      OR lp.user_id IN (SELECT user_id FROM lead_visits WHERE branch = ?))`;
-    params.push(b, b);
+    // A visited customer belongs to the branch where they closed their LATEST
+    // interaction (purchase branch if bought, else most-recent visit branch), so
+    // a customer who bought in another branch never shows for this manager.
+    rbacWhere = `COALESCE(
+      (SELECT pu.branch FROM purchases pu WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+      (SELECT v.branch FROM lead_visits v WHERE v.user_id = lp.user_id ORDER BY v.visited_at DESC LIMIT 1)
+    ) = ?`;
+    params.push(b);
   } else if (role === 'sales' || role === 'rep') {
-    const me = req.user.name;
-    rbacWhere = `(lp.assigned_rep = ?
-      OR lp.user_id IN (SELECT user_id FROM lead_visits WHERE sales_rep = ?))`;
-    params.push(me, me);
+    const me       = req.user.name;
+    const myBranch = req.user.branch || null;
+    // A visited customer's post-visit OWNER is whoever closed their LATEST
+    // showroom interaction: the purchase's rep if they bought, otherwise their
+    // most-recent visit's sales_rep — scoped to that owner's branch. This stops a
+    // customer who bought in one branch from appearing for a rep in another branch
+    // just because a stray visit got logged there, and supersedes the old
+    // assigned_rep / any-visit matching that leaked across reps and branches.
+    rbacWhere = `
+      TRIM(COALESCE(
+        (SELECT pu.rep FROM purchases pu WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+        (SELECT v.sales_rep FROM lead_visits v WHERE v.user_id = lp.user_id ORDER BY v.visited_at DESC LIMIT 1)
+      )) = TRIM(?)${myBranch ? ` AND COALESCE(
+        (SELECT pu.branch FROM purchases pu WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
+        (SELECT v.branch FROM lead_visits v WHERE v.user_id = lp.user_id ORDER BY v.visited_at DESC LIMIT 1)
+      ) = ?` : ''}`;
+    params.push(me);
+    if (myBranch) params.push(myBranch);
   }
 
   // One row per customer who visited the showroom.
   const rows = db.prepare(`
     SELECT
       lp.user_id, lp.lead_class, lp.purchased_at, lp.revisit_status,
-      (SELECT v.branch    FROM lead_visits v WHERE v.user_id = lp.user_id
-         ORDER BY v.visited_at DESC LIMIT 1) AS branch,
-      (SELECT v.sales_rep FROM lead_visits v WHERE v.user_id = lp.user_id
-         ORDER BY v.visited_at DESC LIMIT 1) AS sales_rep,
+      ${OWNER_BRANCH_SQL} AS branch,
+      ${OWNER_REP_SQL}    AS sales_rep,
       (SELECT COUNT(*) FROM revisit_followups rf WHERE rf.user_id = lp.user_id) AS followup_count
     FROM lead_profiles lp
     WHERE lp.visit_confirmed = 1 AND ${rbacWhere}
@@ -3052,6 +3340,119 @@ app.get('/api/revisit/analytics', requireAuth, authorizeRoles('admin', 'branch_m
     byBranch: [...branchMap.values()].map(withRate).sort((a, b) => b.bought - a.bought),
     bySales:  [...salesMap.values()].map(withRate).sort((a, b) => b.bought - a.bought),
   });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// GET /api/admin/sales-followup-monitor — admin oversight of every sales rep's
+// follow-up work. Returns, per rep, the PRE-visit and POST-visit follow-up
+// activity kept SEPARATE so the admin can tell at a glance who is actually
+// following up vs not, and read what they wrote:
+//   pre  → assigned / followed / pending (+ the customers still pending and the
+//          latest follow-up notes they logged in followup_log)
+//   post → revisit owned / followed / pending (+ the customers still pending and
+//          the latest revisit notes from revisit_followups)
+// ════════════════════════════════════════════════════════════════════════════
+app.get('/api/admin/sales-followup-monitor', requireAuth, requireRole('admin'), (req, res) => {
+  const db = getDb();
+
+  // Every showroom rep — include inactive ones too, their history still matters.
+  const reps = db.prepare(`
+    SELECT name, branch FROM users
+    WHERE role IN ('sales', 'rep')
+    ORDER BY branch, name
+  `).all();
+
+  // ── PRE-visit (branch_customer_followups, customer not yet visited) ─────────
+  const preAgg = db.prepare(`
+    SELECT
+      COUNT(*) AS assigned,
+      COALESCE(SUM(CASE WHEN f.followed_up = 1 THEN 1 ELSE 0 END), 0) AS followed
+    FROM branch_customer_followups f
+    JOIN lead_profiles lp ON lp.user_id = f.user_id
+    WHERE TRIM(f.assigned_sales) = TRIM(?)
+      AND COALESCE(lp.visit_confirmed, 0) = 0
+  `);
+  const prePending = db.prepare(`
+    SELECT f.user_id, lp.first_name, f.assigned_at, f.sent,
+      (SELECT ph.phone FROM lead_phones ph WHERE ph.user_id = f.user_id ORDER BY ph.id LIMIT 1) AS phone
+    FROM branch_customer_followups f
+    JOIN lead_profiles lp ON lp.user_id = f.user_id
+    WHERE TRIM(f.assigned_sales) = TRIM(?)
+      AND COALESCE(lp.visit_confirmed, 0) = 0
+      AND f.followed_up = 0
+    ORDER BY f.assigned_at DESC
+    LIMIT 25
+  `);
+  const preRecent = db.prepare(`
+    SELECT fl.user_id, lp.first_name, fl.call_summary, fl.followed_up_at
+    FROM followup_log fl
+    LEFT JOIN lead_profiles lp ON lp.user_id = fl.user_id
+    WHERE TRIM(fl.sales) = TRIM(?) AND fl.call_summary IS NOT NULL
+    ORDER BY fl.followed_up_at DESC, fl.id DESC
+    LIMIT 15
+  `);
+
+  // ── POST-visit (revisit; owner-based; still pending = not bought/lost) ──────
+  const postAgg = db.prepare(`
+    SELECT
+      COUNT(*) AS total,
+      COALESCE(SUM(CASE WHEN (SELECT COUNT(*) FROM revisit_followups rf WHERE rf.user_id = lp.user_id) > 0 THEN 1 ELSE 0 END), 0) AS followed
+    FROM lead_profiles lp
+    WHERE lp.visit_confirmed = 1
+      AND lp.lead_class != 'purchased' AND lp.purchased_at IS NULL
+      AND (lp.revisit_status IS NULL OR lp.revisit_status = 'pending')
+      AND TRIM(${OWNER_REP_SQL}) = TRIM(?)
+  `);
+  const postPending = db.prepare(`
+    SELECT lp.user_id, lp.first_name, lp.last_activity,
+      COALESCE(lp.phone, (SELECT ph.phone FROM lead_phones ph WHERE ph.user_id = lp.user_id ORDER BY ph.id LIMIT 1)) AS phone
+    FROM lead_profiles lp
+    WHERE lp.visit_confirmed = 1
+      AND lp.lead_class != 'purchased' AND lp.purchased_at IS NULL
+      AND (lp.revisit_status IS NULL OR lp.revisit_status = 'pending')
+      AND TRIM(${OWNER_REP_SQL}) = TRIM(?)
+      AND (SELECT COUNT(*) FROM revisit_followups rf WHERE rf.user_id = lp.user_id) = 0
+    ORDER BY lp.last_activity DESC
+    LIMIT 25
+  `);
+  const postRecent = db.prepare(`
+    SELECT rf.user_id, lp.first_name, rf.note, rf.created_at
+    FROM revisit_followups rf
+    LEFT JOIN lead_profiles lp ON lp.user_id = rf.user_id
+    WHERE TRIM(rf.followed_up_by) = TRIM(?)
+    ORDER BY rf.created_at DESC, rf.id DESC
+    LIMIT 15
+  `);
+
+  const out = reps.map((r) => {
+    const pa  = preAgg.get(r.name)  || { assigned: 0, followed: 0 };
+    const poa = postAgg.get(r.name) || { total: 0, followed: 0 };
+    return {
+      sales_rep: r.name,
+      branch: r.branch || null,
+      pre: {
+        assigned: pa.assigned || 0,
+        followed: pa.followed || 0,
+        pending:  (pa.assigned || 0) - (pa.followed || 0),
+        pending_list: prePending.all(r.name),
+        recent:       preRecent.all(r.name),
+      },
+      post: {
+        total:    poa.total || 0,
+        followed: poa.followed || 0,
+        pending:  (poa.total || 0) - (poa.followed || 0),
+        pending_list: postPending.all(r.name),
+        recent:       postRecent.all(r.name),
+      },
+    };
+  });
+
+  // Hide reps with literally nothing (assignment or activity) to cut noise — but
+  // if that empties the list, fall back to showing everyone so the page isn't blank.
+  const active = out.filter(
+    (r) => r.pre.assigned || r.post.total || r.pre.recent.length || r.post.recent.length
+  );
+  return res.json({ reps: active.length ? active : out });
 });
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -3454,12 +3855,64 @@ app.get('/api/analytics', requireAuth, requireRole('admin'), (req, res) => {
     ORDER BY leads DESC
   `).all(fromDate, toDate, ...branchParam, ...campaignParam);
 
+  // ── SALES analytics — best-selling products. Mirrors the "most viewed"
+  // analysis above but sourced from ACTUAL purchases (purchase_items → products
+  // → categories), not view events. "units" = number of line items sold, which
+  // is the clean, unambiguous "best-seller" metric. We deliberately do NOT split
+  // a contract's price across its products (one contract can bundle several
+  // products under a single total), so we rank by units, not by revenue.
+  const salesArgs = [fromDate, toDate, ...branchParam, ...campaignParam];
+  const salesFrom = `
+    FROM purchase_items pi
+    JOIN purchases pur     ON pur.id = pi.purchase_id
+    JOIN lead_profiles lp  ON lp.user_id = pur.user_id
+    JOIN products p        ON p.id = pi.product_id
+    LEFT JOIN product_categories pc ON pc.id = p.category_id
+    WHERE date(pur.created_at) BETWEEN ? AND ?
+      ${branchClause} ${campaignClause}
+  `;
+  // Best-selling overall (all categories)
+  const topSelling = db.prepare(`
+    SELECT p.name AS product, COALESCE(pc.name, 'بدون فئة') AS category,
+           COUNT(*) AS units, COUNT(DISTINCT pur.user_id) AS buyers
+    ${salesFrom}
+    GROUP BY pi.product_id
+    ORDER BY units DESC, buyers DESC
+    LIMIT 10
+  `).all(...salesArgs);
+  // Sales rolled up per category
+  const salesByCategory = db.prepare(`
+    SELECT COALESCE(pc.name, 'بدون فئة') AS category,
+           COUNT(*) AS units,
+           COUNT(DISTINCT pi.product_id) AS products_sold,
+           COUNT(DISTINCT pur.user_id)   AS buyers
+    ${salesFrom}
+    GROUP BY COALESCE(pc.name, 'بدون فئة')
+    ORDER BY units DESC
+  `).all(...salesArgs);
+  // Best-selling products inside each category (nested, like productsByCategory)
+  const sellingByCategoryRows = db.prepare(`
+    SELECT COALESCE(pc.name, 'بدون فئة') AS category, p.name AS product,
+           COUNT(*) AS units, COUNT(DISTINCT pur.user_id) AS buyers
+    ${salesFrom}
+    GROUP BY COALESCE(pc.name, 'بدون فئة'), pi.product_id
+    ORDER BY category, units DESC
+  `).all(...salesArgs);
+  const sellingByCategory = {};
+  for (const r of sellingByCategoryRows) {
+    if (!sellingByCategory[r.category]) sellingByCategory[r.category] = [];
+    sellingByCategory[r.category].push({ product: r.product, units: r.units, buyers: r.buyers });
+  }
+
   return res.json({
     eventsSeries,
     funnel:      funnel || { total_leads: 0, hot: 0, visited: 0, purchased: 0 },
     topProducts,
     categories,
     productsByCategory,
+    topSelling,
+    salesByCategory,
+    sellingByCategory,
     campaigns,
     adFunnel,
     branches,
@@ -3638,10 +4091,11 @@ app.get('/api/users', requireAuth, requireRole('admin'), (req, res) => {
 });
 
 app.post('/api/users', requireAuth, requireRole('admin'), (req, res) => {
-  const { name, email, password, role = 'rep', branch } = req.body || {};
+  let { name, email, password, role = 'rep', branch } = req.body || {};
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'name, email, and password are required' });
   }
+  name = String(name).trim(); // padded names break name-based assignment matching
   // Branch only meaningful for reception accounts
   const branchVal = ['reception', 'sales', 'branch_manager'].includes(role) ? (branch || null) : null;
   const db   = getDb();
@@ -3660,7 +4114,8 @@ app.post('/api/users', requireAuth, requireRole('admin'), (req, res) => {
 });
 
 app.put('/api/users/:id', requireAuth, requireRole('admin'), (req, res) => {
-  const { name, email, role, password, branch } = req.body || {};
+  let { name, email, role, password, branch, active } = req.body || {};
+  if (name != null) name = String(name).trim();
   const db      = getDb();
   const updates = [];
   const params  = [];
@@ -3669,6 +4124,23 @@ app.put('/api/users/:id', requireAuth, requireRole('admin'), (req, res) => {
   if (email)    { updates.push('email = ?');         params.push(email); }
   if (role)     { updates.push('role = ?');          params.push(role); }
   if (password) { updates.push('password_hash = ?'); params.push(bcrypt.hashSync(password, 10)); }
+  // active: 1 = can log in, 0 = frozen (reversible suspension). Reject freezing
+  // the last remaining admin so the system can never lock itself out.
+  if (active !== undefined) {
+    const next = active ? 1 : 0;
+    if (next === 0) {
+      const target = db.prepare(`SELECT role FROM users WHERE id = ?`).get(req.params.id);
+      if (target?.role === 'admin') {
+        const otherAdmins = db.prepare(
+          `SELECT COUNT(*) AS n FROM users WHERE role = 'admin' AND active = 1 AND id != ?`
+        ).get(req.params.id).n;
+        if (otherAdmins === 0) {
+          return res.status(400).json({ error: 'مينفعش توقف آخر مدير نظام نشط' });
+        }
+      }
+    }
+    updates.push('active = ?'); params.push(next);
+  }
   // Set branch for reception accounts; clear it for any other role
   if (role)     { updates.push('branch = ?');        params.push(['reception','sales','branch_manager'].includes(role) ? (branch || null) : null); }
   else if (branch !== undefined) { updates.push('branch = ?'); params.push(branch || null); }
@@ -4050,9 +4522,10 @@ function seedDemoData(db) {
 
   // ── 3. Purchases — 3 completed sales by demo_sales ──────────────────────
   const purchaseData = [
-    { uid: `${PREFIX}16`, price: 32000, contract: 'CNT-2026-0041', note: 'غرفة نوم كلاسيك ملكي — دفع كاش',        daysAgoN: 6 },
-    { uid: `${PREFIX}17`, price: 18500, contract: 'CNT-2026-0042', note: 'طقم سفرة 8 كراسي فاخر — تقسيط 6 شهور', daysAgoN: 8 },
-    { uid: `${PREFIX}18`, price: 24000, contract: 'CNT-2026-0043', note: 'كنبة 4 مقاعد جلد — دفع كاش',            daysAgoN: 10 },
+    { uid: `${PREFIX}16`, price: 32000, contract: 'CNT-2026-0041', note: 'غرفة نوم كلاسيك ملكي — دفع كاش',        daysAgoN: 6,  products: ['غرفة نوم كلاسيك ملكي'] },
+    { uid: `${PREFIX}17`, price: 18500, contract: 'CNT-2026-0042', note: 'طقم سفرة 8 كراسي فاخر — تقسيط 6 شهور', daysAgoN: 8,  products: ['طقم سفرة 8 كراسي فاخر'] },
+    // Bedroom set repeats here → it becomes the best-seller overall + in غرف النوم.
+    { uid: `${PREFIX}18`, price: 24000, contract: 'CNT-2026-0043', note: 'كنبة 4 مقاعد جلد + غرفة نوم — دفع كاش',  daysAgoN: 10, products: ['كنبة 4 مقاعد جلد', 'غرفة نوم كلاسيك ملكي'] },
   ];
   const insPurchase = db.prepare(`
     INSERT INTO purchases (user_id, price, branch, notes, rep, created_at, contract_number)
@@ -4061,8 +4534,30 @@ function seedDemoData(db) {
   const insPurchaseItem = db.prepare(`
     INSERT INTO purchase_items (purchase_id, product_id) VALUES (?, ?)
   `);
-  // Pick a couple of real catalog products per demo contract so the new
-  // multi-select UI on the lead profile shows realistic items.
+  // The catalog is normally cloned from production (hundreds of real products).
+  // But on a fresh/empty live DB the clone is empty, which would leave demo
+  // purchases with no line items and the best-selling analytics blank. Seed a
+  // tiny catalog (only if none exists) so the demo always reflects the feature.
+  if (db.prepare(`SELECT COUNT(*) c FROM products WHERE active = 1`).get().c === 0) {
+    const catIns  = db.prepare(`INSERT INTO product_categories (name) VALUES (?)`);
+    const prodIns = db.prepare(`INSERT INTO products (category_id, name) VALUES (?, ?)`);
+    const demoCatalog = {
+      'غرف النوم':   ['غرفة نوم كلاسيك ملكي', 'غرفة نوم مودرن'],
+      'السفرة':      ['طقم سفرة 8 كراسي فاخر', 'طقم سفرة 6 كراسي'],
+      'الانتريهات':  ['كنبة 4 مقاعد جلد', 'انتريه كلاسيك'],
+    };
+    db.transaction(() => {
+      for (const [cat, prods] of Object.entries(demoCatalog)) {
+        const cid = catIns.run(cat).lastInsertRowid;
+        for (const name of prods) prodIns.run(cid, name);
+      }
+    })();
+  }
+
+  // Link each demo contract to the catalog product that matches its note (so the
+  // best-selling-by-category analysis is meaningful), falling back to random.
+  const productByName = (frag) =>
+    db.prepare(`SELECT id FROM products WHERE active = 1 AND name LIKE ? LIMIT 1`).get('%' + frag + '%')?.id;
   const pickRandomProducts = (n) => {
     const rows = db.prepare(`SELECT id FROM products WHERE active = 1`).all();
     if (!rows.length) return [];
@@ -4075,8 +4570,10 @@ function seedDemoData(db) {
       const result = insPurchase.run(p.uid, p.price, BRANCH, p.note, SALES, pDate, p.contract);
       const purchaseId = result.lastInsertRowid;
 
-      // 1–3 random catalog products per demo contract
-      const productIds = pickRandomProducts(1 + Math.floor(Math.random() * 3));
+      // Link the contract to its catalog products (by name), so the
+      // best-selling-by-category analysis has real, sensible data.
+      let productIds = (p.products || []).map(productByName).filter(Boolean);
+      if (!productIds.length) productIds = pickRandomProducts(1 + Math.floor(Math.random() * 2));
       for (const pid of productIds) insPurchaseItem.run(purchaseId, pid);
 
       // set purchased_at so the "اشتروا" tab in revisit works
@@ -4086,18 +4583,25 @@ function seedDemoData(db) {
     });
   })();
 
+  // One buyer ALSO browsed a different branch (المعادي) before buying here — so
+  // the cross-branch customer journey + the reception heads-up show up in the
+  // demo too (ownership stays with the branch where they actually bought).
+  insVisit.run(`${PREFIX}16`, 'المعادي', iso(daysAgo(9)), 'سيلز المعادي', null);
+
   // ── 4. Pre-visit follow-up assignments (branch_customer_followups) ───────
   // 2 pending (not yet followed up) + 2 done (followed up + visited / not visited)
+  // `sent` = the rep ticked "بعت" (sent the first outreach). One pending lead is
+  // marked sent, the other not, so the demo shows the checkbox in both states.
   const fupData = [
-    { uid: `${PREFIX}08`, name: 'نور الدين أحمد', fu: 0, visited: false, assignedAgo: 6,  summary: null },
-    { uid: `${PREFIX}20`, name: 'تامر فتحي',      fu: 0, visited: false, assignedAgo: 4,  summary: null },
-    { uid: `${PREFIX}09`, name: 'هبة رضا',        fu: 1, visited: false, assignedAgo: 10, summary: 'مهتمة جداً بطقم السفرة، قالت هتزور الأسبوع الجاي بعد ما يراجع ميزانيتها' },
-    { uid: `${PREFIX}07`, name: 'كريم وليد',      fu: 1, visited: true,  assignedAgo: 12, summary: 'اتصلت بيه، قال هييجي مع زوجته — وفعلاً زاروا وشافوا غرف الأطفال', visitedAgo: 5 },
+    { uid: `${PREFIX}08`, name: 'نور الدين أحمد', fu: 0, sent: 1, visited: false, assignedAgo: 6,  summary: null },
+    { uid: `${PREFIX}20`, name: 'تامر فتحي',      fu: 0, sent: 0, visited: false, assignedAgo: 4,  summary: null },
+    { uid: `${PREFIX}09`, name: 'هبة رضا',        fu: 1, sent: 1, visited: false, assignedAgo: 10, summary: 'مهتمة جداً بطقم السفرة، قالت هتزور الأسبوع الجاي بعد ما يراجع ميزانيتها' },
+    { uid: `${PREFIX}07`, name: 'كريم وليد',      fu: 1, sent: 1, visited: true,  assignedAgo: 12, summary: 'اتصلت بيه، قال هييجي مع زوجته — وفعلاً زاروا وشافوا غرف الأطفال', visitedAgo: 5 },
   ];
   const insFup = db.prepare(`
     INSERT OR REPLACE INTO branch_customer_followups
-      (branch, user_id, followed_up, followed_up_at, followed_up_by, assigned_sales, assigned_at, assigned_by, call_summary)
-    VALUES (?,?,?,?,?,?,?,?,?)
+      (branch, user_id, followed_up, followed_up_at, followed_up_by, assigned_sales, assigned_at, assigned_by, call_summary, sent, sent_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?)
   `);
   db.transaction(() => {
     for (const f of fupData) {
@@ -4109,7 +4613,9 @@ function seedDemoData(db) {
         SALES,
         iso(daysAgo(f.assignedAgo)),
         MANAGER,
-        f.summary
+        f.summary,
+        f.sent ? 1 : 0,
+        f.sent ? iso(daysAgo(f.assignedAgo)) : null
       );
       // if visited after followup, also update lead_profiles
       if (f.visited) {
@@ -4122,15 +4628,35 @@ function seedDemoData(db) {
     }
   })();
 
+  // followup_log — the append-only PRE-visit follow-up timeline. Seed an entry
+  // for each done follow-up (and a 2nd one for هبة, to show a multi-touch
+  // timeline) so the admin's "متابعات السيلز" monitor isn't empty in the demo.
+  const insFulog = db.prepare(`
+    INSERT INTO followup_log (branch, user_id, sales, call_summary, followed_up_at)
+    VALUES (?,?,?,?,?)
+  `);
+  db.transaction(() => {
+    for (const f of fupData) {
+      if (f.fu && f.summary) {
+        insFulog.run(BRANCH, f.uid, SALES, f.summary,
+          iso(daysAgo(f.visitedAgo ? f.visitedAgo + 2 : 3)));
+      }
+    }
+    // A second, earlier touch for هبة رضا — shows the rep followed up more than once.
+    insFulog.run(BRANCH, `${PREFIX}09`, SALES,
+      'كلمتها أول مرة، طلبت تفاصيل أكتر عن الخامات والأسعار — بعتتلها صور', iso(daysAgo(7)));
+  })();
+
   // ── 5. Sales targets for this month ─────────────────────────────────────
   const insTarget = db.prepare(`
     INSERT OR REPLACE INTO sales_targets (scope_type, scope_name, target_month, target_amount)
     VALUES (?,?,?,?)
   `);
   db.transaction(() => {
-    insTarget.run('branch',     BRANCH, month, 400000);   // branch target
-    insTarget.run('sales_rep',  SALES,  month,  80000);   // personal target for demo_sales
-    insTarget.run('branch_manager', MANAGER, month, 400000);
+    // Targets are now CONTRACT COUNTS (not money).
+    insTarget.run('branch',     BRANCH, month, 20);   // 20 contracts for the branch
+    insTarget.run('sales_rep',  SALES,  month,  8);   // 8 contracts for demo_sales
+    insTarget.run('branch_manager', MANAGER, month, 20);
   })();
 
   // ── 6. Pending tasks for demo_sales ─────────────────────────────────────
@@ -4333,7 +4859,8 @@ app.get('/api/admin/kpis', requireAuth, requireRole('admin'), (req, res) => {
   if (branch) { purWhere += ' AND branch = ?'; purParams.push(branch); }
   if (rep)    { purWhere += ' AND rep = ?';    purParams.push(rep); }
   const purRow = db.prepare(`
-    SELECT COALESCE(SUM(price), 0) AS revenue, COUNT(DISTINCT user_id) AS buyers
+    SELECT COALESCE(SUM(price), 0) AS revenue, COUNT(DISTINCT user_id) AS buyers,
+           COUNT(*) AS contracts
     FROM purchases WHERE ${purWhere}
   `).get(...purParams);
 
@@ -4359,7 +4886,8 @@ app.get('/api/admin/kpis', requireAuth, requireRole('admin'), (req, res) => {
       FROM sales_targets WHERE scope_type = 'branch' AND target_month = ?
     `).get(curMonth).t || 0;
   }
-  const monthRev = monthRevenue(db, { branch, rep, month: curMonth });
+  const monthRev  = monthRevenue(db, { branch, rep, month: curMonth });
+  const monthCnts = monthContracts(db, { branch, rep, month: curMonth });
 
   const revenue = purRow.revenue || 0;
 
@@ -4412,13 +4940,15 @@ app.get('/api/admin/kpis', requireAuth, requireRole('admin'), (req, res) => {
   `).all(...ldParams);
 
   return res.json({
-    total_revenue:    revenue,
+    total_revenue:    revenue,                 // kept for backward-compat
+    contracts_count:  purRow.contracts || 0,   // headline metric now
     total_visits:     visits,
     closing_rate:     visits ? Math.round((purRow.buyers / visits) * 100) : 0,
-    target,
+    target,                                     // a CONTRACTS target now
     target_month:     curMonth,
     month_revenue:    monthRev,
-    percent_achieved: pctAchieved(monthRev, target),
+    month_contracts:  monthCnts,
+    percent_achieved: pctAchieved(monthCnts, target),
     funnel_stages,
     lead_distribution,
     branch_demand,
@@ -4433,12 +4963,14 @@ app.get('/api/sales/my-target', requireAuth, authorizeRoles('sales', 'rep'), (re
   const db = getDb();
   const me = req.user.name;
   // Current calendar month: this month's target vs this month's revenue.
-  const target  = getTarget(db, 'sales_rep', me);
-  const revenue = monthRevenue(db, { rep: me });
+  const target    = getTarget(db, 'sales_rep', me);
+  const revenue   = monthRevenue(db, { rep: me });
+  const contracts = monthContracts(db, { rep: me });
   return res.json({
-    target,
-    revenue,
-    percent:      pctAchieved(revenue, target),
+    target,                                  // a CONTRACTS target now
+    revenue,                                 // kept for backward-compat
+    contracts,
+    percent:      pctAchieved(contracts, target),
     target_month: currentMonth(),
   });
 });

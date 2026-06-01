@@ -98,7 +98,7 @@ export default function Contracts() {
           </h1>
           {!loading && (
             <p className="text-dark-400 text-sm mt-1">
-              {rows.length} تعاقد · إجمالي {fmt(totalValue)} ج.م
+              {rows.length} تعاقد
             </p>
           )}
         </div>
@@ -128,7 +128,6 @@ export default function Contracts() {
                   <th className="py-3 px-4">العميل</th>
                   <th className="py-3 px-4">الفرع</th>
                   <th className="py-3 px-4">السيلز</th>
-                  <th className="py-3 px-4">المبلغ</th>
                   <th className="py-3 px-4">رقم التعاقد</th>
                   {canEdit && <th className="py-3 px-4 text-center">إجراء</th>}
                 </tr>
@@ -147,20 +146,6 @@ export default function Contracts() {
                       </td>
                       <td className="py-3 px-4 text-dark-300">{formatBranch(c.branch) || '—'}</td>
                       <td className="py-3 px-4 text-dark-300">{c.rep || '—'}</td>
-                      <td className="py-3 px-4">
-                        {editing ? (
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            dir="ltr"
-                            value={editBuf.price}
-                            onChange={(e) => setEditBuf((b) => ({ ...b, price: e.target.value }))}
-                            className="input-field text-xs py-1.5 w-28"
-                          />
-                        ) : (
-                          <span className="text-emerald-400 font-black">{fmt(c.price)} ج.م</span>
-                        )}
-                      </td>
                       <td className="py-3 px-4">
                         {editing ? (
                           <input
