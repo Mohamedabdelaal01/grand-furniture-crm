@@ -575,6 +575,12 @@ export const formatBranch = (branch) => {
   return _BRANCH_FALLBACK[branch] || branch;
 };
 
+/** Safe customer display name — never leak the raw user_id (e.g. walkin_… ) to the UI. */
+export const customerName = (c) => {
+  const n = c?.first_name && String(c.first_name).trim();
+  return n || 'عميل بدون اسم';
+};
+
 // ✅ FIX: added missing map_click
 export const formatEventType = (eventType) => {
   const map = {

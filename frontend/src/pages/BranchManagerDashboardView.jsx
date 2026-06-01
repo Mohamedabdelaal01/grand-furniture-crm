@@ -24,7 +24,7 @@ import {
   fetchBranchOverview, fetchBranchCustomers, updateCustomerFollowup,
   assignCustomerToSales,
   fetchBranchSales, createBranchSales, updateBranchSales, toggleUserActive,
-  formatBranch,
+  formatBranch, customerName,
 } from '../services/api';
 
 const fmt = (n) => new Intl.NumberFormat('en-US').format(n || 0);
@@ -78,7 +78,7 @@ function CallSummaryModal({ customer, onConfirm, onClose }) {
           <h3 className="text-white font-black">متابعة العميل</h3>
           <button onClick={onClose} className="text-dark-400 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
-        <p className="text-dark-400 text-xs mb-3">{customer.first_name || customer.user_id}</p>
+        <p className="text-dark-400 text-xs mb-3">{customerName(customer)}</p>
         <label className="block text-dark-400 text-xs mb-1">ملخص المكالمة (اختياري)</label>
         <textarea
           value={summary}
@@ -104,7 +104,7 @@ function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow }) {
     <div className="px-4 py-3 flex items-center gap-3 hover:bg-dark-800/20 transition-colors flex-wrap">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-white font-bold text-sm truncate">{c.first_name || c.user_id}</span>
+          <span className="text-white font-bold text-sm truncate">{customerName(c)}</span>
           <CrossBranchTags c={c} />
           <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-dark-700'} ${leadClassColor[c.lead_class] || 'text-dark-400'}`}>
             {leadClassLabel[c.lead_class] || c.lead_class}
@@ -194,7 +194,7 @@ function DoneRow({ c, busy, onRevert }) {
       </button>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-white font-bold text-sm truncate">{c.first_name || c.user_id}</span>
+          <span className="text-white font-bold text-sm truncate">{customerName(c)}</span>
           <CrossBranchTags c={c} />
           <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-dark-700'} ${leadClassColor[c.lead_class] || 'text-dark-400'}`}>
             {leadClassLabel[c.lead_class] || c.lead_class}

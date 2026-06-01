@@ -11,7 +11,7 @@ import {
   Search, CornerDownLeft, LayoutDashboard, Users, FileText, Radar,
   Headset, TrendingUp, Package, Activity, Settings, ScrollText, User,
 } from 'lucide-react';
-import { searchLeadsGlobal } from '../services/api';
+import { searchLeadsGlobal, customerName } from '../services/api';
 
 const PAGES = [
   { label: 'نظرة عامة',        path: '/',                        icon: LayoutDashboard, kw: 'dashboard رئيسية' },
@@ -157,7 +157,7 @@ export default function CommandPalette() {
                           <span className="text-white text-sm font-bold">{item.label}</span>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <span className="text-white text-sm font-bold truncate">{item.first_name || item.user_id}</span>
+                            <span className="text-white text-sm font-bold truncate">{customerName(item)}</span>
                             {item.phone && <span className="text-dark-500 font-mono text-[11px]" dir="ltr">{item.phone}</span>}
                           </div>
                         )}

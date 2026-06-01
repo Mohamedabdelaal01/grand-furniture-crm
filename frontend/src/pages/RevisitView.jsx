@@ -17,6 +17,7 @@ import {
 import {
   fetchRevisitCustomers, closeRevisitCustomer, reopenRevisitCustomer,
   recordPurchase, formatBranch, logRevisitFollowup, fetchRevisitFollowups,
+  customerName,
 } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ProductMultiSelect from '../components/ProductMultiSelect';
@@ -97,7 +98,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
             onClick={() => navigate(`/leads/${c.user_id}`)}
             className="text-white font-black text-sm hover:text-primary-400 transition-colors"
           >
-            {c.first_name || c.user_id}
+            {customerName(c)}
           </button>
           <div className="flex items-center gap-3 mt-1 text-[11px] text-dark-400 flex-wrap">
             <CrossBranchTags c={c} />

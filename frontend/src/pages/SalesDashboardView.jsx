@@ -23,6 +23,7 @@ import {
   fetchMySalesCustomers, fetchSalesFollowups, submitSalesFollowup, setSalesFollowupSent,
   fetchSalesFollowupLog, addSalesFollowupLog,
   formatBranch, formatLeadClass, getLeadBadgeClass, fetchMyTarget,
+  customerName,
 } from '../services/api';
 import TargetProgress, { arabicMonthLabel } from '../components/TargetProgress';
 import CrossBranchTags from '../components/CrossBranchTags';
@@ -105,7 +106,7 @@ function CallModal({ customer, onConfirm, onClose }) {
           <h3 className="text-white font-black">متابعة العميل</h3>
           <button onClick={onClose} className="text-dark-400 hover:text-white"><X className="w-5 h-5" /></button>
         </div>
-        <p className="text-dark-400 text-xs mb-3">{customer.first_name || customer.user_id}</p>
+        <p className="text-dark-400 text-xs mb-3">{customerName(customer)}</p>
         <label className="block text-dark-400 text-xs mb-1">ملخص المكالمة</label>
         <textarea
           value={summary}
@@ -243,7 +244,7 @@ function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-white font-bold text-sm truncate">{c.first_name || c.user_id}</span>
+          <span className="text-white font-bold text-sm truncate">{customerName(c)}</span>
           <span className={`px-2 py-0.5 rounded-full border text-[10px] font-black ${getLeadBadgeClass(c.lead_class)}`}>
             {formatLeadClass(c.lead_class)}
           </span>
