@@ -392,6 +392,12 @@ const downloadCsv = async (path, filename) => {
 export const exportLeadsCsv     = () => downloadCsv('/api/admin/export/leads.csv',     'leads-export.csv');
 export const exportContractsCsv = () => downloadCsv('/api/admin/export/contracts.csv', 'contracts-export.csv');
 
+/** Admin: swap two sales reps — exchange their branch + pre-visit customer lists. */
+export const swapReps = async (repA, repB) => {
+  const response = await api.post('/api/admin/swap-reps', { repA, repB });
+  return response.data; // { ok, rows_swapped, a:{...}, b:{...} }
+};
+
 // ── Contracts (purchases) ────────────────────────────────────────────────────
 /** Contracts list — scoped server-side by role. */
 export const fetchContracts = async () => {

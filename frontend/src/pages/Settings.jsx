@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import {
   Settings2, Users, Key, Building2, Eye, EyeOff,
   Save, Plus, Edit2, Check, AlertTriangle, X, Trash2, Wifi, WifiOff,
-  Trophy, Power, ShieldCheck, Tag, Target,
+  Trophy, Power, ShieldCheck, Tag, Target, ArrowLeftRight,
 } from 'lucide-react';
 import {
   fetchSettings, updateSetting,
@@ -17,6 +17,7 @@ import {
   fetchForecastWeights, updateForecastWeights,
 } from '../services/api';
 import useBranches from '../hooks/useBranches';
+import SwapRepsModal from '../components/SwapRepsModal';
 
 // ── Tabs ────────────────────────────────────────────────────────────────────
 const TABS = [
@@ -370,6 +371,9 @@ function UsersTab() {
   const [modal,    setModal]    = useState(null);  // null | { mode: 'create' | 'edit', user? }
   const [cleaning, setCleaning] = useState(false);
   const [offboardTarget, setOffboardTarget] = useState(null); // user pending offboarding
+  const [swapOpen, setSwapOpen] = useState(false);            // swap-reps tool modal
+
+  const salesReps = users.filter(u => ['sales', 'rep'].includes(u.role));
 
   const handleCleanup = async () => {
     if (!window.confirm(
@@ -451,6 +455,15 @@ function UsersTab() {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <p className="text-dark-400 text-sm">{users.length} مستخدم</p>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSwapOpen(true)}
+            disabled={salesReps.length < 2}
+            className="btn-secondary text-xs disabled:opacity-40"
+            title="تبديل سيلزين: الفرع + عملاء قبل الزيارة"
+          >
+            <ArrowLeftRight className="w-3.5 h-3.5 text-primary-400" />
+            تبديل سيلزين
+          </button>
           <button
             onClick={handleCleanup}
             disabled={cleaning}
@@ -573,6 +586,13 @@ function UsersTab() {
           user={offboardTarget}
           onClose={() => setOffboardTarget(null)}
           onDone={() => { setOffboardTarget(null); load(); }}
+        />
+      )}
+      {swapOpen && (
+        <SwapRepsModal
+          reps={salesReps}
+          onClose={() => setSwapOpen(false)}
+          onDone={load}
         />
       )}
     </div>
