@@ -361,6 +361,37 @@ export const fetchSalesFollowupMonitor = async () => {
   return response.data.reps || []; // [{ sales_rep, branch, pre:{...}, post:{...} }]
 };
 
+// ── Advanced analytics & enterprise admin ────────────────────────────────────
+/** Admin: deep analytics (rep conversion, velocity, lost leads, pipeline value). */
+export const fetchAdvancedAnalytics = async () => {
+  const response = await api.get('/api/analytics/advanced');
+  return response.data; // { repConversion, velocity, lostLeads, pipeline }
+};
+
+/** Admin: global lead search for the Ctrl+K command palette. */
+export const searchLeadsGlobal = async (q) => {
+  const response = await api.get('/api/admin/search', { params: { q } });
+  return response.data.results || []; // [{ user_id, first_name, phone, lead_class }]
+};
+
+/** Admin: infrastructure vitals (DB size, row counts, uptime, memory). */
+export const fetchSystemHealth = async () => {
+  const response = await api.get('/api/admin/system-health');
+  return response.data;
+};
+
+/** Stream an authenticated CSV endpoint to a file download (keeps the Bearer token). */
+const downloadCsv = async (path, filename) => {
+  const res  = await api.get(path, { responseType: 'blob' });
+  const url  = window.URL.createObjectURL(new Blob([res.data], { type: 'text/csv;charset=utf-8;' }));
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  a.remove(); window.URL.revokeObjectURL(url);
+};
+export const exportLeadsCsv     = () => downloadCsv('/api/admin/export/leads.csv',     'leads-export.csv');
+export const exportContractsCsv = () => downloadCsv('/api/admin/export/contracts.csv', 'contracts-export.csv');
+
 // ── Contracts (purchases) ────────────────────────────────────────────────────
 /** Contracts list — scoped server-side by role. */
 export const fetchContracts = async () => {

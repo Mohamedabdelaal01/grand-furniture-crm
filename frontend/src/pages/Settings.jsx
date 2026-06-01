@@ -423,11 +423,11 @@ function UsersTab() {
 
   const handleToggleActive = async (u) => {
     const goingActive = u.active === 0;
-    const verb = goingActive ? 'تفعيل' : 'إيقاف';
+    const verb = goingActive ? 'إلغاء التجميد' : 'تجميد';
     if (!goingActive && !window.confirm(
-      `هتوقف حساب "${u.name}"؟\n` +
-      `الحساب مش هيقدر يدخل تاني، بس كل تفاعلاته (متابعات، مبيعات، إلخ) هتفضل في السجل.\n` +
-      `تقدر تفعّله تاني في أي وقت.`
+      `هتجمّد حساب "${u.name}"؟\n` +
+      `الحساب هيتسجّل خروجه فوراً ومش هيقدر يدخل تاني، بس كل تفاعلاته (متابعات، مبيعات، إلخ) هتفضل في السجل.\n` +
+      `تقدر تلغي التجميد في أي وقت.`
     )) return;
     const tId = toast.loading(`جاري الـ${verb}...`);
     try {
@@ -531,7 +531,7 @@ function UsersTab() {
                       </button>
                       <button
                         onClick={() => handleToggleActive(u)}
-                        title={isInactive ? 'تفعيل' : 'إيقاف'}
+                        title={isInactive ? 'إلغاء التجميد (تفعيل)' : 'تجميد الحساب'}
                         className={`p-1.5 rounded-lg transition-colors ${
                           isInactive
                             ? 'text-emerald-400 hover:bg-emerald-500/10'

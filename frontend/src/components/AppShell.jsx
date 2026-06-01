@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
+import CommandPalette from './CommandPalette';
 import { useAuth } from '../contexts/AuthContext';
 
 /**
@@ -31,6 +32,9 @@ export default function AppShell() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {/* Global Ctrl/Cmd+K command palette — admin only */}
+      {user?.role === 'admin' && <CommandPalette />}
 
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

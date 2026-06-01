@@ -5,8 +5,8 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { FileText, RefreshCw, Pencil, Trash2, Check, X } from 'lucide-react';
-import { fetchContracts, updateContract, deleteContract, formatBranch } from '../services/api';
+import { FileText, RefreshCw, Pencil, Trash2, Check, X, FileSpreadsheet } from 'lucide-react';
+import { fetchContracts, updateContract, deleteContract, formatBranch, exportContractsCsv } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
 const fmt = (n) => new Intl.NumberFormat('en-US').format(n || 0);
@@ -102,10 +102,21 @@ export default function Contracts() {
             </p>
           )}
         </div>
-        <button onClick={load} disabled={loading} className="btn-secondary">
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          تحديث
-        </button>
+        <div className="flex items-center gap-2">
+          {user?.role === 'admin' && (
+            <button
+              onClick={() => { toast.promise(exportContractsCsv(), { loading: 'جاري التصدير...', success: 'تم تنزيل الملف', error: 'فشل التصدير' }); }}
+              className="btn-secondary"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              تصدير إلى Excel
+            </button>
+          )}
+          <button onClick={load} disabled={loading} className="btn-secondary">
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            تحديث
+          </button>
+        </div>
       </div>
 
       {/* Table */}

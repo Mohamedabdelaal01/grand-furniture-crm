@@ -4,8 +4,10 @@ import {
   Users, Search, Filter, ChevronLeft, ChevronRight,
   Eye, Download, RefreshCw, SlidersHorizontal, AlertTriangle,
 } from 'lucide-react';
-import { fetchLeads, formatLeadClass, getLeadBadgeClass, formatBranch } from '../services/api';
+import toast from 'react-hot-toast';
+import { fetchLeads, formatLeadClass, getLeadBadgeClass, formatBranch, exportLeadsCsv } from '../services/api';
 import useBranches from '../hooks/useBranches';
+import { useAuth } from '../contexts/AuthContext';
 
 const PAGE_SIZES = [25, 50, 100];
 
@@ -78,6 +80,7 @@ export default function Leads() {
   const limit        = parseInt(searchParams.get('limit') || '50', 10);
 
   const { branches } = useBranches();
+  const { user } = useAuth();
   const branchOptions = [
     { value: '', label: 'كل الفروع' },
     ...branches.map(b => ({ value: b.id, label: b.name })),
@@ -142,6 +145,12 @@ export default function Leads() {
 
   // CSV export
   const exportCSV = () => {
+    // Admins get the FULL dataset straight from the backend (UTF-8 BOM for Excel);
+    // other roles export the rows currently loaded on the page.
+    if (user?.role === 'admin') {
+      toast.promise(exportLeadsCsv(), { loading: 'جاري التصدير...', success: 'تم تنزيل الملف', error: 'فشل التصدير' });
+      return;
+    }
     if (!data?.leads?.length) return;
     const headers = ['الاسم', 'التصنيف', 'النقاط', 'الفرع', 'الحملة', 'رقم التليفون', 'آخر نشاط'];
     const rows = data.leads.map(l => [
@@ -188,11 +197,11 @@ export default function Leads() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={exportCSV}
-            disabled={!leads.length}
+            disabled={user?.role !== 'admin' && !leads.length}
             className="btn-secondary text-xs disabled:opacity-40"
           >
             <Download className="w-3.5 h-3.5" />
-            تصدير CSV
+            تصدير إلى Excel
           </button>
           <button onClick={load} className="btn-secondary" disabled={loading}>
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />

@@ -22,3 +22,6 @@ out/
 # IDE
 .vscode/
 .idea/
+
+# Vercel link (local only)
+.vercel

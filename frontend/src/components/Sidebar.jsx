@@ -4,6 +4,7 @@ import {
   LogOut, BookOpen, Phone, Trophy, ShieldCheck, ShoppingBag,
   CheckCircle2, UserPlus, PhoneCall, MapPinned, FileText,
   TrendingUp, Megaphone, MapPin, Package, Headset, Building2, ScrollText, Bot,
+  Radar, Activity,
   X,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -39,6 +40,12 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
       ],
     },
     {
+      title: '📊 التحليلات العميقة',
+      items: [
+        { path: '/admin/advanced-analytics', icon: Radar, label: 'التحليلات العميقة' },
+      ],
+    },
+    {
       title: '🏬 إدارة التشغيل',
       items: [
         { path: '/leads',            icon: Users,   label: 'قاعدة العملاء' },
@@ -49,9 +56,10 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
     {
       title: '⚙️ النظام والرقابة',
       items: [
-        { path: '/audit-logs', icon: ScrollText, label: 'سجل العمليات' },
-        { path: '/mcp',        icon: Bot,        label: 'ربط الذكاء الاصطناعي' },
-        { path: '/settings',   icon: Settings,   label: 'الإعدادات'   },
+        { path: '/audit-logs',    icon: ScrollText, label: 'سجل العمليات' },
+        { path: '/system-health', icon: Activity,   label: 'صحة النظام' },
+        { path: '/mcp',           icon: Bot,        label: 'ربط الذكاء الاصطناعي' },
+        { path: '/settings',      icon: Settings,   label: 'الإعدادات'   },
       ],
     },
   ];

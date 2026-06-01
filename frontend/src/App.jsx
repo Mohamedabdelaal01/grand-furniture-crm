@@ -21,6 +21,8 @@ import SystemGuide          from './pages/SystemGuide';
 import McpGuide             from './pages/McpGuide';
 import ManyChatGuide        from './pages/ManyChatGuide';
 import SalesFollowupMonitor from './pages/SalesFollowupMonitor';
+import AdvancedAnalytics    from './pages/AdvancedAnalytics';
+import SystemHealth         from './pages/SystemHealth';
 import NotFound             from './pages/NotFound';
 
 function App() {
@@ -124,6 +126,8 @@ function App() {
               <Route path="reception"         element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardView view="reception"/></ProtectedRoute>} />
               <Route path="sales-performance" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardView view="salesperf"/></ProtectedRoute>} />
               <Route path="followup-monitor"  element={<ProtectedRoute allowedRoles={['admin']}><SalesFollowupMonitor /></ProtectedRoute>} />
+              <Route path="admin/advanced-analytics" element={<ProtectedRoute allowedRoles={['admin']}><AdvancedAnalytics /></ProtectedRoute>} />
+              <Route path="system-health"     element={<ProtectedRoute allowedRoles={['admin']}><SystemHealth /></ProtectedRoute>} />
             </Route>
 
             {/* Fallback — explicit 404, not a silent redirect */}
