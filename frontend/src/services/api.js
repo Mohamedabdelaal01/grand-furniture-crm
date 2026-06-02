@@ -406,8 +406,8 @@ export const fetchContracts = async () => {
 };
 
 /** Admin / branch manager updates a contract's price + number. */
-export const updateContract = async (id, { price, contract_number }) => {
-  const response = await api.put(`/api/contracts/${id}`, { price, contract_number });
+export const updateContract = async (id, { price, contract_number, product_ids }) => {
+  const response = await api.put(`/api/contracts/${id}`, { price, contract_number, product_ids });
   return response.data;
 };
 

@@ -3,11 +3,12 @@
  * Scoped server-side by role: sales see their own, branch managers see their
  * branch, admin sees all. Editing/deleting is admin / branch-manager only.
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
 import toast from 'react-hot-toast';
-import { FileText, RefreshCw, Pencil, Trash2, Check, X, FileSpreadsheet } from 'lucide-react';
-import { fetchContracts, updateContract, deleteContract, formatBranch, exportContractsCsv } from '../services/api';
+import { FileText, RefreshCw, Pencil, Trash2, Check, X, FileSpreadsheet, ShoppingBag } from 'lucide-react';
+import { fetchContracts, updateContract, deleteContract, formatBranch, exportContractsCsv, customerName } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import ProductMultiSelect from '../components/ProductMultiSelect';
 
 const fmt = (n) => new Intl.NumberFormat('en-US').format(n || 0);
 const fmtDate = (iso) => (iso ? String(iso).split(' ')[0].split('T')[0] : '—');
@@ -20,7 +21,7 @@ export default function Contracts() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy]       = useState(false);
   const [editId, setEditId]   = useState(null);
-  const [editBuf, setEditBuf] = useState({ price: '', contract_number: '' });
+  const [editBuf, setEditBuf] = useState({ price: '', contract_number: '', productIds: [] });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -37,25 +38,29 @@ export default function Contracts() {
 
   const startEdit = (c) => {
     setEditId(c.id);
-    setEditBuf({ price: c.price ?? '', contract_number: c.contract_number ?? '' });
+    setEditBuf({
+      price: c.price ?? '',
+      contract_number: c.contract_number ?? '',
+      productIds: (c.products || []).map((p) => p.id),
+    });
   };
 
   const saveEdit = async (id) => {
+    if (!editBuf.productIds.length) {
+      toast.error('لازم تختار منتج واحد على الأقل');
+      return;
+    }
     setBusy(true);
     const tId = toast.loading('جاري الحفظ...');
     try {
       await updateContract(id, {
         price: editBuf.price,
         contract_number: editBuf.contract_number,
+        product_ids: editBuf.productIds,
       });
-      setRows((prev) => prev.map((r) =>
-        r.id === id
-          ? { ...r, price: editBuf.price === '' ? null : Number(editBuf.price),
-              contract_number: editBuf.contract_number.trim() || null }
-          : r
-      ));
       setEditId(null);
       toast.success('تم حفظ التعاقد', { id: tId });
+      await load(); // refresh so the updated products show
     } catch (e) {
       toast.error(e?.response?.data?.error || 'فشل الحفظ', { id: tId });
     }
@@ -81,7 +86,7 @@ export default function Contracts() {
     setBusy(false);
   };
 
-  const totalValue = rows.reduce((s, r) => s + (Number(r.price) || 0), 0);
+  const colCount = canEdit ? 7 : 6;
 
   return (
     <div className="max-w-[1400px] mx-auto space-y-6 pb-12" dir="rtl">
@@ -139,6 +144,7 @@ export default function Contracts() {
                   <th className="py-3 px-4">العميل</th>
                   <th className="py-3 px-4">الفرع</th>
                   <th className="py-3 px-4">السيلز</th>
+                  <th className="py-3 px-4">المنتجات</th>
                   <th className="py-3 px-4">رقم التعاقد</th>
                   {canEdit && <th className="py-3 px-4 text-center">إجراء</th>}
                 </tr>
@@ -147,16 +153,30 @@ export default function Contracts() {
                 {rows.map((c) => {
                   const editing = editId === c.id;
                   return (
-                    <tr key={c.id} className="border-t border-dark-800/60 hover:bg-dark-800/20">
+                    <Fragment key={c.id}>
+                    <tr className={`border-t border-dark-800/60 ${editing ? 'bg-dark-800/30' : 'hover:bg-dark-800/20'}`}>
                       <td className="py-3 px-4 text-dark-300">{fmtDate(c.created_at)}</td>
                       <td className="py-3 px-4 text-white font-bold">
-                        {c.first_name || c.user_id}
+                        {customerName(c)}
                         {c.phone && (
                           <span className="text-dark-500 font-mono mr-2" dir="ltr">{c.phone}</span>
                         )}
                       </td>
                       <td className="py-3 px-4 text-dark-300">{formatBranch(c.branch) || '—'}</td>
                       <td className="py-3 px-4 text-dark-300">{c.rep || '—'}</td>
+                      <td className="py-3 px-4">
+                        {c.products && c.products.length ? (
+                          <div className="flex flex-wrap gap-1 max-w-[280px]">
+                            {c.products.map((p) => (
+                              <span key={p.id} className="text-[11px] bg-primary-500/10 text-primary-300 px-2 py-0.5 rounded-full">
+                                {p.name}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-dark-600">— مفيش —</span>
+                        )}
+                      </td>
                       <td className="py-3 px-4">
                         {editing ? (
                           <input
@@ -213,6 +233,24 @@ export default function Contracts() {
                         </td>
                       )}
                     </tr>
+                    {editing && (
+                      <tr className="bg-dark-900/50 border-t border-dark-800/60">
+                        <td colSpan={colCount} className="px-4 pb-4 pt-1">
+                          <div className="flex items-center gap-2 mb-2 text-dark-300 text-xs font-bold">
+                            <ShoppingBag className="w-4 h-4 text-primary-400" />
+                            عدّل المنتجات اللي العميل خدها ({editBuf.productIds.length} مختار)
+                          </div>
+                          <div className="max-w-xl">
+                            <ProductMultiSelect
+                              compact
+                              selectedIds={editBuf.productIds}
+                              onChange={(ids) => setEditBuf((b) => ({ ...b, productIds: ids }))}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   );
                 })}
               </tbody>
