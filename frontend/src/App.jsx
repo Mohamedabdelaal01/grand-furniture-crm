@@ -125,7 +125,7 @@ function App() {
               <Route path="gamification"      element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardView view="gamify"   /></ProtectedRoute>} />
               <Route path="reception"         element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardView view="reception"/></ProtectedRoute>} />
               <Route path="sales-performance" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardView view="salesperf"/></ProtectedRoute>} />
-              <Route path="followup-monitor"  element={<ProtectedRoute allowedRoles={['admin']}><SalesFollowupMonitor /></ProtectedRoute>} />
+              <Route path="followup-monitor"  element={<ProtectedRoute allowedRoles={['admin','branch_manager']}><SalesFollowupMonitor /></ProtectedRoute>} />
               <Route path="admin/advanced-analytics" element={<ProtectedRoute allowedRoles={['admin']}><AdvancedAnalytics /></ProtectedRoute>} />
               <Route path="system-health"     element={<ProtectedRoute allowedRoles={['admin']}><SystemHealth /></ProtectedRoute>} />
             </Route>

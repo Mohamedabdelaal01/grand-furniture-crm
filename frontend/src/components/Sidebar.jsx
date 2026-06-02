@@ -98,8 +98,9 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
     {
       title: 'المتابعات',
       items: [
-        { path: '/branch/pending', icon: UserPlus,    label: 'توزيع المتابعات' },
-        { path: '/branch/done',    icon: CheckCircle2, label: 'تمت متابعتهم'   },
+        { path: '/branch/pending',   icon: UserPlus,     label: 'توزيع المتابعات' },
+        { path: '/branch/done',      icon: CheckCircle2, label: 'تمت متابعتهم'   },
+        { path: '/followup-monitor', icon: Headset,      label: 'متابعات السيلز' },
         revisitLink,
       ],
     },
