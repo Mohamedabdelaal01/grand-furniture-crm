@@ -4,7 +4,7 @@ import {
   LogOut, BookOpen, Phone, Trophy, ShieldCheck, ShoppingBag,
   CheckCircle2, UserPlus, PhoneCall, MapPinned, FileText,
   TrendingUp, Megaphone, MapPin, Package, Headset, Building2, ScrollText, Bot,
-  Radar, Activity,
+  Radar, Activity, ScanLine,
   X,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -107,6 +107,10 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
     {
       title: 'الفرع',
       items: [
+        // Faisal's branch manager doubles as reception — register walk-ins.
+        ...(user?.branch === 'faisal'
+          ? [{ path: '/branch/reception', icon: ScanLine, label: 'الاستقبال' }]
+          : []),
         { path: '/branch/pending?registration=manual', icon: Phone, label: 'عملاء الاستقبال' },
         contractsLink,
         { path: '/catalog',         icon: Package,  label: 'إدارة المنتجات' },

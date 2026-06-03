@@ -23,6 +23,7 @@ import ManyChatGuide        from './pages/ManyChatGuide';
 import SalesFollowupMonitor from './pages/SalesFollowupMonitor';
 import AdvancedAnalytics    from './pages/AdvancedAnalytics';
 import SystemHealth         from './pages/SystemHealth';
+import ReceptionDashboardView from './pages/ReceptionDashboardView';
 import NotFound             from './pages/NotFound';
 
 function App() {
@@ -128,6 +129,8 @@ function App() {
               <Route path="followup-monitor"  element={<ProtectedRoute allowedRoles={['admin','branch_manager']}><SalesFollowupMonitor /></ProtectedRoute>} />
               <Route path="admin/advanced-analytics" element={<ProtectedRoute allowedRoles={['admin']}><AdvancedAnalytics /></ProtectedRoute>} />
               <Route path="system-health"     element={<ProtectedRoute allowedRoles={['admin']}><SystemHealth /></ProtectedRoute>} />
+              {/* Faisal's branch manager doubles as reception (backend gates to faisal). */}
+              <Route path="branch/reception"  element={<ProtectedRoute allowedRoles={['branch_manager']}><ReceptionDashboardView /></ProtectedRoute>} />
             </Route>
 
             {/* Fallback — explicit 404, not a silent redirect */}
