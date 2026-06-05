@@ -79,10 +79,17 @@ export default function AdvancedAnalytics() {
   }
 
   const { repConversion = [], velocity = {}, lostLeads = {}, pipeline = {} } = data;
+  // Localize the breakdown labels — the backend returns raw branch ids
+  // (faisal/maadi/…) and raw platform values (facebook/instagram); show Arabic.
+  const PLATFORM_AR = { instagram: 'إنستجرام', facebook: 'فيسبوك' };
+  const localizeBranch   = (rows) => (rows || []).map((r) =>
+    ({ ...r, label: r.label === 'غير محدّد' ? r.label : (formatBranch(r.label) || r.label) }));
+  const localizePlatform = (rows) => (rows || []).map((r) =>
+    ({ ...r, label: PLATFORM_AR[r.label] || r.label }));
   const lostMap = {
-    byCategory: { label: 'حسب آخر فئة', data: lostLeads.byCategory, color: '#6366f1' },
-    byBranch:   { label: 'حسب الفرع',   data: lostLeads.byBranch,   color: '#0ea5e9' },
-    byPlatform: { label: 'حسب المنصة',  data: lostLeads.byPlatform, color: '#a855f7' },
+    byCategory: { label: 'حسب آخر فئة', data: lostLeads.byCategory,            color: '#6366f1' },
+    byBranch:   { label: 'حسب الفرع',   data: localizeBranch(lostLeads.byBranch),   color: '#0ea5e9' },
+    byPlatform: { label: 'حسب المنصة',  data: localizePlatform(lostLeads.byPlatform), color: '#a855f7' },
   };
   const velBuckets = velocity.buckets ? [
     { label: 'نفس اليوم', count: velocity.buckets.same_day },
