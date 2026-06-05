@@ -113,7 +113,15 @@ export default function Analytics() {
     }
   }, [from, to, branch, campaign]);
 
-  useEffect(() => { load(); }, []);   // load on mount with defaults
+  // Auto-apply: reload whenever any filter changes (debounced so typing a
+  // campaign name or picking a date doesn't fire a request per keystroke).
+  // `load` is rebuilt whenever from/to/branch/campaign change, so depending on
+  // it re-runs this effect on every filter change. The "تطبيق" button stays as
+  // a manual refresh.
+  useEffect(() => {
+    const t = setTimeout(load, 350);
+    return () => clearTimeout(t);
+  }, [load]);
 
   const funnel      = data?.funnel      || {};
   const eventSeries = buildEventTrend(data?.eventsSeries || []);
