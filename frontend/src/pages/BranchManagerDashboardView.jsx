@@ -22,7 +22,7 @@ import TargetProgress, { arabicMonthLabel } from '../components/TargetProgress';
 import CrossBranchTags from '../components/CrossBranchTags';
 import {
   fetchBranchOverview, fetchBranchCustomers, updateCustomerFollowup,
-  assignCustomerToSales,
+  assignCustomerToSales, editBranchCustomerContact,
   fetchBranchSales, createBranchSales, updateBranchSales, toggleUserActive,
   formatBranch, customerName,
 } from '../services/api';
@@ -99,12 +99,19 @@ function CallSummaryModal({ customer, onConfirm, onClose }) {
 }
 
 // One customer row in the "distribute" (pending) view.
-function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow }) {
+function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
   return (
     <div className="px-4 py-3 flex items-center gap-3 hover:bg-dark-800/20 transition-colors flex-wrap">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-white font-bold text-sm truncate">{customerName(c)}</span>
+          <button
+            onClick={() => onEdit(c)}
+            title="تعديل الاسم والتليفون"
+            className="shrink-0 p-1 rounded-lg text-dark-500 hover:text-primary-400 hover:bg-primary-500/10 transition-colors"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
           <CrossBranchTags c={c} />
           <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-dark-700'} ${leadClassColor[c.lead_class] || 'text-dark-400'}`}>
             {leadClassLabel[c.lead_class] || c.lead_class}
@@ -262,7 +269,7 @@ function Pager({ page, totalPages, setPage, start, count }) {
   );
 }
 
-function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFollow }) {
+function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
   const rows = customers.filter(c => !c.followed_up);
   const { page, setPage, totalPages, pageRows, start } = usePaged(rows);
   return (
@@ -293,6 +300,7 @@ function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFol
                 busy={!!busy[c.user_id]}
                 onAssign={onAssign}
                 onSelfFollow={onSelfFollow}
+                onEdit={onEdit}
               />
             ))}
           </div>
@@ -504,6 +512,7 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
   const [error, setError]         = useState(null);
   const [busy, setBusy]           = useState({});
   const [callFor, setCallFor]     = useState(null); // customer awaiting manager's call summary
+  const [editFor, setEditFor]     = useState(null); // customer whose name/phone is being edited
 
   // Customer filters — registration type is seeded from the URL so the
   // sidebar "عملاء الاستقبال" link lands pre-filtered.
@@ -832,6 +841,7 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
           busy={busy}
           onAssign={onAssign}
           onSelfFollow={onSelfFollow}
+          onEdit={setEditFor}
         />
       )}
 
@@ -855,6 +865,67 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
           onClose={() => setCallFor(null)}
         />
       )}
+
+      {editFor && (
+        <ContactEditModal
+          customer={editFor}
+          onClose={() => setEditFor(null)}
+          onSaved={(patch) => { patchCustomer(editFor.user_id, patch); setEditFor(null); }}
+        />
+      )}
+    </div>
+  );
+}
+
+// Edit a reception customer's name + phone (fix a desk typo).
+function ContactEditModal({ customer, onClose, onSaved }) {
+  const [name,  setName]  = useState(customer.first_name || '');
+  const [phone, setPhone] = useState(customer.phone || '');
+  const [saving, setSaving] = useState(false);
+
+  const save = async () => {
+    if (!name.trim() && !phone.trim()) { toast.error('اكتب اسم أو رقم'); return; }
+    setSaving(true);
+    const tId = toast.loading('جاري الحفظ...');
+    try {
+      const res = await editBranchCustomerContact(customer.user_id, {
+        first_name: name.trim() || undefined,
+        phone: phone.trim() || undefined,
+      });
+      toast.success('تم تعديل بيانات العميل', { id: tId });
+      onSaved({ first_name: res.first_name ?? name.trim(), phone: res.phone ?? phone.trim() });
+    } catch (e) {
+      toast.error(e?.response?.data?.error || 'فشل التعديل', { id: tId });
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" dir="rtl" onMouseDown={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="relative w-full max-w-sm bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-5"
+           onMouseDown={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-white font-black flex items-center gap-2"><Pencil className="w-4 h-4 text-primary-400" /> تعديل بيانات العميل</h3>
+          <button onClick={onClose} className="text-dark-400 hover:text-white"><X className="w-5 h-5" /></button>
+        </div>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <label className="text-dark-500 text-[11px] font-black">الاسم</label>
+            <input value={name} onChange={(e) => setName(e.target.value)} className="input-field w-full" placeholder="اسم العميل" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-dark-500 text-[11px] font-black">التليفون</label>
+            <input value={phone} onChange={(e) => setPhone(e.target.value)} className="input-field w-full" placeholder="01xxxxxxxxx" dir="ltr" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 mt-5">
+          <button onClick={onClose} className="btn-secondary flex-1">إلغاء</button>
+          <button onClick={save} disabled={saving} className="btn-primary flex-1">
+            {saving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'حفظ'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -209,6 +209,12 @@ export const assignCustomerToSales = async (userId, sales, branch) => {
   return response.data;
 };
 
+/** Branch manager / admin: edit a reception customer's name and/or phone. */
+export const editBranchCustomerContact = async (userId, { first_name, phone }) => {
+  const response = await api.patch(`/api/branch/customers/${userId}/contact`, { first_name, phone });
+  return response.data;
+};
+
 /** Sales rep: customers the manager assigned to me (pending + done). */
 export const fetchSalesFollowups = async () => {
   const response = await api.get('/api/sales/followups');
