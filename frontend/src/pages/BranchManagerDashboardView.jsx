@@ -269,26 +269,27 @@ function Pager({ page, totalPages, setPage, start, count }) {
   );
 }
 
-function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
-  const rows = customers.filter(c => !c.followed_up);
+// One distribution sub-section (its own header, count, list and pagination).
+function DistributionSection({ title, icon: Icon, iconColor, rows, loading, salesNames,
+                              busy, onAssign, onSelfFollow, onEdit, emptyMsg, needSales }) {
   const { page, setPage, totalPages, pageRows, start } = usePaged(rows);
   return (
     <div className="card overflow-hidden">
       <div className="p-4 flex items-center gap-2 border-b border-dark-800">
-        <UserPlus className="w-4 h-4 text-amber-400" />
-        <h4 className="text-white font-black text-sm">توزيع المتابعات</h4>
+        <Icon className={`w-4 h-4 ${iconColor}`} />
+        <h4 className="text-white font-black text-sm">{title}</h4>
         <span className="text-xs text-dark-400 font-bold">({rows.length})</span>
       </div>
       {loading ? (
         <div className="flex items-center justify-center py-16">
           <div className="w-6 h-6 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
         </div>
-      ) : salesNames.length === 0 ? (
+      ) : needSales && salesNames.length === 0 ? (
         <p className="text-center text-dark-500 text-sm py-12">
           لازم تضيف سيلز الأول من <b className="text-dark-300">إعدادات الفرع</b> علشان توزّع عليهم
         </p>
       ) : rows.length === 0 ? (
-        <p className="text-center text-dark-500 text-sm py-16">مفيش عملاء مستنيين توزيع 🎉</p>
+        <p className="text-center text-dark-500 text-sm py-14">{emptyMsg}</p>
       ) : (
         <>
           <div className="divide-y divide-dark-800/60">
@@ -307,6 +308,29 @@ function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFol
           <Pager page={page} totalPages={totalPages} setPage={setPage} start={start} count={pageRows.length} />
         </>
       )}
+    </div>
+  );
+}
+
+function PendingView({ customers, loading, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
+  const all         = customers.filter(c => !c.followed_up);
+  const notAssigned = all.filter(c => !c.assigned_sales);
+  const assigned    = all.filter(c =>  c.assigned_sales);
+  const common = { loading, salesNames, busy, onAssign, onSelfFollow, onEdit };
+  return (
+    <div className="space-y-6">
+      <DistributionSection
+        title="لم يتم التوزيع" icon={UserPlus} iconColor="text-amber-400"
+        rows={notAssigned} needSales
+        emptyMsg="مفيش عملاء مستنيين توزيع 🎉"
+        {...common}
+      />
+      <DistributionSection
+        title="تم توزيعهم" icon={CheckCircle2} iconColor="text-emerald-400"
+        rows={assigned}
+        emptyMsg="لسه محدّش اتوزّع"
+        {...common}
+      />
     </div>
   );
 }
