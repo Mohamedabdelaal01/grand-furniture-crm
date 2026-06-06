@@ -10,7 +10,7 @@
  * manager / admin see on the customer profile.
  */
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   RefreshCw, Users, ShoppingBag, Percent, Wallet, CheckCircle2, Clock,
   PhoneCall, X, Star, MapPinned, MapPinOff, BarChart3, Search, CheckSquare, Square,
@@ -269,6 +269,15 @@ function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
               <p className="mt-1.5 text-[12px] text-dark-200 bg-dark-800/60 rounded-lg px-3 py-2 leading-relaxed">
                 {c.call_summary}
               </p>
+            )}
+            {c.visited && (
+              <Link
+                to="/revisit"
+                className="mt-1.5 flex items-center gap-1.5 text-[12px] font-bold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg px-3 py-2 transition-colors"
+              >
+                <MapPinned className="w-3.5 h-3.5 shrink-0" />
+                تمت زيارته للمعرض — كمّل متابعته في «متابعة بعد الزيارة» ←
+              </Link>
             )}
             <FollowupHistory c={c} />
           </>
