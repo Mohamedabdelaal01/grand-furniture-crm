@@ -84,8 +84,8 @@ function customerMatchesPhone(customer, normQuery) {
 const FUP_TABS = [
   { id: 'pending',     label: 'محتاجين متابعة', icon: PhoneCall, tone: 'text-amber-400',
     title: 'عملاء محتاجين متابعة',  empty: 'مفيش عملاء مسنودين ليك للمتابعة دلوقتي' },
-  { id: 'visited',     label: 'تابعتهم + زاروا', icon: MapPinned, tone: 'text-emerald-400',
-    title: 'تابعتهم وزاروا المعرض', empty: 'مفيش عملاء تابعتهم وزاروا المعرض لسه' },
+  { id: 'visited',     label: 'زاروا المعرض', icon: MapPinned, tone: 'text-emerald-400',
+    title: 'زاروا المعرض — تابعهم بعد الزيارة', empty: 'مفيش عملاء زاروا المعرض لسه' },
   { id: 'not-visited', label: 'تابعتهم + لسه',  icon: MapPinOff, tone: 'text-amber-400',
     title: 'تابعتهم ولسه مزاروش',   empty: 'كل اللي تابعتهم زاروا المعرض 👌' },
 ];
@@ -250,7 +250,12 @@ function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
           </span>
           {mode !== 'pending' && (
             c.visited
-              ? <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400">تمت الزيارة</span>
+              ? <>
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400">تمت الزيارة</span>
+                  {!c.followed_up && (
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-300">زار قبل المتابعة</span>
+                  )}
+                </>
               : <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">لسه مزارش</span>
           )}
           <CrossBranchTags c={c} />
@@ -404,9 +409,13 @@ export default function SalesDashboardView({ view = 'home' }) {
   }[view] || 'المتابعات';
 
   const lists = {
-    pending:       followups.filter(f => !f.followed_up),
+    // "لم يتابع" = needs a pre-visit call → not followed up AND hasn't visited yet.
+    // (A customer who already visited leaves this queue — no point calling pre-visit.)
+    pending:       followups.filter(f => !f.followed_up && !f.visited),
     done:          followups.filter(f => !!f.followed_up),
-    visited:       followups.filter(f => !!f.followed_up && f.visited),
+    // "زاروا المعرض" = anyone who visited (whether followed up first or walked in
+    // cold) — they all need POST-visit follow-up if they didn't buy.
+    visited:       followups.filter(f => !!f.visited),
     'not-visited': followups.filter(f => !!f.followed_up && !f.visited),
   };
 
