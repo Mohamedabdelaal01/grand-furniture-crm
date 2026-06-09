@@ -107,8 +107,8 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
     {
       title: 'الفرع',
       items: [
-        // Faisal's branch manager doubles as reception — register walk-ins.
-        ...(user?.branch === 'faisal'
+        // These branch managers double as reception — register walk-ins.
+        ...(['faisal', 'nasr_city'].includes(user?.branch)
           ? [{ path: '/branch/reception', icon: ScanLine, label: 'الاستقبال' }]
           : []),
         { path: '/branch/pending?registration=manual', icon: Phone, label: 'عملاء الاستقبال' },
