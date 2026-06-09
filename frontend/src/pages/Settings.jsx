@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import {
   Settings2, Users, Key, Building2, Eye, EyeOff,
   Save, Plus, Edit2, Check, AlertTriangle, X, Trash2, Wifi, WifiOff,
-  Trophy, Power, ShieldCheck, Tag, Target, ArrowLeftRight,
+  Trophy, Power, ShieldCheck, Tag, Target, ArrowLeftRight, ArrowRightLeft,
 } from 'lucide-react';
 import {
   fetchSettings, updateSetting,
@@ -18,6 +18,7 @@ import {
 } from '../services/api';
 import useBranches from '../hooks/useBranches';
 import SwapRepsModal from '../components/SwapRepsModal';
+import TransferRepModal from '../components/TransferRepModal';
 
 // ── Tabs ────────────────────────────────────────────────────────────────────
 const TABS = [
@@ -372,6 +373,7 @@ function UsersTab() {
   const [cleaning, setCleaning] = useState(false);
   const [offboardTarget, setOffboardTarget] = useState(null); // user pending offboarding
   const [swapOpen, setSwapOpen] = useState(false);            // swap-reps tool modal
+  const [transferOpen, setTransferOpen] = useState(false);    // transfer-rep tool modal
 
   const salesReps = users.filter(u => ['sales', 'rep'].includes(u.role));
 
@@ -463,6 +465,15 @@ function UsersTab() {
           >
             <ArrowLeftRight className="w-3.5 h-3.5 text-primary-400" />
             تبديل سيلزين
+          </button>
+          <button
+            onClick={() => setTransferOpen(true)}
+            disabled={salesReps.length < 1}
+            className="btn-secondary text-xs disabled:opacity-40"
+            title="نقل سيلز لفرع تاني (فاضي)"
+          >
+            <ArrowRightLeft className="w-3.5 h-3.5 text-primary-400" />
+            نقل سيلز
           </button>
           <button
             onClick={handleCleanup}
@@ -592,6 +603,13 @@ function UsersTab() {
         <SwapRepsModal
           reps={salesReps}
           onClose={() => setSwapOpen(false)}
+          onDone={load}
+        />
+      )}
+      {transferOpen && (
+        <TransferRepModal
+          reps={salesReps}
+          onClose={() => setTransferOpen(false)}
           onDone={load}
         />
       )}

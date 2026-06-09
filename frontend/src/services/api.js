@@ -404,6 +404,12 @@ export const swapReps = async (repA, repB) => {
   return response.data; // { ok, rows_swapped, a:{...}, b:{...} }
 };
 
+/** Admin: move a sales rep to another branch (old pre-visit customers released). */
+export const transferRep = async (repId, newBranch) => {
+  const response = await api.post('/api/admin/transfer-rep', { repId, newBranch });
+  return response.data; // { ok, rep, from, to, released }
+};
+
 // ── Contracts (purchases) ────────────────────────────────────────────────────
 /** Contracts list — scoped server-side by role. */
 export const fetchContracts = async () => {
