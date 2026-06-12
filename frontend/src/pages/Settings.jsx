@@ -15,6 +15,7 @@ import {
   fetchIntegrationStatus, formatBranch,
   fetchAchievementWeights, updateAchievementWeights,
   fetchForecastWeights, updateForecastWeights,
+  syncMetaHistorical,
 } from '../services/api';
 import useBranches from '../hooks/useBranches';
 import SwapRepsModal from '../components/SwapRepsModal';
@@ -299,6 +300,67 @@ function ApiTab({ settings, onSave }) {
           </div>
         </div>
       ))}
+      <MetaCapiSection />
+    </div>
+  );
+}
+
+// ── Meta CAPI — pixel warm-up (bulk-sync historical leads) ───────────────────
+function MetaCapiSection() {
+  const [syncing, setSyncing] = useState(false);
+  const [result,  setResult]  = useState(null);
+
+  const runSync = async () => {
+    if (!window.confirm(
+      'هيتبعت كل العملاء اللي عندهم رقم تليفون لفيسبوك (Meta) كأحداث Lead لبناء الجماهير.\n' +
+      'العملية ممكن تاخد دقايق حسب العدد. نبدأ؟'
+    )) return;
+    setSyncing(true);
+    setResult(null);
+    try {
+      const res = await syncMetaHistorical();
+      setResult(res);
+      if (res.ok) {
+        toast.success(`تم مزامنة ${res.sent} عميل بنجاح مع فيسبوك`, { duration: 7000 });
+      } else {
+        toast.error(`اتبعت ${res.sent} عميل، بس ${res.failed_batches} دفعة فشلت — راجع التفاصيل`, { duration: 8000 });
+      }
+    } catch (e) {
+      toast.error(e?.response?.data?.error || 'فشلت المزامنة');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4 pt-6 border-t border-dark-800">
+      <div>
+        <h3 className="text-white font-black text-sm">ربط فيسبوك (Meta CAPI)</h3>
+        <p className="text-dark-500 text-xs mt-0.5">
+          الأحداث الجديدة (Lead / Purchase) بتتبعت تلقائياً. الزرار ده بيعمل
+          «Pixel Warm-up» — يبعت كل العملاء القدامى اللي عندهم تليفون مرة واحدة
+          عشان تبني Custom & Lookalike Audiences فوراً.
+        </p>
+      </div>
+      <button onClick={runSync} disabled={syncing} className="btn-primary disabled:opacity-60">
+        {syncing
+          ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> جاري المزامنة… (ممكن تاخد دقايق)</>
+          : 'مزامنة العملاء القدامى (Pixel Warm-up)'}
+      </button>
+      {result && (
+        <div className={`rounded-xl border p-4 text-xs space-y-1 ${result.ok ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-amber-500/40 bg-amber-500/5'}`}>
+          <p className="text-dark-200">
+            إجمالي العملاء بأرقام: <b className="text-white">{result.total}</b> ·
+            صالح للإرسال: <b className="text-white">{result.eligible}</b> ·
+            اتبعت: <b className="text-emerald-400">{result.sent}</b> ·
+            دفعات: <b className="text-white">{result.batches}</b>
+            {result.failed_batches > 0 && <> · فشلت: <b className="text-rose-400">{result.failed_batches}</b></>}
+          </p>
+          {result.errors?.length > 0 && (
+            <p className="text-rose-300/80 font-mono text-[10px] leading-relaxed" dir="ltr">{result.errors[0]}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

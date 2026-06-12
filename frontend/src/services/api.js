@@ -410,6 +410,13 @@ export const transferRep = async (repId, newBranch) => {
   return response.data; // { ok, rep, from, to, released }
 };
 
+/** Admin: Meta CAPI pixel warm-up — bulk-sync all historical leads with phones.
+ *  Long timeout: thousands of leads × sequential 500-batches can take minutes. */
+export const syncMetaHistorical = async () => {
+  const response = await api.post('/api/admin/meta/sync-historical', {}, { timeout: 300000 });
+  return response.data; // { ok, total, eligible, sent, batches, failed_batches, errors }
+};
+
 // ── Contracts (purchases) ────────────────────────────────────────────────────
 /** Contracts list — scoped server-side by role. */
 export const fetchContracts = async () => {
