@@ -48,6 +48,17 @@ function normalizePhone(raw) {
   return d;
 }
 
+// ── ManyChat placeholder guard ────────────────────────────────────────────────
+// An unresolved ManyChat field reference arrives as a literal "{{...}}" template
+// token (e.g. "{{gender}}", "{{cuf_14597615}}") — it means the External Request
+// block points at a field that didn't resolve. It's never a real value, so we
+// store NULL instead of polluting the column. Matches a "{{ }}" token ANYWHERE
+// in the string (not just a whole-string match), so partially-broken values
+// like "John {{last_name}}" are caught too.
+function isBrokenPlaceholder(v) {
+  return typeof v === 'string' && /\{\{.*?\}\}/.test(v);
+}
+
 // ── Branch normalization ──────────────────────────────────────────────────────
 // ManyChat sends the same branch under inconsistent ids across different
 // External Request blocks (Arabic free text, English slug, alt spellings like
@@ -360,6 +371,23 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
 app.post('/api/events', validateSecret, validatePayload, rateLimiter, (req, res) => {
   const db = getDb();
 
+  // ── 0. Sanitize unresolved ManyChat placeholders ──────────────────────
+  // Single entry point: null any "{{...}}" token BEFORE the payload is read,
+  // so garbage never reaches a DB column, extra_fields, the event_id dedup key,
+  // or the Meta CAPI payload. user_id and event_type are structural (already
+  // guaranteed non-empty by validatePayload) and left untouched.
+  const PLACEHOLDER_SKIP = new Set(['user_id', 'event_type']);
+  const brokenFields = [];
+  for (const k of Object.keys(req.body || {})) {
+    if (!PLACEHOLDER_SKIP.has(k) && isBrokenPlaceholder(req.body[k])) {
+      brokenFields.push(`${k}=${req.body[k]}`);
+      req.body[k] = null;
+    }
+  }
+  if (brokenFields.length) {
+    console.warn(`[events] nulled broken ManyChat placeholders — user_id=${req.body.user_id}, event=${req.body.event_type}: ${brokenFields.join(', ')}`);
+  }
+
   // ── 1. Extract payload ────────────────────────────────────────────────
   // Validation (required fields, types) is handled upstream by validatePayload.
   const {
@@ -388,6 +416,9 @@ app.post('/api/events', validateSecret, validatePayload, rateLimiter, (req, res)
     source: manychat_source,
     // platform: 'instagram' or 'facebook' — set per-flow in ManyChat
     platform: rawPlatform,
+    // psid: Messenger Page-Scoped ID — sent for Meta CAPI Advanced Matching so
+    // leads from direct m.me links (no fbclid) still match. Optional.
+    psid,
   } = req.body;
 
   // Normalize platform: lowercase, only accept known values
@@ -397,16 +428,8 @@ app.post('/api/events', validateSecret, validatePayload, rateLimiter, (req, res)
     return (v === 'instagram' || v === 'facebook') ? v : null;
   })();
 
-  // Detect unresolved ManyChat user_field placeholders (e.g. "{{cuf_14597615}}")
-  // — these mean the External Request reference is wrong on the ManyChat side
-  // and we should treat the value as missing rather than store garbage.
-  const isBrokenPlaceholder = (v) => typeof v === 'string' && /^\{\{[^}]+\}\}$/.test(v.trim());
-  const cleanCampaignSource = isBrokenPlaceholder(campaign_source) ? null : campaign_source;
-  const cleanAdId           = isBrokenPlaceholder(ad_id)           ? null : ad_id;
-  const cleanVisitCode      = isBrokenPlaceholder(visit_code)      ? null : visit_code;
-  if (isBrokenPlaceholder(campaign_source) || isBrokenPlaceholder(ad_id)) {
-    console.warn(`[events] broken placeholder from ManyChat — user_id=${user_id}, event=${event_type}, campaign_source=${campaign_source}, ad_id=${ad_id}`);
-  }
+  // (campaign_source, ad_id, visit_code and every other field were already
+  // stripped of unresolved "{{...}}" placeholders in step 0 above.)
 
   // Canonical phone (used as the reception lookup key — replaces visit code)
   const normPhone = normalizePhone(phone);
@@ -485,7 +508,7 @@ app.post('/api/events', validateSecret, validatePayload, rateLimiter, (req, res)
     db.prepare(`
       INSERT INTO lead_profiles (user_id, first_name, campaign_source, ad_id, visit_code, phone, platform)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(user_id, first_name || 'Unknown', cleanCampaignSource || null, cleanAdId || null, cleanVisitCode || null, normPhone || null, normalizedPlatform);
+    `).run(user_id, first_name || 'Unknown', campaign_source || null, ad_id || null, visit_code || null, normPhone || null, normalizedPlatform);
 
     profile = db.prepare(`
       SELECT * FROM lead_profiles WHERE user_id = ?
@@ -616,9 +639,9 @@ app.post('/api/events', validateSecret, validatePayload, rateLimiter, (req, res)
     isVisitConfirmed ? 1 : 0,
     isLocationEvent ? 1 : 0,
     isVisitConfirmed ? 1 : 0,  // visit_at — same flag, separate param
-    cleanCampaignSource || null,
-    cleanAdId || null,
-    cleanVisitCode || null,
+    campaign_source || null,
+    ad_id || null,
+    visit_code || null,
     normPhone || null,
     // ManyChat enrichment fields
     last_name || null,
@@ -645,8 +668,14 @@ app.post('/api/events', validateSecret, validatePayload, rateLimiter, (req, res)
     // (changes=1 → first time we see this phone for them; repeats don't refire).
     // Fire-and-forget — never blocks or fails the webhook response.
     if (phoneIns.changes > 0) {
+      // Advanced Matching: send the Messenger PSID as external_id so leads from
+      // direct m.me links (which carry no fbclid) still match a Meta profile.
+      // Prefer the explicit psid; fall back to user_id (itself the PSID for
+      // Messenger subscribers). If neither resolves, sendMetaEvent just omits
+      // external_id and matches on the phone alone — no error either way.
       sendMetaEvent('Lead',
-        { phone: normPhone, firstName: first_name, externalId: user_id },
+        { phone: normPhone, firstName: first_name, lastName: last_name, branch: detectedBranch, gender,
+          externalId: psid || user_id },
         `lead_${user_id}_${normPhone}`);
     }
   }
@@ -1676,6 +1705,7 @@ app.post('/api/reception/walkin', requireAuth, authorizeRoles('reception', 'admi
   const existed = !!lead;
   const userId  = existed ? lead.user_id : `walkin_${crypto.randomUUID()}`;
 
+  let phoneIsNew = false;
   const tx = db.transaction(() => {
     if (existed) {
       // Known customer walking in again — refresh + mark this visit.
@@ -1701,7 +1731,8 @@ app.post('/api/reception/walkin', requireAuth, authorizeRoles('reception', 'admi
       `).run(userId, name, np, branch, interestVal, sourceVal);
     }
 
-    db.prepare(`INSERT OR IGNORE INTO lead_phones (user_id, phone) VALUES (?, ?)`).run(userId, np);
+    const phoneIns = db.prepare(`INSERT OR IGNORE INTO lead_phones (user_id, phone) VALUES (?, ?)`).run(userId, np);
+    phoneIsNew = phoneIns.changes > 0;
 
     // A branch_selected event makes the walk-in show up everywhere online
     // leads do (reception list, branch-manager customers, funnels).
@@ -1717,6 +1748,16 @@ app.post('/api/reception/walkin', requireAuth, authorizeRoles('reception', 'admi
       .run(userId, branch);
   });
   tx();
+
+  // Meta CAPI "Lead" — walk-ins are real top-of-funnel signals too. Fire only
+  // when this phone is NEW (mirrors the ManyChat path so a known customer
+  // re-visiting never double-counts). reception always picks a branch → we also
+  // get `ct` for free. Fire-and-forget — never blocks or fails the response.
+  if (phoneIsNew) {
+    sendMetaEvent('Lead',
+      { phone: np, firstName: name, branch, externalId: userId },
+      `lead_${userId}_${np}`);
+  }
 
   console.log(`🚶 WALK-IN ${existed ? 'RE-VISIT' : 'CREATED'}: ${name} → ${branch} (${sourceVal})`);
 
@@ -1767,15 +1808,17 @@ app.get('/api/sales/my', requireAuth, authorizeRoles('sales'), (req, res) => {
     FROM lead_visits v
     JOIN lead_profiles lp ON lp.user_id = v.user_id
     WHERE v.sales_rep = ?
+      AND COALESCE(lp.is_duplicate, 0) = 0
       ${ownerBranchFilter}
       ${todayFilter}
     ORDER BY (my_purchases > 0) ASC, v.visited_at DESC
   `).all(me, me, me, ...(myBranch ? [myBranch] : []));
 
-  // This-month performance
+  // This-month performance — flagged-duplicate visits don't count as "served".
   const servedMonth = db.prepare(`
     SELECT COUNT(DISTINCT user_id) AS n FROM lead_visits
     WHERE sales_rep = ? AND strftime('%Y-%m', visited_at) = strftime('%Y-%m','now')
+      AND ${NOT_DUPLICATE('lead_visits.user_id')}
   `).get(me).n;
   const boughtMonth = db.prepare(`
     SELECT COUNT(DISTINCT v.user_id) AS n
@@ -2308,9 +2351,11 @@ app.get('/api/branch/overview', requireAuth, authorizeRoles('branch_manager', 'a
     WHERE event_type = 'branch_selected' AND (event_value = ? OR branch = ?)
   `).get(branch, branch).n;
 
-  // Customers who actually visited this branch (one row per user/branch)
+  // Customers who actually visited this branch (one row per user/branch).
+  // Flagged-duplicate leads are excluded so the funnel matches the rep KPIs.
   const visited = db.prepare(`
-    SELECT COUNT(DISTINCT user_id) AS n FROM lead_visits WHERE branch = ?
+    SELECT COUNT(DISTINCT user_id) AS n FROM lead_visits
+    WHERE branch = ? AND ${NOT_DUPLICATE('lead_visits.user_id')}
   `).get(branch).n;
 
   // Per-salesperson performance in this branch (same logic as admin analytics)
@@ -2327,6 +2372,7 @@ app.get('/api/branch/overview', requireAuth, authorizeRoles('branch_manager', 'a
       SELECT user_id, rep, SUM(price) AS amount FROM purchases GROUP BY user_id, rep
     ) DP ON DP.user_id = v.user_id AND DP.rep = v.sales_rep
     WHERE v.branch = ? AND v.sales_rep IS NOT NULL
+      AND ${NOT_DUPLICATE('v.user_id')}
     GROUP BY v.sales_rep
     ORDER BY total_sales DESC
   `).all(branch).map(r => ({
@@ -2349,6 +2395,7 @@ app.get('/api/branch/overview', requireAuth, authorizeRoles('branch_manager', 'a
       SELECT DISTINCT user_id FROM lead_visits WHERE branch = ?
     ) lv ON lv.user_id = f.user_id
     WHERE f.branch = ? AND f.assigned_sales IS NOT NULL AND f.followed_up = 1
+      AND ${NOT_DUPLICATE('f.user_id')}
     GROUP BY f.assigned_sales
   `).all(branch, branch);
 
@@ -2375,6 +2422,7 @@ app.get('/api/branch/overview', requireAuth, authorizeRoles('branch_manager', 'a
     SELECT TRIM(assigned_sales) AS sales_rep, COUNT(*) AS assigned
     FROM branch_customer_followups
     WHERE branch = ? AND assigned_sales IS NOT NULL AND TRIM(assigned_sales) <> ''
+      AND ${NOT_DUPLICATE('branch_customer_followups.user_id')}
     GROUP BY TRIM(assigned_sales)
   `).all(branch);
   for (const a of assignedStats) {
@@ -2564,6 +2612,16 @@ const OWNER_BRANCH_SQL = `COALESCE(
 const OWNER_REP_SQL = `COALESCE(
   (SELECT pu.rep      FROM purchases pu  WHERE pu.user_id = lp.user_id ORDER BY pu.created_at DESC, pu.id DESC LIMIT 1),
   (SELECT v.sales_rep FROM lead_visits v WHERE v.user_id  = lp.user_id ORDER BY v.visited_at DESC LIMIT 1))`;
+
+// Duplicate exclusion — the SINGLE choke point that keeps a manager-flagged
+// duplicate out of every sales-rep queue and KPI. Drop this predicate into the
+// WHERE of any rep-facing query; `uid` is that query's user_id column reference
+// (e.g. 'v.user_id', 'f.user_id', 'lead_visits.user_id'). Correlated NOT EXISTS
+// so it works whether or not lead_profiles is already joined. When lead_profiles
+// IS already aliased `lp`, prefer the cheaper inline `COALESCE(lp.is_duplicate,0)=0`.
+const NOT_DUPLICATE = (uid) => `NOT EXISTS (
+  SELECT 1 FROM lead_profiles ddup
+  WHERE ddup.user_id = ${uid} AND ddup.is_duplicate = 1)`;
 
 // Records an admin/manager action in the undo ledger. `oldState` describes how
 // to restore the affected row: { table, where: {...}, row: {...}|null }.
@@ -2803,6 +2861,163 @@ app.patch('/api/branch/customers/:userId/contact', requireAuth, authorizeRoles('
 });
 
 // ════════════════════════════════════════════════════════════════════════════
+// "عملاء الفرع" — the branch manager's full lead list for their branch:
+// everyone who REQUESTED the branch online (branch_selected) OR WALKED IN
+// (lead_visits). Shows both follow-up reps (pre-visit = assigned_sales,
+// post-visit = latest showroom sales_rep) and the duplicate flag. Unlike the
+// rep-facing queues, this list INTENTIONALLY includes flagged duplicates (with
+// the flag) so the manager can review and un-flag them.
+//   branch_manager → locked to own branch. admin → ?branch=<id>.
+//   ?q=  optional — flexible LIKE search over name OR any phone.
+// ════════════════════════════════════════════════════════════════════════════
+function branchScopeOf(req) {
+  return req.user?.role === 'branch_manager'
+    ? (req.user.branch || null)
+    : (req.query.branch || req.body?.branch || null);
+}
+
+// True iff `userId` belongs to `branch` (requested it, was assigned in it, or
+// visited it). Mirrors the /contact RBAC so a manager can only touch own-branch
+// leads.
+function leadInBranch(db, userId, branch) {
+  return !!db.prepare(`
+    SELECT 1 AS ok WHERE
+      EXISTS (SELECT 1 FROM events e WHERE e.user_id = ? AND e.event_type = 'branch_selected' AND (e.event_value = ? OR e.branch = ?))
+      OR EXISTS (SELECT 1 FROM branch_customer_followups f WHERE f.user_id = ? AND f.branch = ?)
+      OR EXISTS (SELECT 1 FROM lead_visits v WHERE v.user_id = ? AND v.branch = ?)
+  `).get(userId, branch, branch, userId, branch, userId, branch);
+}
+
+app.get('/api/branch/leads', requireAuth, authorizeRoles('branch_manager', 'admin'), (req, res) => {
+  const branch = branchScopeOf(req);
+  if (!branch) return res.status(400).json({ error: 'branch_required' });
+
+  const db = getDb();
+  const q = (req.query.q && String(req.query.q).trim()) || '';
+  const like = `%${q}%`;
+  // Phone search ignores spaces/symbols the manager might type ("0100 123").
+  const digits = q.replace(/\D/g, '');
+  const digitsLike = `%${digits}%`;
+
+  const rows = db.prepare(`
+    SELECT
+      u.user_id,
+      lp.first_name,
+      COALESCE(lp.phone, (SELECT ph.phone FROM lead_phones ph
+                          WHERE ph.user_id = u.user_id ORDER BY ph.id LIMIT 1)) AS phone,
+      COALESCE(lp.lead_class, 'cold')  AS lead_class,
+      COALESCE(lp.total_score, 0)      AS total_score,
+      COALESCE(lp.visit_confirmed, 0)  AS visit_confirmed,
+      COALESCE(lp.is_duplicate, 0)     AS is_duplicate,
+      lp.last_activity,
+      lp.manychat_source,
+      -- Pre-visit follow-up rep = who the manager handed the lead to.
+      f.assigned_sales                 AS pre_visit_rep,
+      COALESCE(f.auto_assigned, 0)     AS pre_auto_assigned,
+      -- Post-visit follow-up rep = the showroom rep on their latest visit here.
+      (SELECT v.sales_rep FROM lead_visits v
+         WHERE v.user_id = u.user_id AND v.branch = ?
+         ORDER BY v.visited_at DESC, v.id DESC LIMIT 1) AS post_visit_rep,
+      CASE WHEN EXISTS (SELECT 1 FROM lead_visits v
+                        WHERE v.user_id = u.user_id AND v.branch = ?) THEN 1 ELSE 0 END AS visited
+    FROM (
+      SELECT e.user_id FROM events e
+        WHERE e.event_type = 'branch_selected' AND (e.event_value = ? OR e.branch = ?)
+          AND EXISTS (SELECT 1 FROM lead_phones ph WHERE ph.user_id = e.user_id)
+      UNION
+      SELECT v.user_id FROM lead_visits v WHERE v.branch = ?
+    ) u
+    LEFT JOIN lead_profiles lp ON lp.user_id = u.user_id
+    LEFT JOIN branch_customer_followups f ON f.user_id = u.user_id AND f.branch = ?
+    ${q ? `WHERE (
+      lp.first_name LIKE ?
+      OR EXISTS (SELECT 1 FROM lead_phones ph WHERE ph.user_id = u.user_id AND ph.phone LIKE ?)
+      OR COALESCE(lp.phone,'') LIKE ?
+    )` : ''}
+    ORDER BY lp.last_activity DESC, lp.total_score DESC
+    LIMIT 1000
+  `).all(...[
+    branch, branch, branch, branch, branch, branch,
+    ...(q ? [like, digitsLike, digitsLike] : []),
+  ]);
+
+  return res.json({ branch, count: rows.length, customers: rows });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// PATCH /api/branch/leads/:userId/duplicate — flag (or un-flag) a lead as a
+// duplicate. Flagged leads vanish from every sales-rep queue + KPI immediately
+// (the exclusion is enforced in those queries), but the row is preserved so the
+// action is fully reversible. Body: { is_duplicate: true|false }
+// ════════════════════════════════════════════════════════════════════════════
+app.patch('/api/branch/leads/:userId/duplicate', requireAuth, authorizeRoles('branch_manager', 'admin'), (req, res) => {
+  const branch = branchScopeOf(req);
+  if (!branch) return res.status(400).json({ error: 'branch_required' });
+  const { userId } = req.params;
+  const db = getDb();
+
+  const lead = db.prepare(`SELECT user_id, is_duplicate FROM lead_profiles WHERE user_id = ?`).get(userId);
+  if (!lead) return res.status(404).json({ error: 'العميل مش موجود' });
+  if (req.user?.role === 'branch_manager' && !leadInBranch(db, userId, branch)) {
+    return res.status(403).json({ error: 'العميل ده مش في فرعك' });
+  }
+
+  const newVal = req.body?.is_duplicate ? 1 : 0;
+  db.prepare(`UPDATE lead_profiles SET is_duplicate = ? WHERE user_id = ?`).run(newVal, userId);
+
+  auditLog(db, req.user?.name, 'mark_duplicate', userId, {
+    table: 'lead_profiles',
+    where: { user_id: userId },
+    row:   { is_duplicate: lead.is_duplicate ?? 0 },
+  });
+
+  return res.json({ ok: true, is_duplicate: newVal });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// PATCH /api/branch/leads/:userId/assign-post — reassign the POST-visit (show-
+// room) follow-up rep. This is stored as lead_visits.sales_rep on the lead's
+// latest visit in this branch, which is exactly what the post-visit /revisit
+// list derives the owner from. (Pre-visit reassignment reuses the existing
+// /api/branch/customers/:userId/assign, which sets assigned_sales.)
+// Body: { sales }
+// ════════════════════════════════════════════════════════════════════════════
+app.patch('/api/branch/leads/:userId/assign-post', requireAuth, authorizeRoles('branch_manager', 'admin'), (req, res) => {
+  const branch = branchScopeOf(req);
+  if (!branch) return res.status(400).json({ error: 'branch_required' });
+  const { userId } = req.params;
+  const sales = (req.body?.sales && String(req.body.sales).trim()) || null;
+  if (!sales) return res.status(400).json({ error: 'sales_required' });
+
+  const db = getDb();
+
+  // The chosen rep must be an active sales rep in this branch (same guard as the
+  // pre-visit assign — stops a stale dropdown writing a cross-branch rep).
+  const repInBranch = db.prepare(
+    `SELECT 1 FROM users WHERE TRIM(name) = TRIM(?) AND role IN ('sales','rep') AND branch = ? AND active = 1`
+  ).get(sales, branch);
+  if (!repInBranch) {
+    return res.status(400).json({ error: 'السيلز ده مش في الفرع ده — حدّث الصفحة واختار من القائمة الجديدة' });
+  }
+
+  // Latest visit row for this lead in this branch — that's the post-visit owner.
+  const visit = db.prepare(
+    `SELECT * FROM lead_visits WHERE user_id = ? AND branch = ? ORDER BY visited_at DESC, id DESC LIMIT 1`
+  ).get(userId, branch);
+  if (!visit) return res.status(400).json({ error: 'العميل ده لسه مزارش الفرع — مفيش متابعة بعد الزيارة' });
+
+  db.prepare(`UPDATE lead_visits SET sales_rep = ? WHERE id = ?`).run(sales, visit.id);
+
+  auditLog(db, req.user?.name, 'assign_post_visit', userId, {
+    table: 'lead_visits',
+    where: { id: visit.id },
+    row:   { sales_rep: visit.sales_rep ?? null },
+  });
+
+  return res.json({ ok: true, post_visit_rep: sales });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
 // Sales follow-ups — the sales rep sees customers the branch manager assigned
 // to them, splits pending vs done, and writes a call summary on completion.
 // ════════════════════════════════════════════════════════════════════════════
@@ -2850,6 +3065,8 @@ app.get('/api/sales/followups', requireAuth, authorizeRoles('sales'), (req, res)
     -- shows up as a nameless ghost (the raw walkin_ id) in the rep's list.
     JOIN lead_profiles lp ON lp.user_id = f.user_id
     WHERE TRIM(f.assigned_sales) = TRIM(?)
+      -- Duplicate leads the branch manager flagged never reach the rep's queue.
+      AND COALESCE(lp.is_duplicate, 0) = 0
       AND (
         -- still pre-visit (the normal case), OR
         COALESCE(lp.visit_confirmed, 0) = 0
@@ -3310,6 +3527,8 @@ app.get('/api/revisit/customers', requireAuth, authorizeRoles('admin', 'branch_m
       ${crossBranchCols('lp.user_id')}
     FROM lead_profiles lp
     WHERE lp.visit_confirmed = 1
+      -- Duplicate leads the branch manager flagged never reach the rep's queue.
+      AND COALESCE(lp.is_duplicate, 0) = 0
       AND ${statusWhere}
       AND ${rbacWhere}
     ORDER BY COALESCE(lp.revisit_updated_at, lp.purchased_at, lp.last_activity) DESC
@@ -4801,7 +5020,7 @@ app.post('/api/admin/meta/sync-historical', requireAuth, requireRole('admin'), a
     const db = getDb();
     // Every lead that has ANY phone (profile.phone or any lead_phones row).
     const leads = db.prepare(`
-      SELECT lp.user_id, lp.first_name,
+      SELECT lp.user_id, lp.first_name, lp.last_name, lp.gender, lp.preferred_branch,
         COALESCE(lp.phone, (SELECT ph.phone FROM lead_phones ph
                             WHERE ph.user_id = lp.user_id ORDER BY ph.id LIMIT 1)) AS phone
       FROM lead_profiles lp
@@ -5288,7 +5507,12 @@ function seedDemoData(db) {
     );
   })();
 
-  console.log(`🌱 Demo seed: ${leads.length} leads+events, ${allVisited.length} visits, 3 purchases, 4 pre-visit fups, 3 revisit logs, 3 tasks — branch: ${BRANCH}`);
+  // ── Duplicate-flag demo: mark one junk lead so the branch manager's
+  // "عملاء الفرع" view shows the duplicate badge, and so the exclusion from the
+  // rep queues/KPIs is visible in the sandbox. Reversible from the UI.
+  db.prepare(`UPDATE lead_profiles SET is_duplicate = 1 WHERE user_id = ?`).run(`${PREFIX}02`);
+
+  console.log(`🌱 Demo seed: ${leads.length} leads+events, ${allVisited.length} visits, 3 purchases, 4 pre-visit fups, 3 revisit logs, 3 tasks, 1 duplicate — branch: ${BRANCH}`);
 }
 
 // Account-based cloned sandbox — interconnected demo_* training accounts.
@@ -5597,7 +5821,7 @@ app.get('/api/admin/leads-aging', requireAuth, requireRole('admin'), (_req, res)
 // ════════════════════════════════════════════════════════════════════════════
 // Version marker — bumped on every meaningful release so the admin
 // (and our deploy checks) can confirm production is running the latest code.
-const BUILD_VERSION = '2026-05-20-manychat-enrichment-v1';
+const BUILD_VERSION = '2026-06-13-branch-leads-duplicate-v6';
 app.get('/health', (req, res) => {
   res.json({
     status:    'ok',
