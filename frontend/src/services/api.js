@@ -215,6 +215,30 @@ export const editBranchCustomerContact = async (userId, { first_name, phone }) =
   return response.data;
 };
 
+/** Branch manager: full lead list for their branch (online + walk-ins).
+ *  Optional `q` does a flexible LIKE search over name OR phone. */
+export const fetchBranchLeads = async (branch, q) => {
+  const response = await api.get('/api/branch/leads', {
+    params: { ...(branch ? { branch } : {}), ...(q ? { q } : {}) },
+  });
+  return response.data; // { branch, count, customers[] }
+};
+
+/** Branch manager: flag / un-flag a lead as a duplicate (excludes it from rep
+ *  queues + KPIs). `isDuplicate` boolean. */
+export const setLeadDuplicate = async (userId, isDuplicate, branch) => {
+  const response = await api.patch(`/api/branch/leads/${userId}/duplicate`, {
+    is_duplicate: isDuplicate, branch,
+  });
+  return response.data; // { ok, is_duplicate }
+};
+
+/** Branch manager: reassign the POST-visit (showroom) follow-up rep. */
+export const assignPostVisitRep = async (userId, sales, branch) => {
+  const response = await api.patch(`/api/branch/leads/${userId}/assign-post`, { sales, branch });
+  return response.data; // { ok, post_visit_rep }
+};
+
 /** Sales rep: customers the manager assigned to me (pending + done). */
 export const fetchSalesFollowups = async () => {
   const response = await api.get('/api/sales/followups');

@@ -331,8 +331,19 @@ const LeadDetail = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   {profile.platform && <PlatformBadge platform={profile.platform} />}
+                  {profile.ig_username && (
+                    <a
+                      href={`https://instagram.com/${String(profile.ig_username).replace(/^@/, '')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      title="افتح حساب إنستجرام"
+                      className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-pink-500/10 text-pink-300 border border-pink-500/25 hover:bg-pink-500/20 transition-colors"
+                      dir="ltr"
+                    >
+                      @{String(profile.ig_username).replace(/^@/, '')}
+                    </a>
+                  )}
                   <span className={`badge ${getLeadBadgeClass(profile.lead_class)}`}>
                     {formatLeadClass(profile.lead_class)}
                   </span>

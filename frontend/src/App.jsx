@@ -8,6 +8,7 @@ import Login                from './pages/Login';
 import Dashboard            from './pages/Dashboard';
 import AdminDashboardView   from './pages/AdminDashboardView';
 import BranchManagerDashboardView from './pages/BranchManagerDashboardView';
+import BranchLeadsView         from './pages/BranchLeadsView';
 import SalesDashboardView   from './pages/SalesDashboardView';
 import LeadDetail           from './pages/LeadDetail';
 import Leads                from './pages/Leads';
@@ -49,6 +50,14 @@ function App() {
               <Route path="leads"       element={<Leads />} />
               <Route path="leads/:userId" element={<LeadDetail />} />
               {/* Branch manager focused views */}
+              <Route
+                path="branch/leads"
+                element={
+                  <ProtectedRoute allowedRoles={['branch_manager']}>
+                    <BranchLeadsView />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="branch/pending"
                 element={
