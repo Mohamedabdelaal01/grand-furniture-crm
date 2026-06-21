@@ -5,6 +5,7 @@ import { format }         from 'date-fns';
 import { ar }             from 'date-fns/locale';
 import { useAuth }        from '../contexts/AuthContext';
 import { useAlerts }      from '../contexts/AlertsContext';
+import ThemeToggle        from './ThemeToggle';
 
 const Navbar = ({ onMenuToggle }) => {
   const navigate              = useNavigate();
@@ -39,7 +40,7 @@ const Navbar = ({ onMenuToggle }) => {
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchValue(value);
-    
+
     if (location.pathname !== '/leads') {
       navigate(`/leads?search=${encodeURIComponent(value)}`);
     } else {
@@ -66,11 +67,11 @@ const Navbar = ({ onMenuToggle }) => {
     : 'GF';
 
   return (
-    <header className="h-16 md:h-20 bg-dark-900/50 backdrop-blur-md border-b border-dark-800 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 gap-3">
+    <header className="h-16 md:h-20 bg-surface/50 backdrop-blur-md border-b border-border flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 gap-3">
       {/* Hamburger — mobile only */}
       <button
         onClick={onMenuToggle}
-        className="lg:hidden p-2 rounded-xl bg-dark-800/50 hover:bg-dark-700 text-dark-400 hover:text-white border border-dark-700/50 transition-all active:scale-95 flex-shrink-0"
+        className="lg:hidden p-2 rounded-xl bg-surface-secondary/50 hover:bg-surface-tertiary text-muted hover:text-foreground border border-border/50 transition-all active:scale-95 flex-shrink-0"
         aria-label="فتح القائمة"
       >
         <Menu className="w-5 h-5" />
@@ -79,13 +80,13 @@ const Navbar = ({ onMenuToggle }) => {
       {/* Search */}
       <div className="flex-1 max-w-xl">
         <div className="relative group">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-dark-500 group-focus-within:text-primary-500 transition-colors w-4 h-4" />
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-accent transition-colors w-4 h-4" />
           <input
             type="text"
             value={searchValue}
             onChange={handleSearch}
             placeholder="ابحث عن عميل، منتج، أو فرع..."
-            className="w-full bg-dark-800/50 border border-dark-700 hover:border-dark-600 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/5 rounded-2xl py-2.5 pr-11 pl-4 text-sm text-dark-50 placeholder-dark-500 transition-all outline-none"
+            className="w-full bg-surface-secondary/50 border border-border hover:border-separator focus:border-accent focus:ring-4 focus:ring-accent/10 rounded-2xl py-2.5 pr-11 pl-4 text-sm text-foreground placeholder-muted transition-all outline-none"
           />
         </div>
       </div>
@@ -93,23 +94,26 @@ const Navbar = ({ onMenuToggle }) => {
       {/* Right side */}
       <div className="flex items-center gap-4">
         {/* Date & Time */}
-        <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-dark-800/40 rounded-xl border border-dark-700/50">
-          <CalendarIcon className="w-4 h-4 text-primary-500" />
+        <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-surface-secondary/40 rounded-xl border border-border/50">
+          <CalendarIcon className="w-4 h-4 text-accent" />
           <div className="text-right leading-tight">
-            <p className="text-dark-200 text-xs font-bold">
+            <p className="text-foreground text-xs font-bold">
               {format(currentTime, 'EEEE، d MMMM', { locale: ar })}
             </p>
-            <p className="text-dark-500 text-[10px] font-medium">
+            <p className="text-muted text-[10px] font-medium">
               {format(currentTime, 'hh:mm:ss a', { locale: ar })}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Light / Dark theme toggle */}
+          <ThemeToggle />
+
           {/* Refresh */}
           <button
             onClick={handleRefresh}
-            className="p-2.5 bg-dark-800/50 hover:bg-dark-700 text-dark-400 hover:text-primary-400 rounded-xl border border-dark-700/50 transition-all active:scale-95"
+            className="p-2.5 bg-surface-secondary/50 hover:bg-surface-tertiary text-muted hover:text-accent rounded-xl border border-border/50 transition-all active:scale-95"
             title="تحديث البيانات"
           >
             <RefreshCw className={`w-5 h-5 transition-transform ${refreshing ? 'animate-spin' : ''}`} />
@@ -117,12 +121,12 @@ const Navbar = ({ onMenuToggle }) => {
 
           {/* Bell with real unread count */}
           <button
-            className="relative p-2.5 bg-dark-800/50 hover:bg-dark-700 text-dark-400 hover:text-primary-400 rounded-xl border border-dark-700/50 transition-all active:scale-95"
+            className="relative p-2.5 bg-surface-secondary/50 hover:bg-surface-tertiary text-muted hover:text-accent rounded-xl border border-border/50 transition-all active:scale-95"
             title="الإشعارات"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-dark-900">
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-danger text-danger-foreground text-[10px] font-black rounded-full flex items-center justify-center border-2 border-surface">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -133,28 +137,28 @@ const Navbar = ({ onMenuToggle }) => {
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setUserMenuOpen((v) => !v)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-dark-800/50 hover:bg-dark-700 border border-dark-700/50 transition-all"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-surface-secondary/50 hover:bg-surface-tertiary border border-border/50 transition-all"
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-xs shadow-inner">
               {initials}
             </div>
             <div className="hidden sm:block text-right leading-tight">
-              <p className="text-dark-100 text-xs font-bold truncate max-w-[100px]">{user?.name || '—'}</p>
-              <p className="text-dark-500 text-[10px]">{roleLabel}</p>
+              <p className="text-foreground text-xs font-bold truncate max-w-[100px]">{user?.name || '—'}</p>
+              <p className="text-muted text-[10px]">{roleLabel}</p>
             </div>
-            <ChevronDown className={`w-3.5 h-3.5 text-dark-500 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-muted transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {userMenuOpen && (
-            <div className="absolute left-0 top-full mt-2 w-52 bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden z-50">
+            <div className="absolute left-0 top-full mt-2 w-52 bg-surface border border-border rounded-2xl shadow-2xl shadow-black/40 overflow-hidden z-50">
               {/* User info */}
-              <div className="px-4 py-3 border-b border-dark-800">
-                <p className="text-white text-sm font-bold">{user?.name}</p>
-                <p className="text-dark-500 text-[11px] truncate">{user?.email}</p>
+              <div className="px-4 py-3 border-b border-border">
+                <p className="text-foreground text-sm font-bold">{user?.name}</p>
+                <p className="text-muted text-[11px] truncate">{user?.email}</p>
                 <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-black ${
                   user?.role === 'admin'
-                    ? 'bg-primary-500/10 text-primary-400 border border-primary-500/20'
-                    : 'bg-dark-700 text-dark-400 border border-dark-600'
+                    ? 'bg-accent/10 text-accent border border-accent/20'
+                    : 'bg-surface-tertiary text-muted border border-border'
                 }`}>
                   {roleLabel}
                 </span>
@@ -164,7 +168,7 @@ const Navbar = ({ onMenuToggle }) => {
               <div className="p-1.5">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-rose-400 hover:bg-rose-500/10 text-sm font-bold transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-danger hover:bg-danger/10 text-sm font-bold transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   تسجيل الخروج

@@ -3,8 +3,86 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  /*
+   * Semantic theme tokens (OKLCH). Stored as BARE channels ("L C H") — not
+   * wrapped in oklch() — so Tailwind can inject the alpha channel for opacity
+   * modifiers (e.g. `bg-accent/10`). tailwind.config.js wraps them as
+   * `oklch(var(--token) / <alpha-value>)`. Light = :root/.light, dark = .dark.
+   */
+  :root,
+  .light {
+    --accent: 62.04% 0.1950 253.83;
+    --accent-foreground: 99.11% 0 0;
+    --background: 97.02% 0.0015 253.83;
+    --border: 90.00% 0.0015 253.83;
+    --danger: 65.32% 0.2335 25.74;
+    --danger-foreground: 99.11% 0 0;
+    --default: 94.00% 0.0015 253.83;
+    --default-foreground: 21.03% 0.0059 253.83;
+    --field-background: 100.00% 0.0008 253.83;
+    --field-border: transparent;
+    --field-foreground: 21.03% 0.0015 253.83;
+    --field-placeholder: 55.17% 0.0030 253.83;
+    --focus: 62.04% 0.1950 253.83;
+    --foreground: 21.03% 0.0015 253.83;
+    --muted: 55.17% 0.0030 253.83;
+    --overlay: 100.00% 0.0004 253.83;
+    --overlay-foreground: 21.03% 0.0015 253.83;
+    --scrollbar: 87.10% 0.0015 253.83;
+    --segment: 100.00% 0.0015 253.83;
+    --segment-foreground: 21.03% 0.0015 253.83;
+    --separator: 92.00% 0.0015 253.83;
+    --success: 73.29% 0.1941 150.81;
+    --success-foreground: 21.03% 0.0059 150.81;
+    --surface: 100.00% 0.0008 253.83;
+    --surface-foreground: 21.03% 0.0015 253.83;
+    --surface-secondary: 95.24% 0.0012 253.83;
+    --surface-secondary-foreground: 21.03% 0.0015 253.83;
+    --surface-tertiary: 93.73% 0.0012 253.83;
+    --surface-tertiary-foreground: 21.03% 0.0015 253.83;
+    --warning: 78.19% 0.1590 72.33;
+    --warning-foreground: 21.03% 0.0059 72.33;
+
+    /* Non-color tokens (used as-is, not channel-wrapped) */
+    --radius: 0.5rem;
+    --field-radius: 0.75rem;
+
     --primary-glow: rgba(59, 130, 246, 0.5);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --accent: 62.04% 0.1950 253.83;
+    --accent-foreground: 99.11% 0 0;
+    --background: 12.00% 0.0015 253.83;
+    --border: 28.00% 0.0015 253.83;
+    --danger: 59.40% 0.1973 24.63;
+    --danger-foreground: 99.11% 0 0;
+    --default: 27.40% 0.0015 253.83;
+    --default-foreground: 99.11% 0 0;
+    --field-background: 21.03% 0.0030 253.83;
+    --field-border: transparent;
+    --field-foreground: 99.11% 0.0015 253.83;
+    --field-placeholder: 70.50% 0.0030 253.83;
+    --focus: 62.04% 0.1950 253.83;
+    --foreground: 99.11% 0.0015 253.83;
+    --muted: 70.50% 0.0030 253.83;
+    --overlay: 21.03% 0.0030 253.83;
+    --overlay-foreground: 99.11% 0.0015 253.83;
+    --scrollbar: 70.50% 0.0015 253.83;
+    --segment: 39.64% 0.0015 253.83;
+    --segment-foreground: 99.11% 0.0015 253.83;
+    --separator: 25.00% 0.0015 253.83;
+    --success: 73.29% 0.1941 150.81;
+    --success-foreground: 21.03% 0.0059 150.81;
+    --surface: 21.03% 0.0030 253.83;
+    --surface-foreground: 99.11% 0.0015 253.83;
+    --surface-secondary: 25.70% 0.0023 253.83;
+    --surface-secondary-foreground: 99.11% 0.0015 253.83;
+    --surface-tertiary: 27.21% 0.0023 253.83;
+    --surface-tertiary-foreground: 99.11% 0.0015 253.83;
+    --warning: 82.03% 0.1392 76.34;
+    --warning-foreground: 21.03% 0.0059 76.34;
   }
 
   * {

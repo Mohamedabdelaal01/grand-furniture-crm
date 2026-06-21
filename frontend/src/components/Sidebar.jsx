@@ -199,25 +199,25 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
      *   • Visible → translate-x-0     (slides in, sits above the backdrop)
      */
     <aside className={`
-      w-64 bg-dark-900 border-l border-dark-800 flex flex-col h-full z-50
+      w-64 bg-surface border-l border-border flex flex-col h-full z-50
       fixed inset-y-0 right-0 transition-transform duration-300 ease-in-out
       lg:relative lg:translate-x-0 lg:z-20
       ${isOpen ? 'translate-x-0' : 'translate-x-full'}
     `}>
       {/* Logo + mobile close button */}
-      <div className="h-20 flex items-center px-6 border-b border-dark-800">
+      <div className="h-20 flex items-center px-6 border-b border-border">
         <div className="flex items-center gap-3 flex-1">
-          <div className="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-lg shadow-primary-900/20">
+          <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-primary-900/20">
             <Sofa className="w-6 h-6 text-white" />
           </div>
           <div className="text-right flex-1">
-            <h1 className="text-lg font-bold text-white tracking-tight leading-none">جراند للأثاث</h1>
-            <p className="text-[10px] text-dark-400 font-medium uppercase tracking-widest mt-1">Grand Furniture</p>
+            <h1 className="text-lg font-bold text-foreground tracking-tight leading-none">جراند للأثاث</h1>
+            <p className="text-[10px] text-muted font-medium uppercase tracking-widest mt-1">Grand Furniture</p>
           </div>
           {/* Close button — mobile only */}
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-lg text-dark-400 hover:text-white hover:bg-dark-800 transition-colors"
+            className="lg:hidden p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-secondary transition-colors"
             aria-label="إغلاق القائمة"
           >
             <X className="w-5 h-5" />
@@ -230,7 +230,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
         {navSections.map((section, si) => (
           <div key={section.title || `sec-${si}`} className="mb-4 last:mb-0">
             {section.title && (
-              <p className="text-[10px] font-black text-dark-500 uppercase tracking-[0.15em] px-4 mb-2">
+              <p className="text-[10px] font-black text-muted uppercase tracking-[0.15em] px-4 mb-2">
                 {section.title}
               </p>
             )}
@@ -245,13 +245,13 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
                     onClick={onClose}
                     className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group
                       ${active
-                        ? 'bg-primary-600/10 text-primary-500 border border-primary-600/20'
-                        : 'text-dark-400 hover:bg-dark-800 hover:text-dark-100 border border-transparent'
+                        ? 'bg-accent/10 text-accent border border-accent/20'
+                        : 'text-muted hover:bg-surface-secondary hover:text-foreground border border-transparent'
                       }`}
                   >
                     <Icon className={`w-4 h-4 transition-transform duration-200 ${active ? 'scale-110' : 'group-hover:scale-110'}`} />
-                    <span className={`font-semibold text-sm ${active ? 'text-primary-400' : ''}`}>{item.label}</span>
-                    {active && <div className="mr-auto w-1.5 h-1.5 rounded-full bg-primary-500 shadow-glow" />}
+                    <span className={`font-semibold text-sm ${active ? 'text-accent' : ''}`}>{item.label}</span>
+                    {active && <div className="mr-auto w-1.5 h-1.5 rounded-full bg-accent shadow-glow" />}
                   </Link>
                 );
               })}
@@ -261,19 +261,19 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
       </nav>
 
       {/* User Profile + Logout */}
-      <div className="p-4 border-t border-dark-800 bg-dark-950/30 space-y-2">
-        <div className="flex items-center gap-3 p-2 rounded-xl bg-dark-800/40">
+      <div className="p-4 border-t border-border bg-background/30 space-y-2">
+        <div className="flex items-center gap-3 p-2 rounded-xl bg-surface-secondary/40">
           <div className="relative flex-shrink-0">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold text-sm shadow-inner">
               {initials}
             </div>
-            <div className="absolute bottom-0 left-0 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full" />
+            <div className="absolute bottom-0 left-0 w-3 h-3 bg-success border-2 border-surface rounded-full" />
           </div>
           <div className="flex-1 text-right overflow-hidden">
-            <p className="text-sm font-bold text-dark-50 truncate">{user?.name || '—'}</p>
+            <p className="text-sm font-bold text-foreground truncate">{user?.name || '—'}</p>
             <div className="flex items-center justify-end gap-1 mt-0.5">
-              <RoleIcon className={`w-3 h-3 ${isAdmin ? 'text-amber-400' : 'text-primary-400'}`} />
-              <p className={`text-[11px] font-bold ${isAdmin ? 'text-amber-400' : 'text-primary-400'}`}>
+              <RoleIcon className={`w-3 h-3 ${isAdmin ? 'text-amber-400' : 'text-accent'}`} />
+              <p className={`text-[11px] font-bold ${isAdmin ? 'text-amber-400' : 'text-accent'}`}>
                 {roleLabel}
               </p>
             </div>
@@ -282,7 +282,7 @@ const Sidebar = ({ isOpen = false, onClose = () => {} }) => {
 
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-dark-400 hover:text-rose-400 hover:bg-rose-500/5 border border-transparent hover:border-rose-500/20 transition-all text-sm font-bold"
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-muted hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 transition-all text-sm font-bold"
         >
           <LogOut className="w-4 h-4" />
           تسجيل الخروج

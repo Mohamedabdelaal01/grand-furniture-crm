@@ -24,7 +24,7 @@ export default function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-dark-950 overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden">
       {/* Mobile overlay backdrop — closes drawer on tap-outside */}
       {sidebarOpen && (
         <div
@@ -43,7 +43,7 @@ export default function AppShell() {
         {isDemo && (
           <div
             dir="rtl"
-            className="bg-amber-500 text-amber-950 font-black text-sm text-center px-4 py-2 shadow-lg"
+            className="bg-warning text-warning-foreground font-black text-sm text-center px-4 py-2 shadow-lg"
           >
             ⚠️ وضع التجريب والتدريب نشط حالياً — أي بيانات يتم تسجيلها لن تؤثر على النظام الحقيقي
           </div>

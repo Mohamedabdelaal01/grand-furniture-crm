@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sofa, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Login() {
   const navigate        = useNavigate();
@@ -34,29 +35,41 @@ export default function Login() {
     }
   };
 
+  // Shared input styling — semantic field tokens (theme-aware, inline so the
+  // global .input-field class stays untouched for the inner pages batch).
+  const fieldClass =
+    'w-full px-4 py-2.5 bg-field text-field-foreground placeholder-field-placeholder ' +
+    'border border-border rounded-field focus:outline-none focus:border-focus ' +
+    'focus:ring-2 focus:ring-focus/40 transition-all duration-300';
+
   return (
-    <div className="min-h-screen bg-dark-950 flex items-center justify-center p-4" dir="rtl">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative" dir="rtl">
+      {/* Light / Dark toggle — fixed top-left so it's reachable before login */}
+      <div className="absolute top-4 left-4">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md">
 
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-900/40">
+          <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-900/40">
             <Sofa className="w-9 h-9 text-white" />
           </div>
-          <h1 className="text-3xl font-black text-white">Grand Furniture</h1>
-          <p className="text-dark-400 text-sm mt-1">نظام إدارة المبيعات الذكي</p>
+          <h1 className="text-3xl font-black text-foreground">Grand Furniture</h1>
+          <p className="text-muted text-sm mt-1">نظام إدارة المبيعات الذكي</p>
         </div>
 
         {/* Card */}
-        <div className="card p-8 space-y-6">
+        <div className="bg-surface border border-border rounded-2xl shadow-soft p-8 space-y-6">
           <div>
-            <h2 className="text-xl font-black text-white">تسجيل الدخول</h2>
-            <p className="text-dark-400 text-sm mt-1">أدخل بياناتك للمتابعة</p>
+            <h2 className="text-xl font-black text-foreground">تسجيل الدخول</h2>
+            <p className="text-muted text-sm mt-1">أدخل بياناتك للمتابعة</p>
           </div>
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-danger/10 border border-danger/20 text-danger text-sm">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
@@ -65,7 +78,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="block text-dark-300 text-xs font-bold uppercase tracking-wider">
+              <label className="block text-muted text-xs font-bold uppercase tracking-wider">
                 البريد الإلكتروني
               </label>
               <input
@@ -75,14 +88,14 @@ export default function Login() {
                 placeholder="admin@grandfurniture.eg"
                 required
                 autoFocus
-                className="input-field w-full"
+                className={fieldClass}
                 dir="ltr"
               />
             </div>
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="block text-dark-300 text-xs font-bold uppercase tracking-wider">
+              <label className="block text-muted text-xs font-bold uppercase tracking-wider">
                 كلمة المرور
               </label>
               <div className="relative">
@@ -92,13 +105,13 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="input-field w-full pl-10"
+                  className={`${fieldClass} pl-10`}
                   dir="ltr"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd((v) => !v)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500 hover:text-dark-300 transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground transition-colors"
                   tabIndex={-1}
                 >
                   {showPwd
@@ -113,7 +126,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading || !email || !password}
-              className="btn-primary w-full py-3 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 mt-2 bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl font-bold shadow-lg shadow-primary-900/30 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto block" />
@@ -127,7 +140,7 @@ export default function Login() {
           </form>
         </div>
 
-        <p className="text-center text-dark-600 text-xs mt-6">
+        <p className="text-center text-muted text-xs mt-6">
           Grand Furniture CRM — Sales Intelligence System
         </p>
       </div>
