@@ -30,8 +30,8 @@ import {
 const fmt = (n) => new Intl.NumberFormat('en-US').format(n || 0);
 
 const leadClassLabel = { cold: 'بارد', warm: 'دافئ', hot: 'ساخن', visited: 'زار', purchased: 'اشترى' };
-const leadClassColor = { cold: 'text-dark-400', warm: 'text-amber-400', hot: 'text-rose-400', visited: 'text-sky-400', purchased: 'text-emerald-400' };
-const leadClassBg    = { cold: 'bg-dark-700', warm: 'bg-amber-500/10', hot: 'bg-rose-500/10', visited: 'bg-sky-500/10', purchased: 'bg-emerald-500/10' };
+const leadClassColor = { cold: 'text-muted', warm: 'text-amber-400', hot: 'text-rose-400', visited: 'text-sky-400', purchased: 'text-emerald-400' };
+const leadClassBg    = { cold: 'bg-surface-tertiary', warm: 'bg-amber-500/10', hot: 'bg-rose-500/10', visited: 'bg-sky-500/10', purchased: 'bg-emerald-500/10' };
 
 function timeAgo(dateStr) {
   if (!dateStr) return '—';
@@ -44,7 +44,7 @@ function timeAgo(dateStr) {
 
 const KPI = ({ icon: Icon, label, value, tone = 'primary' }) => {
   const tones = {
-    primary: 'text-primary-400 bg-primary-500/10',
+    primary: 'text-accent bg-accent/10',
     emerald: 'text-emerald-400 bg-emerald-500/10',
     amber:   'text-amber-400 bg-amber-500/10',
     sky:     'text-sky-400 bg-sky-500/10',
@@ -54,8 +54,8 @@ const KPI = ({ icon: Icon, label, value, tone = 'primary' }) => {
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${tones[tone]}`}>
         <Icon className="w-5 h-5" />
       </div>
-      <p className="text-2xl font-black text-white">{value}</p>
-      <p className="text-dark-500 text-xs mt-1">{label}</p>
+      <p className="text-2xl font-black text-foreground">{value}</p>
+      <p className="text-muted text-xs mt-1">{label}</p>
     </div>
   );
 };
@@ -75,17 +75,17 @@ function CallSummaryModal({ customer, onConfirm, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" dir="rtl" onClick={onClose}>
       <div className="card p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-black">متابعة العميل</h3>
-          <button onClick={onClose} className="text-dark-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <h3 className="text-foreground font-black">متابعة العميل</h3>
+          <button onClick={onClose} className="text-muted hover:text-foreground"><X className="w-5 h-5" /></button>
         </div>
-        <p className="text-dark-400 text-xs mb-3">{customerName(customer)}</p>
-        <label className="block text-dark-400 text-xs mb-1">ملخص المكالمة (اختياري)</label>
+        <p className="text-muted text-xs mb-3">{customerName(customer)}</p>
+        <label className="block text-muted text-xs mb-1">ملخص المكالمة (اختياري)</label>
         <textarea
           value={summary}
           onChange={e => setSummary(e.target.value)}
           rows={4}
           placeholder="اكتب اللي حصل في المكالمة..."
-          className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-2.5 text-white text-sm mb-5 focus:outline-none focus:border-primary-500 resize-none"
+          className="w-full bg-surface-secondary border border-border rounded-xl px-3 py-2.5 text-foreground text-sm mb-5 focus:outline-none focus:border-accent resize-none"
         />
         <div className="flex gap-2">
           <button onClick={onClose} className="btn-secondary flex-1">إلغاء</button>
@@ -101,19 +101,19 @@ function CallSummaryModal({ customer, onConfirm, onClose }) {
 // One customer row in the "distribute" (pending) view.
 function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
   return (
-    <div className="px-4 py-3 flex items-center gap-3 hover:bg-dark-800/20 transition-colors flex-wrap">
+    <div className="px-4 py-3 flex items-center gap-3 hover:bg-surface-secondary/20 transition-colors flex-wrap">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-white font-bold text-sm truncate">{customerName(c)}</span>
+          <span className="text-foreground font-bold text-sm truncate">{customerName(c)}</span>
           <button
             onClick={() => onEdit(c)}
             title="تعديل الاسم والتليفون"
-            className="shrink-0 p-1 rounded-lg text-dark-500 hover:text-primary-400 hover:bg-primary-500/10 transition-colors"
+            className="shrink-0 p-1 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors"
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <CrossBranchTags c={c} />
-          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-dark-700'} ${leadClassColor[c.lead_class] || 'text-dark-400'}`}>
+          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-surface-tertiary'} ${leadClassColor[c.lead_class] || 'text-muted'}`}>
             {leadClassLabel[c.lead_class] || c.lead_class}
           </span>
           {c.visited ? (
@@ -123,12 +123,12 @@ function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
             <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
               c.auto_assigned
                 ? 'bg-violet-500/10 text-violet-300 border border-violet-500/30'
-                : 'bg-primary-500/10 text-primary-400'
+                : 'bg-accent/10 text-accent'
             }`}>
               مسنود لـ {c.assigned_sales}
             </span>
           ) : (
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-dark-700 text-dark-400">
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-surface-tertiary text-muted">
               مش متوزّع
             </span>
           )}
@@ -142,7 +142,7 @@ function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
             </span>
           ) : null}
         </div>
-        <div className="flex items-center gap-3 mt-0.5 text-[11px] text-dark-400 flex-wrap">
+        <div className="flex items-center gap-3 mt-0.5 text-[11px] text-muted flex-wrap">
           {c.phone && (
             <span dir="ltr" className="font-mono font-bold text-emerald-400">📱 {c.phone}</span>
           )}
@@ -155,7 +155,7 @@ function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
           <span className="flex items-center gap-0.5"><Star className="w-3 h-3 text-amber-400" />{c.total_score}</span>
         </div>
         {c.last_input_text && (
-          <p className="mt-1 text-[11px] text-dark-300 leading-snug">💬 {c.last_input_text}</p>
+          <p className="mt-1 text-[11px] text-muted leading-snug">💬 {c.last_input_text}</p>
         )}
       </div>
 
@@ -163,7 +163,7 @@ function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
         value={c.assigned_sales || ''}
         disabled={busy}
         onChange={e => e.target.value && onAssign(c, e.target.value)}
-        className="bg-dark-800 border border-dark-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-primary-500 max-w-[150px]"
+        className="bg-surface-secondary border border-border rounded-xl px-3 py-2 text-foreground text-xs focus:outline-none focus:border-accent max-w-[150px]"
       >
         <option value="" disabled>اسند لـ سيلز…</option>
         {salesNames.map(n => <option key={n} value={n}>{n}</option>)}
@@ -187,7 +187,7 @@ function AssignRow({ c, salesNames, busy, onAssign, onSelfFollow, onEdit }) {
 // One customer row in the "done" view.
 function DoneRow({ c, busy, onRevert }) {
   return (
-    <div className="px-4 py-3 flex items-start gap-3 hover:bg-dark-800/20 transition-colors">
+    <div className="px-4 py-3 flex items-start gap-3 hover:bg-surface-secondary/20 transition-colors">
       <button
         onClick={() => onRevert(c)}
         disabled={busy}
@@ -201,9 +201,9 @@ function DoneRow({ c, busy, onRevert }) {
       </button>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-white font-bold text-sm truncate">{customerName(c)}</span>
+          <span className="text-foreground font-bold text-sm truncate">{customerName(c)}</span>
           <CrossBranchTags c={c} />
-          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-dark-700'} ${leadClassColor[c.lead_class] || 'text-dark-400'}`}>
+          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${leadClassBg[c.lead_class] || 'bg-surface-tertiary'} ${leadClassColor[c.lead_class] || 'text-muted'}`}>
             {leadClassLabel[c.lead_class] || c.lead_class}
           </span>
           {c.visited ? (
@@ -212,7 +212,7 @@ function DoneRow({ c, busy, onRevert }) {
             <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">لسه مزارش</span>
           )}
         </div>
-        <div className="flex items-center gap-3 mt-0.5 text-[11px] text-dark-400 flex-wrap">
+        <div className="flex items-center gap-3 mt-0.5 text-[11px] text-muted flex-wrap">
           {c.phone && (
             <span dir="ltr" className="font-mono font-bold text-emerald-400">📱 {c.phone}</span>
           )}
@@ -222,7 +222,7 @@ function DoneRow({ c, busy, onRevert }) {
           <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{timeAgo(c.followed_up_at)}</span>
         </div>
         {c.call_summary && (
-          <p className="mt-1.5 text-[12px] text-dark-200 bg-dark-800/60 rounded-lg px-3 py-2 leading-relaxed">
+          <p className="mt-1.5 text-[12px] text-foreground bg-surface-secondary/60 rounded-lg px-3 py-2 leading-relaxed">
             {c.call_summary}
           </p>
         )}
@@ -246,22 +246,22 @@ function usePaged(rows) {
 function Pager({ page, totalPages, setPage, start, count }) {
   if (totalPages <= 1) return null;
   return (
-    <div className="flex items-center justify-between gap-3 p-3 border-t border-dark-800 text-xs">
+    <div className="flex items-center justify-between gap-3 p-3 border-t border-border text-xs">
       <button
         onClick={() => setPage(page - 1)}
         disabled={page <= 1}
-        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-800/60 border border-dark-700 text-dark-300 hover:text-white hover:bg-dark-800 disabled:opacity-40 disabled:cursor-not-allowed font-bold transition-colors"
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-secondary/60 border border-border text-muted hover:text-foreground hover:bg-surface-secondary disabled:opacity-40 disabled:cursor-not-allowed font-bold transition-colors"
       >
         <ChevronRight className="w-4 h-4" /> السابق
       </button>
-      <span className="text-dark-400 font-bold">
-        صفحة <b className="text-white">{page}</b> من {totalPages}
-        <span className="text-dark-600"> · عرض {start + 1}–{start + count}</span>
+      <span className="text-muted font-bold">
+        صفحة <b className="text-foreground">{page}</b> من {totalPages}
+        <span className="text-muted"> · عرض {start + 1}–{start + count}</span>
       </span>
       <button
         onClick={() => setPage(page + 1)}
         disabled={page >= totalPages}
-        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-800/60 border border-dark-700 text-dark-300 hover:text-white hover:bg-dark-800 disabled:opacity-40 disabled:cursor-not-allowed font-bold transition-colors"
+        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-secondary/60 border border-border text-muted hover:text-foreground hover:bg-surface-secondary disabled:opacity-40 disabled:cursor-not-allowed font-bold transition-colors"
       >
         التالي <ChevronLeft className="w-4 h-4" />
       </button>
@@ -275,24 +275,24 @@ function DistributionSection({ title, icon: Icon, iconColor, rows, loading, sale
   const { page, setPage, totalPages, pageRows, start } = usePaged(rows);
   return (
     <div className="card overflow-hidden">
-      <div className="p-4 flex items-center gap-2 border-b border-dark-800">
+      <div className="p-4 flex items-center gap-2 border-b border-border">
         <Icon className={`w-4 h-4 ${iconColor}`} />
-        <h4 className="text-white font-black text-sm">{title}</h4>
-        <span className="text-xs text-dark-400 font-bold">({rows.length})</span>
+        <h4 className="text-foreground font-black text-sm">{title}</h4>
+        <span className="text-xs text-muted font-bold">({rows.length})</span>
       </div>
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <div className="w-6 h-6 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+          <div className="w-6 h-6 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : needSales && salesNames.length === 0 ? (
-        <p className="text-center text-dark-500 text-sm py-12">
-          لازم تضيف سيلز الأول من <b className="text-dark-300">إعدادات الفرع</b> علشان توزّع عليهم
+        <p className="text-center text-muted text-sm py-12">
+          لازم تضيف سيلز الأول من <b className="text-muted">إعدادات الفرع</b> علشان توزّع عليهم
         </p>
       ) : rows.length === 0 ? (
-        <p className="text-center text-dark-500 text-sm py-14">{emptyMsg}</p>
+        <p className="text-center text-muted text-sm py-14">{emptyMsg}</p>
       ) : (
         <>
-          <div className="divide-y divide-dark-800/60">
+          <div className="divide-y divide-border/60">
             {pageRows.map(c => (
               <AssignRow
                 key={c.user_id}
@@ -340,20 +340,20 @@ function DoneView({ customers, loading, busy, onRevert }) {
   const { page, setPage, totalPages, pageRows, start } = usePaged(rows);
   return (
     <div className="card overflow-hidden">
-      <div className="p-4 flex items-center gap-2 border-b border-dark-800">
+      <div className="p-4 flex items-center gap-2 border-b border-border">
         <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-        <h4 className="text-white font-black text-sm">عملاء تمت متابعتهم</h4>
-        <span className="text-xs text-dark-400 font-bold">({rows.length})</span>
+        <h4 className="text-foreground font-black text-sm">عملاء تمت متابعتهم</h4>
+        <span className="text-xs text-muted font-bold">({rows.length})</span>
       </div>
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <div className="w-6 h-6 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+          <div className="w-6 h-6 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : rows.length === 0 ? (
-        <p className="text-center text-dark-500 text-sm py-16">لسه محدش اتمتابع</p>
+        <p className="text-center text-muted text-sm py-16">لسه محدش اتمتابع</p>
       ) : (
         <>
-          <div className="divide-y divide-dark-800/60">
+          <div className="divide-y divide-border/60">
             {pageRows.map(c => (
               <DoneRow key={c.user_id} c={c} busy={!!busy[c.user_id]} onRevert={onRevert} />
             ))}
@@ -388,20 +388,20 @@ function SalesModal({ editing, onSave, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" dir="rtl" onClick={onClose}>
       <form className="card p-6 w-full max-w-sm" onClick={e => e.stopPropagation()} onSubmit={submit}>
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-white font-black">{editing ? 'تعديل سيلز' : 'إضافة سيلز جديد'}</h3>
-          <button type="button" onClick={onClose} className="text-dark-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <h3 className="text-foreground font-black">{editing ? 'تعديل سيلز' : 'إضافة سيلز جديد'}</h3>
+          <button type="button" onClick={onClose} className="text-muted hover:text-foreground"><X className="w-5 h-5" /></button>
         </div>
-        <label className="block text-dark-400 text-xs mb-1">الاسم</label>
+        <label className="block text-muted text-xs mb-1">الاسم</label>
         <input value={name} onChange={e => setName(e.target.value)}
-          className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-2.5 text-white text-sm mb-4 focus:outline-none focus:border-primary-500" />
-        <label className="block text-dark-400 text-xs mb-1">الإيميل</label>
+          className="w-full bg-surface-secondary border border-border rounded-xl px-3 py-2.5 text-foreground text-sm mb-4 focus:outline-none focus:border-accent" />
+        <label className="block text-muted text-xs mb-1">الإيميل</label>
         <input value={email} type="email" onChange={e => setEmail(e.target.value)}
-          className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-2.5 text-white text-sm mb-4 focus:outline-none focus:border-primary-500" dir="ltr" />
-        <label className="block text-dark-400 text-xs mb-1">
+          className="w-full bg-surface-secondary border border-border rounded-xl px-3 py-2.5 text-foreground text-sm mb-4 focus:outline-none focus:border-accent" dir="ltr" />
+        <label className="block text-muted text-xs mb-1">
           {editing ? 'باسورد جديد (سيبه فاضي لو مش هتغيّره)' : 'الباسورد'}
         </label>
         <input value={password} type="text" onChange={e => setPass(e.target.value)}
-          className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-2.5 text-white text-sm mb-5 focus:outline-none focus:border-primary-500" dir="ltr" />
+          className="w-full bg-surface-secondary border border-border rounded-xl px-3 py-2.5 text-foreground text-sm mb-5 focus:outline-none focus:border-accent" dir="ltr" />
         <div className="flex gap-2">
           <button type="button" onClick={onClose} className="btn-secondary flex-1">إلغاء</button>
           <button type="submit" disabled={saving} className="btn-primary flex-1">
@@ -466,11 +466,11 @@ function SettingsView() {
   return (
     <>
     <div className="card overflow-hidden">
-      <div className="p-4 flex items-center justify-between gap-3 border-b border-dark-800 flex-wrap">
+      <div className="p-4 flex items-center justify-between gap-3 border-b border-border flex-wrap">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-primary-400" />
-          <h4 className="text-white font-black text-sm">سيلز الفرع</h4>
-          <span className="text-xs text-dark-400 font-bold">({sales.length})</span>
+          <ShieldCheck className="w-4 h-4 text-accent" />
+          <h4 className="text-foreground font-black text-sm">سيلز الفرع</h4>
+          <span className="text-xs text-muted font-bold">({sales.length})</span>
         </div>
         <button onClick={() => setModal({})} className="btn-primary text-xs py-2 px-3 flex items-center gap-1">
           <Plus className="w-4 h-4" /> إضافة سيلز
@@ -479,24 +479,24 @@ function SettingsView() {
 
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <div className="w-6 h-6 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+          <div className="w-6 h-6 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : sales.length === 0 ? (
-        <p className="text-center text-dark-500 text-sm py-16">لسه مفيش سيلز — اضغط "إضافة سيلز"</p>
+        <p className="text-center text-muted text-sm py-16">لسه مفيش سيلز — اضغط "إضافة سيلز"</p>
       ) : (
-        <div className="divide-y divide-dark-800/60">
+        <div className="divide-y divide-border/60">
           {sales.map(s => (
             <div key={s.id} className="px-4 py-3 flex items-center gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-white font-bold text-sm truncate">{s.name}</span>
+                  <span className="text-foreground font-bold text-sm truncate">{s.name}</span>
                   {s.active ? (
                     <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400">نشِط</span>
                   ) : (
                     <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400">موقوف</span>
                   )}
                 </div>
-                <p className="text-dark-400 text-[11px] mt-0.5" dir="ltr">{s.email}</p>
+                <p className="text-muted text-[11px] mt-0.5" dir="ltr">{s.email}</p>
               </div>
               <button onClick={() => toggleActive(s)} disabled={busy[s.id]}
                 title={s.active ? 'إيقاف' : 'تفعيل'}
@@ -638,8 +638,8 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
       <div className="max-w-lg mx-auto py-16 text-center" dir="rtl">
         <div className="card p-10 border-amber-500/20 bg-amber-500/5">
           <Building2 className="w-10 h-10 text-amber-400 mx-auto mb-3" />
-          <p className="text-white font-black mb-1">الحساب ده مش مربوط بفرع</p>
-          <p className="text-dark-400 text-sm">كلّم مدير النظام يحدّد فرع لحساب مدير الفرع ده.</p>
+          <p className="text-foreground font-black mb-1">الحساب ده مش مربوط بفرع</p>
+          <p className="text-muted text-sm">كلّم مدير النظام يحدّد فرع لحساب مدير الفرع ده.</p>
         </div>
       </div>
     );
@@ -670,13 +670,13 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">
+            <span className="w-6 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">
               مدير فرع · {viewLabel}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2">
-            <Building2 className="w-7 h-7 text-primary-400" />
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground flex items-center gap-2">
+            <Building2 className="w-7 h-7 text-accent" />
             فرع {formatBranch(branch)}
           </h1>
         </div>
@@ -700,13 +700,13 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
       {view === 'overview' && (
         error ? (
           <div className="card p-10 text-center border-rose-500/20 bg-rose-500/5">
-            <p className="text-white font-black mb-1">تعذّر التحميل</p>
-            <p className="text-dark-400 text-sm mb-5">{error}</p>
+            <p className="text-foreground font-black mb-1">تعذّر التحميل</p>
+            <p className="text-muted text-sm mb-5">{error}</p>
             <button onClick={load} className="btn-primary">إعادة المحاولة</button>
           </div>
         ) : loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="space-y-10">
@@ -728,8 +728,8 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
                       <Wallet className="w-5 h-5" />
                     </div>
                   </div>
-                  <p className="text-2xl font-black text-white">{fmt(k.contracts_count)}</p>
-                  <p className="text-dark-500 text-xs mt-1">عدد تعاقدات الفرع</p>
+                  <p className="text-2xl font-black text-foreground">{fmt(k.contracts_count)}</p>
+                  <p className="text-muted text-xs mt-1">عدد تعاقدات الفرع</p>
                   <TargetProgress
                     target={k.target}
                     percent={k.target_pct}
@@ -750,7 +750,7 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs whitespace-nowrap">
                   <thead>
-                    <tr className="bg-dark-800/60 text-dark-400 text-right font-black uppercase tracking-wider">
+                    <tr className="bg-surface-secondary/60 text-muted text-right font-black uppercase tracking-wider">
                       <th className="py-3 px-4">السيلز</th>
                       <th className="py-3 px-4 text-center">مسنود له</th>
                       <th className="py-3 px-4 text-center">تمت متابعتهم</th>
@@ -767,41 +767,41 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
                   </thead>
                   <tbody>
                     {bySales.length === 0 ? (
-                      <tr><td colSpan={12} className="py-10 text-center text-dark-500">لسه مفيش بيانات سيلز للفرع ده</td></tr>
+                      <tr><td colSpan={12} className="py-10 text-center text-muted">لسه مفيش بيانات سيلز للفرع ده</td></tr>
                     ) : bySales.map((r, i) => (
-                      <tr key={`${r.sales_rep}-${i}`} className="border-t border-dark-800/60 hover:bg-dark-800/20">
-                        <td className="py-3 px-4 text-white font-bold">{r.sales_rep}</td>
+                      <tr key={`${r.sales_rep}-${i}`} className="border-t border-border/60 hover:bg-surface-secondary/20">
+                        <td className="py-3 px-4 text-foreground font-bold">{r.sales_rep}</td>
                         <td className="py-3 px-4 text-center text-sky-400 font-black">{r.assigned || 0}</td>
-                        <td className="py-3 px-4 text-center text-primary-400 font-bold">{r.followed_up || 0}</td>
+                        <td className="py-3 px-4 text-center text-accent font-bold">{r.followed_up || 0}</td>
                         <td className="py-3 px-4 text-center">
                           <span className={`font-black ${r.followup_rate >= 70 ? 'text-emerald-400' : r.followup_rate >= 40 ? 'text-amber-400' : 'text-rose-400'}`}>
                             {r.followup_rate || 0}%
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-center text-dark-200 font-bold">{r.served}</td>
+                        <td className="py-3 px-4 text-center text-foreground font-bold">{r.served}</td>
                         <td className="py-3 px-4 text-center text-emerald-400 font-bold">{r.bought}</td>
                         <td className="py-3 px-4 text-center">
-                          <span className={`font-black ${r.close_rate >= 30 ? 'text-emerald-400' : r.close_rate >= 10 ? 'text-amber-400' : 'text-dark-500'}`}>
+                          <span className={`font-black ${r.close_rate >= 30 ? 'text-emerald-400' : r.close_rate >= 10 ? 'text-amber-400' : 'text-muted'}`}>
                             {r.close_rate}%
                           </span>
                         </td>
                         <td className="py-3 px-4 text-center text-emerald-400 font-bold">{r.fu_visited || 0}</td>
                         <td className="py-3 px-4 text-center text-amber-400 font-bold">{r.fu_not_visited || 0}</td>
-                        <td className="py-3 px-4 text-center text-primary-400 font-black">{r.contracts || 0}</td>
-                        <td className="py-3 px-4 text-center text-dark-300 font-bold">
+                        <td className="py-3 px-4 text-center text-accent font-black">{r.contracts || 0}</td>
+                        <td className="py-3 px-4 text-center text-muted font-bold">
                           {r.target ? `${fmt(r.target)} تعاقد` : '—'}
                         </td>
                         <td className="py-3 px-4 text-center">
                           {r.target ? (
                             <span className={`font-black ${
                               r.target_pct >= 100 ? 'text-emerald-400'
-                              : r.target_pct >= 60 ? 'text-primary-400'
+                              : r.target_pct >= 60 ? 'text-accent'
                               : r.target_pct >= 30 ? 'text-amber-400'
                               : 'text-rose-400'
                             }`}>
                               {r.target_pct}%
                             </span>
-                          ) : <span className="text-dark-600">—</span>}
+                          ) : <span className="text-muted">—</span>}
                         </td>
                       </tr>
                     ))}
@@ -828,7 +828,7 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
       {/* ── Customer filters (pending/done) ──────────────────────────────── */}
       {(view === 'pending' || view === 'done') && (
         <div className="card p-4 flex flex-wrap gap-3 items-center">
-          <SlidersHorizontal className="w-4 h-4 text-dark-500 flex-shrink-0" />
+          <SlidersHorizontal className="w-4 h-4 text-muted flex-shrink-0" />
           <select
             value={phoneFilter}
             onChange={e => setPhoneFilter(e.target.value)}
@@ -847,7 +847,7 @@ export default function BranchManagerDashboardView({ view = 'overview' }) {
             <option value="online">تسجيل أونلاين</option>
             <option value="manual">تسجيل يدوي (استقبال)</option>
           </select>
-          <span className="text-dark-500 text-xs font-bold mr-auto">
+          <span className="text-muted text-xs font-bold mr-auto">
             {filteredCustomers.length} من {customers.length} عميل
             {customerTotal > customers.length && (
               <span className="text-amber-400"> · إجمالي الفرع {customerTotal} (بيتعرض أحدث {customers.length})</span>
@@ -927,19 +927,19 @@ function ContactEditModal({ customer, onClose, onSaved }) {
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" dir="rtl" onMouseDown={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-      <div className="relative w-full max-w-sm bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-5"
+      <div className="relative w-full max-w-sm bg-surface border border-border rounded-2xl shadow-2xl p-5"
            onMouseDown={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-black flex items-center gap-2"><Pencil className="w-4 h-4 text-primary-400" /> تعديل بيانات العميل</h3>
-          <button onClick={onClose} className="text-dark-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <h3 className="text-foreground font-black flex items-center gap-2"><Pencil className="w-4 h-4 text-accent" /> تعديل بيانات العميل</h3>
+          <button onClick={onClose} className="text-muted hover:text-foreground"><X className="w-5 h-5" /></button>
         </div>
         <div className="space-y-3">
           <div className="space-y-1">
-            <label className="text-dark-500 text-[11px] font-black">الاسم</label>
+            <label className="text-muted text-[11px] font-black">الاسم</label>
             <input value={name} onChange={(e) => setName(e.target.value)} className="input-field w-full" placeholder="اسم العميل" />
           </div>
           <div className="space-y-1">
-            <label className="text-dark-500 text-[11px] font-black">التليفون</label>
+            <label className="text-muted text-[11px] font-black">التليفون</label>
             <input value={phone} onChange={(e) => setPhone(e.target.value)} className="input-field w-full" placeholder="01xxxxxxxxx" dir="ltr" />
           </div>
         </div>

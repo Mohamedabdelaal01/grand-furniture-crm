@@ -2,12 +2,12 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 const colorMap = {
   primary: {
-    icon:       'bg-primary-500/10 text-primary-500 ring-primary-500/20',
-    gradient:   'from-primary-500/8 to-transparent',
-    accent:     'bg-primary-500',
+    icon:       'bg-accent/10 text-accent ring-accent/20',
+    gradient:   'from-accent/8 to-transparent',
+    accent:     'bg-accent',
     trendUp:    'bg-emerald-500/10 text-emerald-400',
     trendDown:  'bg-rose-500/10 text-rose-400',
-    trendFlat:  'bg-dark-700/60 text-dark-400',
+    trendFlat:  'bg-surface-tertiary/60 text-muted',
   },
   success: {
     icon:       'bg-emerald-500/10 text-emerald-400 ring-emerald-500/20',
@@ -15,7 +15,7 @@ const colorMap = {
     accent:     'bg-emerald-500',
     trendUp:    'bg-emerald-500/10 text-emerald-400',
     trendDown:  'bg-rose-500/10 text-rose-400',
-    trendFlat:  'bg-dark-700/60 text-dark-400',
+    trendFlat:  'bg-surface-tertiary/60 text-muted',
   },
   warning: {
     icon:       'bg-amber-500/10 text-amber-400 ring-amber-500/20',
@@ -23,7 +23,7 @@ const colorMap = {
     accent:     'bg-amber-500',
     trendUp:    'bg-emerald-500/10 text-emerald-400',
     trendDown:  'bg-rose-500/10 text-rose-400',
-    trendFlat:  'bg-dark-700/60 text-dark-400',
+    trendFlat:  'bg-surface-tertiary/60 text-muted',
   },
   danger: {
     icon:       'bg-rose-500/10 text-rose-400 ring-rose-500/20',
@@ -31,14 +31,14 @@ const colorMap = {
     accent:     'bg-rose-500',
     trendUp:    'bg-rose-500/10 text-rose-400',    // "more hot leads" = bad trend color
     trendDown:  'bg-emerald-500/10 text-emerald-400',
-    trendFlat:  'bg-dark-700/60 text-dark-400',
+    trendFlat:  'bg-surface-tertiary/60 text-muted',
   },
 };
 
 const KPICard = ({ icon: Icon, label, value, subtitle, trend, color = 'primary', onClick }) => {
   const c = colorMap[color] || colorMap.primary;
 
-  const interactiveStyles = onClick ? 'cursor-pointer hover:ring-2 hover:ring-primary-500/50' : '';
+  const interactiveStyles = onClick ? 'cursor-pointer hover:ring-2 hover:ring-accent/50' : '';
 
   const TrendBadge = () => {
     if (trend === null || trend === undefined) return null;
@@ -73,13 +73,13 @@ const KPICard = ({ icon: Icon, label, value, subtitle, trend, color = 'primary',
 
       <div className="flex items-start justify-between relative z-10">
         <div className="flex-1 min-w-0">
-          <p className="text-dark-400 text-[10px] font-black uppercase tracking-widest mb-3 truncate">{label}</p>
+          <p className="text-muted text-[10px] font-black uppercase tracking-widest mb-3 truncate">{label}</p>
           <div className="flex items-baseline gap-2 mb-1.5 flex-wrap">
-            <h3 className="text-3xl font-black text-white tracking-tight tabular-nums">{value}</h3>
+            <h3 className="text-3xl font-black text-foreground tracking-tight tabular-nums">{value}</h3>
             <TrendBadge />
           </div>
           {subtitle && (
-            <p className="text-dark-500 text-[11px] font-medium leading-snug">{subtitle}</p>
+            <p className="text-muted text-[11px] font-medium leading-snug">{subtitle}</p>
           )}
         </div>
 

@@ -27,9 +27,9 @@ export default function CampaignPerformance({ data }) {
   if (!rows.length) {
     return (
       <div className="card p-6 flex flex-col items-center justify-center min-h-[300px] gap-3">
-        <Megaphone className="w-10 h-10 text-dark-600" />
-        <p className="text-dark-400 font-bold text-sm">لا توجد بيانات حملات بعد</p>
-        <p className="text-dark-600 text-xs text-center max-w-xs">
+        <Megaphone className="w-10 h-10 text-muted" />
+        <p className="text-muted font-bold text-sm">لا توجد بيانات حملات بعد</p>
+        <p className="text-muted text-xs text-center max-w-xs">
           ستظهر البيانات عندما يُضاف campaign_source في بيانات الـ webhook من ManyChat
         </p>
       </div>
@@ -39,17 +39,17 @@ export default function CampaignPerformance({ data }) {
   return (
     <div className="card overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b border-dark-800">
+      <div className="p-6 border-b border-border">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-6 h-1 bg-primary-600 rounded-full" />
-              <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">
+              <span className="w-6 h-1 bg-accent rounded-full" />
+              <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">
                 أداء الحملات
               </span>
             </div>
-            <h2 className="text-lg font-black text-white">نسب التحويل حسب الحملة</h2>
-            <p className="text-dark-500 text-xs mt-0.5">
+            <h2 className="text-lg font-black text-foreground">نسب التحويل حسب الحملة</h2>
+            <p className="text-muted text-xs mt-0.5">
               من تفاعل المسنجر → زيارة المعرض → شراء فعلي
             </p>
           </div>
@@ -57,18 +57,18 @@ export default function CampaignPerformance({ data }) {
           {/* Totals bar */}
           <div className="hidden sm:flex items-center gap-4 text-center">
             <div>
-              <p className="text-2xl font-black text-white tabular-nums">{totals.leads.toLocaleString()}</p>
-              <p className="text-dark-500 text-[10px] font-bold">إجمالي</p>
+              <p className="text-2xl font-black text-foreground tabular-nums">{totals.leads.toLocaleString()}</p>
+              <p className="text-muted text-[10px] font-bold">إجمالي</p>
             </div>
-            <div className="w-px h-8 bg-dark-800" />
+            <div className="w-px h-8 bg-surface-secondary" />
             <div>
               <p className="text-2xl font-black text-sky-400 tabular-nums">{totals.visits.toLocaleString()}</p>
-              <p className="text-dark-500 text-[10px] font-bold">زيارات</p>
+              <p className="text-muted text-[10px] font-bold">زيارات</p>
             </div>
-            <div className="w-px h-8 bg-dark-800" />
+            <div className="w-px h-8 bg-surface-secondary" />
             <div>
               <p className="text-2xl font-black text-violet-400 tabular-nums">{totals.purchases.toLocaleString()}</p>
-              <p className="text-dark-500 text-[10px] font-bold">مشتريات</p>
+              <p className="text-muted text-[10px] font-bold">مشتريات</p>
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function CampaignPerformance({ data }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-dark-500 border-b border-dark-800 text-right text-[11px] uppercase font-black tracking-wider">
+            <tr className="text-muted border-b border-border text-right text-[11px] uppercase font-black tracking-wider">
               <th className="py-3 px-6">الحملة</th>
               <th className="py-3 px-4 text-center">
                 <span className="flex items-center justify-center gap-1">
@@ -129,19 +129,19 @@ export default function CampaignPerformance({ data }) {
               return (
                 <tr
                   key={row.campaign_source}
-                  className="border-b border-dark-800/50 hover:bg-dark-800/30 transition-colors"
+                  className="border-b border-border/50 hover:bg-surface-secondary/30 transition-colors"
                 >
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center flex-shrink-0">
-                        <Megaphone className="w-4 h-4 text-primary-400" />
+                      <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
+                        <Megaphone className="w-4 h-4 text-accent" />
                       </div>
                       <div>
-                        <p className="text-white font-bold">{row.campaign_source}</p>
+                        <p className="text-foreground font-bold">{row.campaign_source}</p>
                         {/* Mini progress bar showing share of total leads */}
-                        <div className="w-24 h-1 bg-dark-800 rounded-full mt-1">
+                        <div className="w-24 h-1 bg-surface-secondary rounded-full mt-1">
                           <div
-                            className="h-1 bg-primary-500/60 rounded-full"
+                            className="h-1 bg-accent/60 rounded-full"
                             style={{ width: `${barWidth}%` }}
                           />
                         </div>
@@ -150,7 +150,7 @@ export default function CampaignPerformance({ data }) {
                   </td>
 
                   <td className="py-4 px-4 text-center">
-                    <span className="text-white font-bold tabular-nums">
+                    <span className="text-foreground font-bold tabular-nums">
                       {row.total_leads.toLocaleString()}
                     </span>
                   </td>
@@ -193,7 +193,7 @@ function RatePill({ value, color }) {
   };
   const c = colorMap[color] || colorMap.sky;
   if (n === 0) {
-    return <span className="text-dark-600 font-bold text-xs">—</span>;
+    return <span className="text-muted font-bold text-xs">—</span>;
   }
   return (
     <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-black tabular-nums ${c.bg} border ${c.border} ${c.text}`}>

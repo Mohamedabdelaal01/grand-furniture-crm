@@ -34,7 +34,7 @@ const TABS = [
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 function SaveStatus({ status }) {
-  if (status === 'saving') return <span className="text-primary-400 text-xs animate-pulse">جاري الحفظ…</span>;
+  if (status === 'saving') return <span className="text-accent text-xs animate-pulse">جاري الحفظ…</span>;
   if (status === 'saved')  return <span className="text-emerald-400 text-xs flex items-center gap-1"><Check className="w-3 h-3" />تم الحفظ</span>;
   if (status === 'error')  return <span className="text-rose-400 text-xs">فشل الحفظ</span>;
   return null;
@@ -147,8 +147,8 @@ function SandboxControl() {
 
   return (
     <div className="card p-5 border border-amber-500/30 bg-amber-500/5">
-      <h3 className="text-white font-black text-sm mb-1">🧪 الحسابات التجريبية (Sandbox)</h3>
-      <p className="text-dark-400 text-xs mb-4 leading-relaxed">
+      <h3 className="text-foreground font-black text-sm mb-1">🧪 الحسابات التجريبية (Sandbox)</h3>
+      <p className="text-muted text-xs mb-4 leading-relaxed">
         طاقم تدريب من 4 حسابات (مدير، مدير فرع، سيلز، استقبال) بيشتغلوا على نسخة منفصلة
         من البيانات — أي حاجة يعملوها <b className="text-amber-300">مش بتأثر على النظام الحقيقي</b>.
       </p>
@@ -174,14 +174,14 @@ function SandboxControl() {
               {busy === 'wipe' ? '⏳...' : 'نعم، امسح'}
             </button>
             <button onClick={() => setConfirmWipe(false)} disabled={!!busy}
-              className="px-3 py-1 rounded text-xs bg-dark-700 hover:bg-dark-600 text-dark-300 disabled:opacity-50">
+              className="px-3 py-1 rounded text-xs bg-surface-tertiary hover:bg-surface-tertiary text-foreground disabled:opacity-50">
               إلغاء
             </button>
           </span>
         )}
       </div>
 
-      <p className="text-dark-600 text-[11px]">
+      <p className="text-muted text-[11px]">
         إيميلات الدخول: demo_admin@demo.local · demo_manager@demo.local ·
         demo_sales@demo.local · demo_reception@demo.local — الباسورد: 123
       </p>
@@ -204,12 +204,12 @@ function IntegrationBanner() {
           {live ? <Wifi className="w-5 h-5 text-emerald-400" /> : <WifiOff className="w-5 h-5 text-amber-400" />}
         </div>
         <div>
-          <p className="text-white font-black text-sm">
+          <p className="text-foreground font-black text-sm">
             ManyChat: {live
               ? <span className="text-emerald-400">LIVE — بيبعت رسائل فعلية ✅</span>
               : <span className="text-amber-400">MOCK — مفيش رسائل بتتبعت ⚠️</span>}
           </p>
-          <p className="text-dark-500 text-xs mt-0.5">
+          <p className="text-muted text-xs mt-0.5">
             {live ? 'الـ API Key متضبط والرسائل بتوصل العملاء.' : 'حط ManyChat API Key تحت عشان الرسائل تشتغل فعلياً.'}
           </p>
         </div>
@@ -223,15 +223,15 @@ function IntegrationBanner() {
       )}
 
       {st.webhook?.secret && (
-        <div className="bg-dark-900/60 border border-dark-700 rounded-lg p-3">
-          <p className="text-dark-400 text-[11px] font-black uppercase tracking-wider mb-1">Webhook Secret</p>
-          <p className="text-dark-500 text-[11px] mb-2">
-            حطه في ManyChat External Request كـ Header: <code className="text-dark-300">x-webhook-secret</code>
+        <div className="bg-surface/60 border border-border rounded-lg p-3">
+          <p className="text-muted text-[11px] font-black uppercase tracking-wider mb-1">Webhook Secret</p>
+          <p className="text-muted text-[11px] mb-2">
+            حطه في ManyChat External Request كـ Header: <code className="text-foreground">x-webhook-secret</code>
             {st.webhook.enforced
               ? <span className="text-emerald-400"> — التطبيق مُفعّل ✅</span>
-              : <span className="text-dark-500"> — التطبيق غير مُفعّل (اختياري حالياً)</span>}
+              : <span className="text-muted"> — التطبيق غير مُفعّل (اختياري حالياً)</span>}
           </p>
-          <code className="block text-emerald-300 text-xs font-mono bg-dark-950/60 px-3 py-2 rounded border border-dark-800 break-all" dir="ltr">
+          <code className="block text-emerald-300 text-xs font-mono bg-background/60 px-3 py-2 rounded border border-border break-all" dir="ltr">
             {st.webhook.secret}
           </code>
         </div>
@@ -283,8 +283,8 @@ function ApiTab({ settings, onSave }) {
       {sections.map(section => (
         <div key={section.title} className="space-y-4">
           <div>
-            <h3 className="text-white font-black text-sm">{section.title}</h3>
-            {section.hint && <p className="text-dark-500 text-xs mt-0.5">{section.hint}</p>}
+            <h3 className="text-foreground font-black text-sm">{section.title}</h3>
+            {section.hint && <p className="text-muted text-xs mt-0.5">{section.hint}</p>}
           </div>
           <div className="space-y-3">
             {section.fields.map(f => (
@@ -333,10 +333,10 @@ function MetaCapiSection() {
   };
 
   return (
-    <div className="space-y-4 pt-6 border-t border-dark-800">
+    <div className="space-y-4 pt-6 border-t border-border">
       <div>
-        <h3 className="text-white font-black text-sm">ربط فيسبوك (Meta CAPI)</h3>
-        <p className="text-dark-500 text-xs mt-0.5">
+        <h3 className="text-foreground font-black text-sm">ربط فيسبوك (Meta CAPI)</h3>
+        <p className="text-muted text-xs mt-0.5">
           الأحداث الجديدة (Lead / Purchase) بتتبعت تلقائياً. الزرار ده بيعمل
           «Pixel Warm-up» — يبعت كل العملاء القدامى اللي عندهم تليفون مرة واحدة
           عشان تبني Custom & Lookalike Audiences فوراً.
@@ -349,11 +349,11 @@ function MetaCapiSection() {
       </button>
       {result && (
         <div className={`rounded-xl border p-4 text-xs space-y-1 ${result.ok ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-amber-500/40 bg-amber-500/5'}`}>
-          <p className="text-dark-200">
-            إجمالي العملاء بأرقام: <b className="text-white">{result.total}</b> ·
-            صالح للإرسال: <b className="text-white">{result.eligible}</b> ·
+          <p className="text-foreground">
+            إجمالي العملاء بأرقام: <b className="text-foreground">{result.total}</b> ·
+            صالح للإرسال: <b className="text-foreground">{result.eligible}</b> ·
             اتبعت: <b className="text-emerald-400">{result.sent}</b> ·
-            دفعات: <b className="text-white">{result.batches}</b>
+            دفعات: <b className="text-foreground">{result.batches}</b>
             {result.failed_batches > 0 && <> · فشلت: <b className="text-rose-400">{result.failed_batches}</b></>}
           </p>
           {result.errors?.length > 0 && (
@@ -390,8 +390,8 @@ function ApiKeyField({ fieldKey, label, hint, initialValue, onSave }) {
     <div className="card p-5 space-y-3">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-white font-bold text-sm">{label}</p>
-          <p className="text-dark-500 text-xs mt-0.5">{hint}</p>
+          <p className="text-foreground font-bold text-sm">{label}</p>
+          <p className="text-muted text-xs mt-0.5">{hint}</p>
         </div>
         {isEmpty && (
           <span className="flex items-center gap-1 text-amber-400 text-[10px] font-black bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
@@ -413,7 +413,7 @@ function ApiKeyField({ fieldKey, label, hint, initialValue, onSave }) {
           <button
             type="button"
             onClick={() => setShow(v => !v)}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500 hover:text-dark-300"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
           >
             {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
@@ -517,7 +517,7 @@ function UsersTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <p className="text-dark-400 text-sm">{users.length} مستخدم</p>
+        <p className="text-muted text-sm">{users.length} مستخدم</p>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSwapOpen(true)}
@@ -525,7 +525,7 @@ function UsersTab() {
             className="btn-secondary text-xs disabled:opacity-40"
             title="تبديل سيلزين: الفرع + عملاء قبل الزيارة"
           >
-            <ArrowLeftRight className="w-3.5 h-3.5 text-primary-400" />
+            <ArrowLeftRight className="w-3.5 h-3.5 text-accent" />
             تبديل سيلزين
           </button>
           <button
@@ -534,7 +534,7 @@ function UsersTab() {
             className="btn-secondary text-xs disabled:opacity-40"
             title="نقل سيلز لفرع تاني (فاضي)"
           >
-            <ArrowRightLeft className="w-3.5 h-3.5 text-primary-400" />
+            <ArrowRightLeft className="w-3.5 h-3.5 text-accent" />
             نقل سيلز
           </button>
           <button
@@ -555,13 +555,13 @@ function UsersTab() {
 
       {loading ? (
         <div className="flex items-center justify-center py-10">
-          <div className="w-7 h-7 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+          <div className="w-7 h-7 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-dark-500 border-b border-dark-800 text-right text-[11px] uppercase font-black tracking-wider">
+              <tr className="text-muted border-b border-border text-right text-[11px] uppercase font-black tracking-wider">
                 <th className="py-3 px-5">الاسم</th>
                 <th className="py-3 px-5">البريد الإلكتروني</th>
                 <th className="py-3 px-5 text-center">الدور</th>
@@ -573,8 +573,8 @@ function UsersTab() {
               {users.map(u => {
                 const isInactive = u.active === 0;
                 return (
-                <tr key={u.id} className={`border-b border-dark-800/50 hover:bg-dark-800/20 transition-colors ${isInactive ? 'opacity-50' : ''}`}>
-                  <td className="py-3 px-5 text-white font-bold">
+                <tr key={u.id} className={`border-b border-border/50 hover:bg-surface-secondary/20 transition-colors ${isInactive ? 'opacity-50' : ''}`}>
+                  <td className="py-3 px-5 text-foreground font-bold">
                     {u.name}
                     {isInactive && (
                       <span className="mr-2 text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/25">
@@ -582,28 +582,28 @@ function UsersTab() {
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-5 text-dark-400 font-mono text-xs">{u.email}</td>
+                  <td className="py-3 px-5 text-muted font-mono text-xs">{u.email}</td>
                   <td className="py-3 px-5 text-center">
                     <span className={`text-xs font-black px-2 py-0.5 rounded-full border ${
                       u.role === 'admin'
-                        ? 'bg-primary-500/10 text-primary-400 border-primary-500/20'
+                        ? 'bg-accent/10 text-accent border-accent/20'
                         : u.role === 'reception'
                           ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                           : u.role === 'sales'
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                             : u.role === 'branch_manager'
                               ? 'bg-sky-500/10 text-sky-400 border-sky-500/20'
-                              : 'bg-dark-700 text-dark-400 border-dark-600'
+                              : 'bg-surface-tertiary text-muted border-border'
                     }`}>
                       {roleLabel(u.role)}
                     </span>
                     {['reception','sales','branch_manager'].includes(u.role) && u.branch && (
-                      <span className="block text-[10px] text-dark-500 mt-1">
+                      <span className="block text-[10px] text-muted mt-1">
                         {formatBranch(u.branch)}
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-5 text-center text-dark-500 text-xs">
+                  <td className="py-3 px-5 text-center text-muted text-xs">
                     {u.created_at?.split('T')[0] || u.created_at?.split(' ')[0]}
                   </td>
                   <td className="py-3 px-5 text-center">
@@ -611,7 +611,7 @@ function UsersTab() {
                       <button
                         onClick={() => setModal({ mode: 'edit', user: u })}
                         title="تعديل"
-                        className="p-1.5 rounded-lg text-dark-400 hover:text-primary-400 hover:bg-primary-500/10 transition-colors"
+                        className="p-1.5 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -630,7 +630,7 @@ function UsersTab() {
                         <button
                           onClick={() => setOffboardTarget(u)}
                           title="إزالة الموظف"
-                          className="p-1.5 rounded-lg text-dark-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                          className="p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -711,13 +711,13 @@ function OffboardModal({ user, onClose, onDone }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-white font-black text-lg">⚠️ خيارات إزالة الموظف</h3>
-          <button onClick={() => !busy && onClose()} className="text-dark-400 hover:text-white">
+          <h3 className="text-foreground font-black text-lg">⚠️ خيارات إزالة الموظف</h3>
+          <button onClick={() => !busy && onClose()} className="text-muted hover:text-foreground">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <p className="text-dark-300 text-sm mb-3">
-          الموظف: <b className="text-white">{user.name}</b>
+        <p className="text-foreground text-sm mb-3">
+          الموظف: <b className="text-foreground">{user.name}</b>
         </p>
 
         <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3 mb-4">
@@ -734,7 +734,7 @@ function OffboardModal({ user, onClose, onDone }) {
             className="w-full text-right rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 p-3.5 transition-colors disabled:opacity-50"
           >
             <p className="text-emerald-300 font-black text-sm">أرشفة الحساب (مستحسن)</p>
-            <p className="text-dark-400 text-[11px] mt-1 leading-relaxed">
+            <p className="text-muted text-[11px] mt-1 leading-relaxed">
               يعطّل الحساب ويمنع دخوله ولكنه يحتفظ بمبيعاته وتاريخه القديم.
             </p>
           </button>
@@ -744,7 +744,7 @@ function OffboardModal({ user, onClose, onDone }) {
             className="w-full text-right rounded-xl border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 p-3.5 transition-colors disabled:opacity-50"
           >
             <p className="text-rose-300 font-black text-sm">حذف جذري (خطر)</p>
-            <p className="text-dark-400 text-[11px] mt-1 leading-relaxed">
+            <p className="text-muted text-[11px] mt-1 leading-relaxed">
               يمسح الحساب بالكامل ويعيد كل عملائه لحالة "جديد".
             </p>
           </button>
@@ -798,12 +798,12 @@ function UserModal({ mode, user, onSave, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
          role="dialog" aria-modal="true" aria-label="نموذج المستخدم">
-      <div className="bg-dark-900 border border-dark-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      <div className="bg-surface border border-border rounded-2xl p-6 w-full max-w-md shadow-2xl">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-white font-black text-lg">
+          <h3 className="text-foreground font-black text-lg">
             {mode === 'create' ? 'إضافة مستخدم جديد' : 'تعديل المستخدم'}
           </h3>
-          <button onClick={onClose} className="text-dark-500 hover:text-white p-1 rounded-lg hover:bg-dark-800">
+          <button onClick={onClose} className="text-muted hover:text-foreground p-1 rounded-lg hover:bg-surface-secondary">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -839,7 +839,7 @@ function UserModal({ mode, user, onSave, onClose }) {
               <button
                 type="button"
                 onClick={() => setShowPwd(v => !v)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500 hover:text-dark-300"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
               >
                 {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -967,7 +967,7 @@ function BranchesTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="w-7 h-7 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+        <div className="w-7 h-7 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -978,8 +978,8 @@ function BranchesTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-white font-black text-sm">{branches.length} فرع مُعرَّف</p>
-          <p className="text-dark-500 text-xs mt-0.5">
+          <p className="text-foreground font-black text-sm">{branches.length} فرع مُعرَّف</p>
+          <p className="text-muted text-xs mt-0.5">
             الفروع تظهر في خيارات العملاء وفلاتر التحليلات
           </p>
         </div>
@@ -995,8 +995,8 @@ function BranchesTab() {
 
       {/* Add form */}
       {addMode && (
-        <div className="card p-5 border-primary-500/30 bg-primary-500/5 space-y-4">
-          <p className="text-primary-300 font-black text-sm">فرع جديد</p>
+        <div className="card p-5 border-accent/30 bg-accent/5 space-y-4">
+          <p className="text-accent font-black text-sm">فرع جديد</p>
           <div className="grid grid-cols-2 gap-3">
             <Field label="المعرّف (بالإنجليزية)" hint="مثال: heliopolis">
               <input
@@ -1030,8 +1030,8 @@ function BranchesTab() {
       {/* Branches list */}
       {branches.length === 0 ? (
         <div className="card p-10 text-center">
-          <Building2 className="w-10 h-10 text-dark-600 mx-auto mb-3" />
-          <p className="text-dark-400 text-sm">لا توجد فروع — أضف أول فرع</p>
+          <Building2 className="w-10 h-10 text-muted mx-auto mb-3" />
+          <p className="text-muted text-sm">لا توجد فروع — أضف أول فرع</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -1045,7 +1045,7 @@ function BranchesTab() {
                 <>
                   <div className="flex-1 grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <p className="text-dark-500 text-[10px] font-bold uppercase">المعرّف</p>
+                      <p className="text-muted text-[10px] font-bold uppercase">المعرّف</p>
                       <input
                         value={editBuf.id}
                         onChange={e => setEditBuf(p => ({ ...p, id: e.target.value }))}
@@ -1054,7 +1054,7 @@ function BranchesTab() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-dark-500 text-[10px] font-bold uppercase">الاسم</p>
+                      <p className="text-muted text-[10px] font-bold uppercase">الاسم</p>
                       <input
                         value={editBuf.name}
                         onChange={e => setEditBuf(p => ({ ...p, name: e.target.value }))}
@@ -1073,7 +1073,7 @@ function BranchesTab() {
                     </button>
                     <button
                       onClick={() => setEditIdx(null)}
-                      className="p-2 rounded-lg bg-dark-700 text-dark-400 hover:text-white transition-colors"
+                      className="p-2 rounded-lg bg-surface-tertiary text-muted hover:text-foreground transition-colors"
                       title="إلغاء"
                     >
                       <X className="w-4 h-4" />
@@ -1083,17 +1083,17 @@ function BranchesTab() {
               ) : (
                 // ── View row ──────────────────────────────────────────────
                 <>
-                  <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center flex-shrink-0">
-                    <Building2 className="w-5 h-5 text-primary-400" />
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
+                    <Building2 className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-black text-sm">{branch.name}</p>
-                    <p className="text-dark-500 text-[11px] font-mono">{branch.id}</p>
+                    <p className="text-foreground font-black text-sm">{branch.name}</p>
+                    <p className="text-muted text-[11px] font-mono">{branch.id}</p>
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={() => startEdit(idx)}
-                      className="p-2 rounded-lg text-dark-400 hover:text-primary-400 hover:bg-primary-500/10 transition-colors"
+                      className="p-2 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors"
                       title="تعديل"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -1101,7 +1101,7 @@ function BranchesTab() {
                     <button
                       onClick={() => handleDelete(idx)}
                       disabled={saving}
-                      className="p-2 rounded-lg text-dark-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                      className="p-2 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                       title="حذف"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -1115,7 +1115,7 @@ function BranchesTab() {
       )}
 
       {saving && (
-        <p className="text-primary-400 text-xs text-center animate-pulse">
+        <p className="text-accent text-xs text-center animate-pulse">
           جاري الحفظ…
         </p>
       )}
@@ -1184,7 +1184,7 @@ function InterestsTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="w-7 h-7 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+        <div className="w-7 h-7 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -1194,8 +1194,8 @@ function InterestsTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-white font-black text-sm">{interests.length} اهتمام مُعرَّف</p>
-          <p className="text-dark-500 text-xs mt-0.5">
+          <p className="text-foreground font-black text-sm">{interests.length} اهتمام مُعرَّف</p>
+          <p className="text-muted text-xs mt-0.5">
             الاهتمامات تظهر في فورم إضافة عميل جديد في الاستقبال
           </p>
         </div>
@@ -1211,8 +1211,8 @@ function InterestsTab() {
 
       {/* Add form */}
       {addMode && (
-        <div className="card p-5 border-primary-500/30 bg-primary-500/5 space-y-4">
-          <p className="text-primary-300 font-black text-sm">اهتمام جديد</p>
+        <div className="card p-5 border-accent/30 bg-accent/5 space-y-4">
+          <p className="text-accent font-black text-sm">اهتمام جديد</p>
           <Field label="اسم الاهتمام" hint="مثال: غرف النوم">
             <input
               value={newItem}
@@ -1236,8 +1236,8 @@ function InterestsTab() {
       {/* Interests list */}
       {interests.length === 0 ? (
         <div className="card p-10 text-center">
-          <Tag className="w-10 h-10 text-dark-600 mx-auto mb-3" />
-          <p className="text-dark-400 text-sm">لا توجد اهتمامات — أضف أول اهتمام</p>
+          <Tag className="w-10 h-10 text-muted mx-auto mb-3" />
+          <p className="text-muted text-sm">لا توجد اهتمامات — أضف أول اهتمام</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -1262,7 +1262,7 @@ function InterestsTab() {
                     </button>
                     <button
                       onClick={() => setEditIdx(null)}
-                      className="p-2 rounded-lg bg-dark-700 text-dark-400 hover:text-white transition-colors"
+                      className="p-2 rounded-lg bg-surface-tertiary text-muted hover:text-foreground transition-colors"
                       title="إلغاء"
                     >
                       <X className="w-4 h-4" />
@@ -1271,14 +1271,14 @@ function InterestsTab() {
                 </>
               ) : (
                 <>
-                  <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center flex-shrink-0">
-                    <Tag className="w-5 h-5 text-primary-400" />
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
+                    <Tag className="w-5 h-5 text-accent" />
                   </div>
-                  <p className="flex-1 min-w-0 text-white font-black text-sm">{item}</p>
+                  <p className="flex-1 min-w-0 text-foreground font-black text-sm">{item}</p>
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={() => startEdit(idx)}
-                      className="p-2 rounded-lg text-dark-400 hover:text-primary-400 hover:bg-primary-500/10 transition-colors"
+                      className="p-2 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors"
                       title="تعديل"
                     >
                       <Edit2 className="w-4 h-4" />
@@ -1286,7 +1286,7 @@ function InterestsTab() {
                     <button
                       onClick={() => handleDelete(idx)}
                       disabled={saving}
-                      className="p-2 rounded-lg text-dark-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                      className="p-2 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                       title="حذف"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -1300,7 +1300,7 @@ function InterestsTab() {
       )}
 
       {saving && (
-        <p className="text-primary-400 text-xs text-center animate-pulse">جاري الحفظ…</p>
+        <p className="text-accent text-xs text-center animate-pulse">جاري الحفظ…</p>
       )}
     </div>
   );
@@ -1366,7 +1366,7 @@ function TargetsTab() {
   if (repsLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="w-7 h-7 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+        <div className="w-7 h-7 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -1374,16 +1374,16 @@ function TargetsTab() {
   return (
     <div className="space-y-8 max-w-2xl">
       <div>
-        <h3 className="text-white font-black text-lg">🎯 إدارة المستهدفات البيعية</h3>
-        <p className="text-dark-500 text-xs mt-1">
+        <h3 className="text-foreground font-black text-lg">🎯 إدارة المستهدفات البيعية</h3>
+        <p className="text-muted text-xs mt-1">
           حدّد مستهدف عدد التعاقدات لكل فرع ولكل سيلز — لكل شهر على حدة.
         </p>
       </div>
 
       {/* Month picker — which month these targets apply to */}
-      <div className="card p-4 flex items-center gap-3 flex-wrap border-primary-500/30 bg-primary-500/5">
-        <Target className="w-4 h-4 text-primary-400" />
-        <label className="text-white font-bold text-sm">شهر المستهدف:</label>
+      <div className="card p-4 flex items-center gap-3 flex-wrap border-accent/30 bg-accent/5">
+        <Target className="w-4 h-4 text-accent" />
+        <label className="text-foreground font-bold text-sm">شهر المستهدف:</label>
         <input
           type="month"
           value={month}
@@ -1391,23 +1391,23 @@ function TargetsTab() {
           dir="ltr"
           className="input-field text-sm py-1.5"
         />
-        <span className="text-dark-500 text-[11px]">
+        <span className="text-muted text-[11px]">
           المستهدفات اللي تحت بتخص الشهر المختار ده فقط.
         </span>
       </div>
 
       {/* Branch targets */}
       <section className="space-y-3">
-        <p className="text-dark-300 font-black text-sm flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-primary-400" /> مستهدفات الفروع
+        <p className="text-foreground font-black text-sm flex items-center gap-2">
+          <Building2 className="w-4 h-4 text-accent" /> مستهدفات الفروع
         </p>
         {branches.length === 0 ? (
-          <p className="text-dark-500 text-sm">لا توجد فروع — أضف الفروع أولاً.</p>
+          <p className="text-muted text-sm">لا توجد فروع — أضف الفروع أولاً.</p>
         ) : branches.map((b) => {
           const key = `branch:${b.id}`;
           return (
             <div key={b.id} className="card p-4 flex items-center gap-3 flex-wrap">
-              <span className="text-white font-bold text-sm flex-1 min-w-[120px]">{b.name}</span>
+              <span className="text-foreground font-bold text-sm flex-1 min-w-[120px]">{b.name}</span>
               {targets[key] != null && (
                 <span className="text-emerald-400 text-[11px] font-bold">
                   الحالي: {fmtNum(targets[key])} تعاقد
@@ -1433,12 +1433,12 @@ function TargetsTab() {
 
       {/* Sales-rep targets */}
       <section className="space-y-3">
-        <p className="text-dark-300 font-black text-sm flex items-center gap-2">
-          <Users className="w-4 h-4 text-primary-400" /> مستهدفات السيلز
+        <p className="text-foreground font-black text-sm flex items-center gap-2">
+          <Users className="w-4 h-4 text-accent" /> مستهدفات السيلز
         </p>
-        <div className="card p-4 border-primary-500/30 bg-primary-500/5 flex items-end gap-3 flex-wrap">
+        <div className="card p-4 border-accent/30 bg-accent/5 flex items-end gap-3 flex-wrap">
           <div className="space-y-1">
-            <label className="text-dark-400 text-[10px] font-black uppercase">السيلز</label>
+            <label className="text-muted text-[10px] font-black uppercase">السيلز</label>
             <select
               value={repPick}
               onChange={(e) => {
@@ -1456,7 +1456,7 @@ function TargetsTab() {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-dark-400 text-[10px] font-black uppercase">المستهدف (تعاقد)</label>
+            <label className="text-muted text-[10px] font-black uppercase">المستهدف (تعاقد)</label>
             <input
               type="number" dir="ltr" placeholder="المبلغ"
               value={repInput}
@@ -1478,7 +1478,7 @@ function TargetsTab() {
           <div className="card overflow-hidden">
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-dark-800/60 text-dark-400 text-right font-black">
+                <tr className="bg-surface-secondary/60 text-muted text-right font-black">
                   <th className="py-2.5 px-4">السيلز</th>
                   <th className="py-2.5 px-4">الفرع</th>
                   <th className="py-2.5 px-4 text-center">المستهدف</th>
@@ -1486,9 +1486,9 @@ function TargetsTab() {
               </thead>
               <tbody>
                 {reps.filter(r => targets[`sales_rep:${r.name}`] != null).map((r) => (
-                  <tr key={r.id} className="border-t border-dark-800/60">
-                    <td className="py-2.5 px-4 text-white font-bold">{r.name}</td>
-                    <td className="py-2.5 px-4 text-dark-400">{r.branch ? formatBranch(r.branch) : '—'}</td>
+                  <tr key={r.id} className="border-t border-border/60">
+                    <td className="py-2.5 px-4 text-foreground font-bold">{r.name}</td>
+                    <td className="py-2.5 px-4 text-muted">{r.branch ? formatBranch(r.branch) : '—'}</td>
                     <td className="py-2.5 px-4 text-center text-emerald-400 font-black">
                       {fmtNum(targets[`sales_rep:${r.name}`])} تعاقد
                     </td>
@@ -1507,8 +1507,8 @@ function TargetsTab() {
 function Field({ label, hint, children }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-dark-300 text-xs font-bold uppercase tracking-wider">{label}</label>
-      {hint && <p className="text-dark-600 text-[11px] -mt-0.5">{hint}</p>}
+      <label className="block text-foreground text-xs font-bold uppercase tracking-wider">{label}</label>
+      {hint && <p className="text-muted text-[11px] -mt-0.5">{hint}</p>}
       {children}
     </div>
   );
@@ -1541,7 +1541,7 @@ export default function Settings() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
-        <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -1552,10 +1552,10 @@ export default function Settings() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="w-6 h-1 bg-primary-600 rounded-full" />
-          <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">إدارة النظام</span>
+          <span className="w-6 h-1 bg-accent rounded-full" />
+          <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">إدارة النظام</span>
         </div>
-        <h1 className="text-3xl font-black text-white">الإعدادات</h1>
+        <h1 className="text-3xl font-black text-foreground">الإعدادات</h1>
       </div>
 
       {/* Tabs */}
@@ -1569,8 +1569,8 @@ export default function Settings() {
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-black transition-all ${
                 active
-                  ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                  : 'text-dark-400 hover:text-white hover:bg-dark-800/50 border border-transparent'
+                  ? 'bg-accent/20 text-accent border border-accent/30'
+                  : 'text-muted hover:text-foreground hover:bg-surface-secondary/50 border border-transparent'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -1626,7 +1626,7 @@ function AchievementsTab() {
     setSaving(false);
   };
 
-  if (loading) return <p className="text-dark-400 text-sm">جاري التحميل...</p>;
+  if (loading) return <p className="text-muted text-sm">جاري التحميل...</p>;
 
   const sliders = [
     { key: 'followup', label: 'نسبة المتابعة',  hint: 'كم عميل اتتابع من اللي سابوا تليفون', color: 'primary' },
@@ -1639,17 +1639,17 @@ function AchievementsTab() {
       <div className="card p-5">
         <div className="flex items-center gap-3 mb-2">
           <Trophy className="w-5 h-5 text-amber-400" />
-          <h3 className="text-white font-black text-lg">معادلة نقاط الإنجازات</h3>
+          <h3 className="text-foreground font-black text-lg">معادلة نقاط الإنجازات</h3>
         </div>
-        <p className="text-dark-400 text-sm mb-6 leading-relaxed">
+        <p className="text-muted text-sm mb-6 leading-relaxed">
           النقاط بتتحسب لكل سيلز ولكل فرع من 3 نسب. اختار وزن كل نسبة في النتيجة النهائية —
-          المجموع لازم يكون <b className="text-white">100</b>.
+          المجموع لازم يكون <b className="text-foreground">100</b>.
         </p>
 
         <div className="space-y-5">
           {sliders.map(s => {
             const tones = {
-              primary: 'text-primary-400',
+              primary: 'text-accent',
               emerald: 'text-emerald-400',
               amber:   'text-amber-400',
             };
@@ -1657,8 +1657,8 @@ function AchievementsTab() {
               <div key={s.key}>
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-white font-black text-sm">{s.label}</p>
-                    <p className="text-dark-500 text-[11px]">{s.hint}</p>
+                    <p className="text-foreground font-black text-sm">{s.label}</p>
+                    <p className="text-muted text-[11px]">{s.hint}</p>
                   </div>
                   <span className={`text-2xl font-black ${tones[s.color]}`}>
                     {w[s.key]}%
@@ -1670,7 +1670,7 @@ function AchievementsTab() {
                   max={100}
                   value={w[s.key]}
                   onChange={e => setW({ ...w, [s.key]: parseInt(e.target.value, 10) })}
-                  className="w-full accent-primary-500"
+                  className="w-full accent-accent"
                 />
               </div>
             );
@@ -1738,11 +1738,11 @@ function ForecastWeightsCard() {
   return (
     <div className="card p-5">
       <div className="flex items-center gap-3 mb-2">
-        <Trophy className="w-5 h-5 text-primary-400" />
-        <h3 className="text-white font-black text-lg">معدّل الزيارة المتوقع</h3>
+        <Trophy className="w-5 h-5 text-accent" />
+        <h3 className="text-foreground font-black text-lg">معدّل الزيارة المتوقع</h3>
       </div>
-      <p className="text-dark-400 text-sm mb-6 leading-relaxed">
-        لما عميل يضغط <b className="text-white">branch_selected</b>، يا إما يكون
+      <p className="text-muted text-sm mb-6 leading-relaxed">
+        لما عميل يضغط <b className="text-foreground">branch_selected</b>، يا إما يكون
         ساب تليفون قبل كده يا إما لأ. الـ "زيارات متوقعة" بتُحسب من العدد
         مضروب في النسبة. كل وزن مستقل (مش لازم المجموع 100).
       </p>

@@ -30,13 +30,13 @@ export default class ErrorBoundary extends Component {
     if (!this.state.hasError) return this.props.children;
 
     return (
-      <div className="flex items-center justify-center min-h-screen bg-dark-950 p-6" dir="rtl">
+      <div className="flex items-center justify-center min-h-screen bg-background p-6" dir="rtl">
         <div className="card p-10 text-center max-w-md border-rose-500/20 bg-rose-500/5">
           <div className="w-20 h-20 bg-rose-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <AlertTriangle className="w-10 h-10 text-rose-500" />
           </div>
-          <h3 className="text-xl font-black text-white mb-3">حصل خطأ غير متوقع</h3>
-          <p className="text-dark-400 mb-8 text-sm leading-relaxed">
+          <h3 className="text-xl font-black text-foreground mb-3">حصل خطأ غير متوقع</h3>
+          <p className="text-muted mb-8 text-sm leading-relaxed">
             عذراً، فيه مشكلة في عرض الصفحة. جرّب ترجع للوحة التحكم — لو المشكلة فضلت
             كلّم الدعم الفني.
           </p>

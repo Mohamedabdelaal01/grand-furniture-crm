@@ -15,17 +15,17 @@ const CustomTooltip = ({ active, payload, label }) => {
   const isRedFlag = views >= RED_FLAG_MIN_VIEWS && purchases === 0;
   return (
     <div className="card p-3 shadow-premium min-w-[160px] space-y-1.5">
-      <p className="text-dark-300 text-sm font-bold mb-1">{label}</p>
-      <p className="text-primary-400 text-sm font-black">
+      <p className="text-foreground text-sm font-bold mb-1">{label}</p>
+      <p className="text-accent text-sm font-black">
         {views.toLocaleString()}
-        <span className="text-dark-400 text-xs font-bold mr-1">مشاهدة</span>
+        <span className="text-muted text-xs font-bold mr-1">مشاهدة</span>
       </p>
       <p className="text-violet-400 text-sm font-black">
         {purchases.toLocaleString()}
-        <span className="text-dark-400 text-xs font-bold mr-1">شراء</span>
+        <span className="text-muted text-xs font-bold mr-1">شراء</span>
       </p>
       {isRedFlag && (
-        <p className="text-rose-400 text-[11px] font-bold flex items-center gap-1 pt-1 border-t border-dark-800">
+        <p className="text-rose-400 text-[11px] font-bold flex items-center gap-1 pt-1 border-t border-border">
           <AlertTriangle className="w-3 h-3" />
           مشاهدات عالية بدون مبيعات
         </p>
@@ -66,9 +66,9 @@ const ProductsChart = ({ data, gapData }) => {
   if (!chartData.length) {
     return (
       <div className="card p-6 flex flex-col items-center justify-center min-h-[320px] gap-3">
-        <Package className="w-10 h-10 text-dark-600" />
-        <p className="text-dark-400 font-bold text-sm">لا توجد بيانات منتجات بعد</p>
-        <p className="text-dark-600 text-xs">ستظهر البيانات عند وصول أول حدث product_details</p>
+        <Package className="w-10 h-10 text-muted" />
+        <p className="text-muted font-bold text-sm">لا توجد بيانات منتجات بعد</p>
+        <p className="text-muted text-xs">ستظهر البيانات عند وصول أول حدث product_details</p>
       </div>
     );
   }
@@ -77,8 +77,8 @@ const ProductsChart = ({ data, gapData }) => {
     <div className="card p-6">
       <div className="mb-5 flex items-start justify-between">
         <div>
-          <h3 className="text-lg font-bold text-dark-50">أداء المنتجات</h3>
-          <p className="text-dark-500 text-xs mt-0.5">مشاهدات أونلاين مقابل مشتريات فعلية</p>
+          <h3 className="text-lg font-bold text-foreground">أداء المنتجات</h3>
+          <p className="text-muted text-xs mt-0.5">مشاهدات أونلاين مقابل مشتريات فعلية</p>
         </div>
         {redFlagCount > 0 && (
           <div className="flex items-center gap-1.5 bg-rose-500/5 border border-rose-500/20 rounded-xl px-3 py-1.5">
@@ -121,8 +121,8 @@ const ProductsChart = ({ data, gapData }) => {
 
       {/* Red flag list */}
       {redFlagCount > 0 && (
-        <div className="mt-4 pt-4 border-t border-dark-800">
-          <p className="text-[10px] font-black uppercase tracking-wider text-dark-500 mb-2">
+        <div className="mt-4 pt-4 border-t border-border">
+          <p className="text-[10px] font-black uppercase tracking-wider text-muted mb-2">
             منتجات تحتاج مراجعة — مشاهدات عالية بدون مبيعات
           </p>
           <div className="flex flex-wrap gap-2">
@@ -131,8 +131,8 @@ const ProductsChart = ({ data, gapData }) => {
                 key={d.name}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/5 border border-rose-500/20 text-xs"
               >
-                <span className="text-white font-bold">{d.name}</span>
-                <span className="text-primary-400 font-black tabular-nums">{d.views}</span>
+                <span className="text-foreground font-bold">{d.name}</span>
+                <span className="text-accent font-black tabular-nums">{d.views}</span>
                 <RedFlagBadge />
               </span>
             ))}

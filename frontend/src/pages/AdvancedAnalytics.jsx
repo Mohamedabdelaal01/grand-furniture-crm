@@ -27,8 +27,8 @@ function SectionCard({ icon: Icon, tone, title, subtitle, children }) {
           <Icon className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-white font-black text-lg leading-tight">{title}</h3>
-          {subtitle && <p className="text-dark-400 text-xs mt-0.5">{subtitle}</p>}
+          <h3 className="text-foreground font-black text-lg leading-tight">{title}</h3>
+          {subtitle && <p className="text-muted text-xs mt-0.5">{subtitle}</p>}
         </div>
       </div>
       {children}
@@ -38,7 +38,7 @@ function SectionCard({ icon: Icon, tone, title, subtitle, children }) {
 
 /** Horizontal labelled bar chart from [{label,count}]. */
 function MiniBars({ data, color = '#6366f1', empty = 'لا توجد بيانات' }) {
-  if (!data || data.length === 0) return <p className="text-dark-600 text-xs italic">{empty}</p>;
+  if (!data || data.length === 0) return <p className="text-muted text-xs italic">{empty}</p>;
   return (
     <ResponsiveContainer width="100%" height={Math.max(120, data.length * 34)}>
       <BarChart data={data} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
@@ -70,12 +70,12 @@ export default function AdvancedAnalytics() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32" dir="rtl">
-        <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
   if (!data) {
-    return <div className="card p-12 text-center text-dark-400 font-bold" dir="rtl">تعذّر تحميل التحليلات</div>;
+    return <div className="card p-12 text-center text-muted font-bold" dir="rtl">تعذّر تحميل التحليلات</div>;
   }
 
   const { repConversion = [], velocity = {}, lostLeads = {}, pipeline = {} } = data;
@@ -104,14 +104,14 @@ export default function AdvancedAnalytics() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">ذكاء الأعمال</span>
+            <span className="w-6 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">ذكاء الأعمال</span>
           </div>
-          <h1 className="text-3xl font-black text-white flex items-center gap-2">
-            <Radar className="w-7 h-7 text-primary-400" />
+          <h1 className="text-3xl font-black text-foreground flex items-center gap-2">
+            <Radar className="w-7 h-7 text-accent" />
             التحليلات العميقة
           </h1>
-          <p className="text-dark-400 text-sm mt-1">
+          <p className="text-muted text-sm mt-1">
             مؤشرات تنفيذية تكشف الكفاءة الحقيقية والفرص الضائعة — مش مجرد أرقام إجمالية.
           </p>
         </div>
@@ -127,42 +127,42 @@ export default function AdvancedAnalytics() {
           <div className="rounded-2xl bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border border-emerald-500/20 p-5 text-center">
             <div className="text-emerald-300 text-xs font-bold mb-1">إجمالي الأموال المعلقة</div>
             <div className="text-emerald-400 text-3xl font-black">{egp(pipeline.total_value)}</div>
-            <div className="text-dark-400 text-[11px] mt-1">money left on the table</div>
+            <div className="text-muted text-[11px] mt-1">money left on the table</div>
           </div>
-          <div className="rounded-2xl bg-dark-900/40 border border-dark-800 p-5">
+          <div className="rounded-2xl bg-surface/40 border border-border p-5">
             <div className="flex items-center gap-2 text-rose-400 font-black mb-1"><Flame className="w-4 h-4" /> عملاء ساخنون</div>
-            <div className="text-white text-2xl font-black">{fmt(pipeline.hot)}</div>
-            <div className="text-dark-400 text-xs mt-1">× {egp(pipeline.hot_ticket)} = <span className="text-rose-300 font-bold">{egp(pipeline.hot_value)}</span></div>
+            <div className="text-foreground text-2xl font-black">{fmt(pipeline.hot)}</div>
+            <div className="text-muted text-xs mt-1">× {egp(pipeline.hot_ticket)} = <span className="text-rose-300 font-bold">{egp(pipeline.hot_value)}</span></div>
           </div>
-          <div className="rounded-2xl bg-dark-900/40 border border-dark-800 p-5">
+          <div className="rounded-2xl bg-surface/40 border border-border p-5">
             <div className="flex items-center gap-2 text-amber-400 font-black mb-1"><Thermometer className="w-4 h-4" /> عملاء دافئون</div>
-            <div className="text-white text-2xl font-black">{fmt(pipeline.warm)}</div>
-            <div className="text-dark-400 text-xs mt-1">× {egp(pipeline.warm_ticket)} = <span className="text-amber-300 font-bold">{egp(pipeline.warm_value)}</span></div>
+            <div className="text-foreground text-2xl font-black">{fmt(pipeline.warm)}</div>
+            <div className="text-muted text-xs mt-1">× {egp(pipeline.warm_ticket)} = <span className="text-amber-300 font-bold">{egp(pipeline.warm_value)}</span></div>
           </div>
         </div>
       </SectionCard>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 1. True rep conversion */}
-        <SectionCard icon={Target} tone="bg-primary-500/15 text-primary-400"
+        <SectionCard icon={Target} tone="bg-accent/15 text-accent"
           title="معدل الإغلاق الحقيقي للسيلز" subtitle="تعاقدات ÷ عملاء مسندين — مين أكفأ في التقفيل مش مين أكتر عملاء">
           {repConversion.length === 0 ? (
-            <p className="text-dark-600 text-xs italic">لا توجد بيانات إسناد بعد</p>
+            <p className="text-muted text-xs italic">لا توجد بيانات إسناد بعد</p>
           ) : (
             <div className="space-y-3">
               {repConversion.map((r) => (
                 <div key={r.rep}>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-white font-bold">{r.rep}
-                      <span className="text-dark-500 font-normal mr-1">{formatBranch(r.branch)}</span>
+                    <span className="text-foreground font-bold">{r.rep}
+                      <span className="text-muted font-normal mr-1">{formatBranch(r.branch)}</span>
                     </span>
                     <span className="font-black" style={{ color: rateColor(r.rate) }}>{r.rate}%</span>
                   </div>
-                  <div className="h-2.5 rounded-full bg-dark-800 overflow-hidden">
+                  <div className="h-2.5 rounded-full bg-surface-secondary overflow-hidden">
                     <div className="h-full rounded-full transition-all"
                          style={{ width: `${Math.min(r.rate, 100)}%`, background: rateColor(r.rate) }} />
                   </div>
-                  <div className="text-dark-500 text-[10px] mt-0.5">
+                  <div className="text-muted text-[10px] mt-0.5">
                     {fmt(r.contracts)} تعاقد من {fmt(r.assigned)} عميل مسند
                   </div>
                 </div>
@@ -178,17 +178,17 @@ export default function AdvancedAnalytics() {
             <>
               <div className="flex items-end gap-3 mb-3">
                 <div className="text-sky-400 text-4xl font-black leading-none">{velocity.avg_days}</div>
-                <div className="text-dark-400 text-sm mb-1">يوم في المتوسط</div>
-                <div className="mr-auto text-left text-[11px] text-dark-500">
+                <div className="text-muted text-sm mb-1">يوم في المتوسط</div>
+                <div className="mr-auto text-left text-[11px] text-muted">
                   <div>أسرع: <span className="text-emerald-400 font-bold">{velocity.fastest_days} يوم</span></div>
                   <div>أبطأ: <span className="text-rose-400 font-bold">{velocity.slowest_days} يوم</span></div>
                 </div>
               </div>
               <MiniBars data={velBuckets} color="#0ea5e9" />
-              <p className="text-dark-500 text-[11px]">على عيّنة {fmt(velocity.sample_size)} تعاقد</p>
+              <p className="text-muted text-[11px]">على عيّنة {fmt(velocity.sample_size)} تعاقد</p>
             </>
           ) : (
-            <p className="text-dark-600 text-xs italic">لا توجد تعاقدات كافية لحساب السرعة</p>
+            <p className="text-muted text-xs italic">لا توجد تعاقدات كافية لحساب السرعة</p>
           )}
         </SectionCard>
       </div>
@@ -201,7 +201,7 @@ export default function AdvancedAnalytics() {
           {Object.entries(lostMap).map(([k, v]) => (
             <button key={k} onClick={() => setLostTab(k)}
               className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${
-                lostTab === k ? 'bg-primary-600 text-white' : 'bg-dark-800 text-dark-300 hover:text-white'}`}>
+                lostTab === k ? 'bg-accent text-white' : 'bg-surface-secondary text-foreground hover:text-white'}`}>
               {v.label}
             </button>
           ))}

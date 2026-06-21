@@ -23,45 +23,45 @@ const CLASS_OPTIONS = [
 
 
 function RelativeTime({ iso }) {
-  if (!iso) return <span className="text-dark-600">—</span>;
+  if (!iso) return <span className="text-muted">—</span>;
   const seconds = Math.floor((Date.now() - new Date(iso.replace(' ', 'T') + 'Z').getTime()) / 1000);
   let text;
   if (seconds < 60)        text = `${seconds}ث`;
   else if (seconds < 3600) text = `${Math.floor(seconds / 60)}د`;
   else if (seconds < 86400) text = `${Math.floor(seconds / 3600)}س`;
   else                     text = `${Math.floor(seconds / 86400)}ي`;
-  return <span className="text-dark-400 text-xs">{text}</span>;
+  return <span className="text-muted text-xs">{text}</span>;
 }
 
 function ScoreBar({ score, max = 200 }) {
   const pct = Math.min(Math.round((score / max) * 100), 100);
-  const color = pct >= 70 ? 'bg-rose-500' : pct >= 40 ? 'bg-amber-500' : 'bg-dark-600';
+  const color = pct >= 70 ? 'bg-rose-500' : pct >= 40 ? 'bg-amber-500' : 'bg-surface-tertiary';
   return (
     <div className="flex items-center gap-2">
-      <div className="w-16 h-1.5 bg-dark-800 rounded-full overflow-hidden">
+      <div className="w-16 h-1.5 bg-surface-secondary rounded-full overflow-hidden">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-dark-300 text-xs tabular-nums">{score}</span>
+      <span className="text-foreground text-xs tabular-nums">{score}</span>
     </div>
   );
 }
 
 const TableRowSkeleton = () => (
-  <tr className="border-b border-dark-800/50">
-    <td className="py-3 px-4"><div className="w-4 h-4 bg-dark-700 rounded animate-pulse" /></td>
+  <tr className="border-b border-border/50">
+    <td className="py-3 px-4"><div className="w-4 h-4 bg-surface-tertiary rounded animate-pulse" /></td>
     <td className="py-3 px-4">
       <div className="space-y-2">
-        <div className="h-4 bg-dark-700 rounded w-24 animate-pulse" />
-        <div className="h-3 bg-dark-800 rounded w-16 animate-pulse" />
+        <div className="h-4 bg-surface-tertiary rounded w-24 animate-pulse" />
+        <div className="h-3 bg-surface-secondary rounded w-16 animate-pulse" />
       </div>
     </td>
-    <td className="py-3 px-4"><div className="w-12 h-5 bg-dark-700 rounded-full animate-pulse" /></td>
-    <td className="py-3 px-4"><div className="w-16 h-2 bg-dark-700 rounded-full animate-pulse" /></td>
-    <td className="py-3 px-4 hidden md:table-cell"><div className="w-16 h-4 bg-dark-700 rounded animate-pulse" /></td>
-    <td className="py-3 px-4 hidden lg:table-cell"><div className="w-20 h-4 bg-dark-700 rounded animate-pulse" /></td>
-    <td className="py-3 px-4 hidden lg:table-cell"><div className="w-16 h-4 bg-dark-700 rounded animate-pulse" /></td>
-    <td className="py-3 px-4 hidden sm:table-cell"><div className="w-10 h-4 bg-dark-700 rounded animate-pulse" /></td>
-    <td className="py-3 px-4 text-center"><div className="w-12 h-6 bg-dark-700 rounded-lg mx-auto animate-pulse" /></td>
+    <td className="py-3 px-4"><div className="w-12 h-5 bg-surface-tertiary rounded-full animate-pulse" /></td>
+    <td className="py-3 px-4"><div className="w-16 h-2 bg-surface-tertiary rounded-full animate-pulse" /></td>
+    <td className="py-3 px-4 hidden md:table-cell"><div className="w-16 h-4 bg-surface-tertiary rounded animate-pulse" /></td>
+    <td className="py-3 px-4 hidden lg:table-cell"><div className="w-20 h-4 bg-surface-tertiary rounded animate-pulse" /></td>
+    <td className="py-3 px-4 hidden lg:table-cell"><div className="w-16 h-4 bg-surface-tertiary rounded animate-pulse" /></td>
+    <td className="py-3 px-4 hidden sm:table-cell"><div className="w-10 h-4 bg-surface-tertiary rounded animate-pulse" /></td>
+    <td className="py-3 px-4 text-center"><div className="w-12 h-6 bg-surface-tertiary rounded-lg mx-auto animate-pulse" /></td>
   </tr>
 );
 
@@ -183,12 +183,12 @@ export default function Leads() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">إدارة العملاء</span>
+            <span className="w-6 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">إدارة العملاء</span>
           </div>
-          <h1 className="text-3xl font-black text-white">العملاء المحتملون</h1>
+          <h1 className="text-3xl font-black text-foreground">العملاء المحتملون</h1>
           {!loading && (
-            <p className="text-dark-400 text-sm mt-1">
+            <p className="text-muted text-sm mt-1">
               {total.toLocaleString()} عميل إجمالاً
             </p>
           )}
@@ -211,11 +211,11 @@ export default function Leads() {
 
       {/* Filters */}
       <div className="card p-4 flex flex-wrap gap-3 items-center">
-        <SlidersHorizontal className="w-4 h-4 text-dark-500 flex-shrink-0" />
+        <SlidersHorizontal className="w-4 h-4 text-muted flex-shrink-0" />
 
         {/* Search */}
         <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-500" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
@@ -298,8 +298,8 @@ export default function Leads() {
             <div className="w-16 h-16 bg-rose-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <AlertTriangle className="w-8 h-8 text-rose-500" />
             </div>
-            <p className="text-white font-black mb-1">تعذّر تحميل العملاء</p>
-            <p className="text-dark-400 text-sm mb-6">{error}</p>
+            <p className="text-foreground font-black mb-1">تعذّر تحميل العملاء</p>
+            <p className="text-muted text-sm mb-6">{error}</p>
             <button onClick={load} className="btn-primary">
               <RefreshCw className="w-4 h-4" /> إعادة المحاولة
             </button>
@@ -310,7 +310,7 @@ export default function Leads() {
             <div className="overflow-x-auto hidden md:block">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-dark-500 border-b border-dark-800 text-right text-[11px] uppercase font-black tracking-wider">
+                  <tr className="text-muted border-b border-border text-right text-[11px] uppercase font-black tracking-wider">
                     <th className="py-3 px-4 w-10">#</th>
                     <th className="py-3 px-4">الاسم</th>
                     <th className="py-3 px-4">التصنيف</th>
@@ -328,24 +328,24 @@ export default function Leads() {
                   ) : leads.length === 0 ? (
                     <tr>
                       <td colSpan={9} className="py-16 text-center">
-                        <Users className="w-10 h-10 text-dark-700 mx-auto mb-3" />
-                        <p className="text-dark-500 font-bold">لا توجد نتائج</p>
+                        <Users className="w-10 h-10 text-muted mx-auto mb-3" />
+                        <p className="text-muted font-bold">لا توجد نتائج</p>
                       </td>
                     </tr>
                   ) : leads.map((lead, i) => (
                     <tr
                       key={lead.user_id}
                       onClick={() => navigate(`/leads/${lead.user_id}`)}
-                      className="border-b border-dark-800/50 hover:bg-dark-800/50 transition-colors cursor-pointer group"
+                      className="border-b border-border/50 hover:bg-surface-secondary/50 transition-colors cursor-pointer group"
                     >
-                      <td className="py-3 px-4 text-dark-600 text-xs tabular-nums">
+                      <td className="py-3 px-4 text-muted text-xs tabular-nums">
                         {pageStart + i}
                       </td>
                       <td className="py-3 px-4">
-                        <p className="text-white font-bold truncate max-w-[140px] group-hover:text-primary-400 transition-colors">
+                        <p className="text-foreground font-bold truncate max-w-[140px] group-hover:text-accent transition-colors">
                           {lead.first_name || '—'}
                         </p>
-                        <p className="text-dark-500 text-[10px] font-mono truncate max-w-[140px]">
+                        <p className="text-muted text-[10px] font-mono truncate max-w-[140px]">
                           {lead.user_id}
                         </p>
                       </td>
@@ -357,19 +357,19 @@ export default function Leads() {
                       <td className="py-3 px-4">
                         <ScoreBar score={lead.total_score} />
                       </td>
-                      <td className="py-3 px-4 hidden md:table-cell text-dark-300 text-xs">
+                      <td className="py-3 px-4 hidden md:table-cell text-foreground text-xs">
                         {formatBranch(lead.preferred_branch || lead.requested_branch) || '—'}
                       </td>
                       <td className="py-3 px-4 hidden lg:table-cell">
                         {lead.campaign_source
-                          ? <span className="text-primary-300 text-xs font-mono">{lead.campaign_source}</span>
-                          : <span className="text-dark-600 text-xs">—</span>
+                          ? <span className="text-accent text-xs font-mono">{lead.campaign_source}</span>
+                          : <span className="text-muted text-xs">—</span>
                         }
                       </td>
                       <td className="py-3 px-4 hidden lg:table-cell">
                         {(lead.phone || lead.visit_code)
                           ? <code className="text-emerald-400 text-xs tracking-wider bg-emerald-500/5 px-2 py-0.5 rounded" dir="ltr">{lead.phone || lead.visit_code}</code>
-                          : <span className="text-dark-600 text-xs">—</span>
+                          : <span className="text-muted text-xs">—</span>
                         }
                       </td>
                       <td className="py-3 px-4 hidden sm:table-cell">
@@ -377,7 +377,7 @@ export default function Leads() {
                       </td>
                       <td className="py-3 px-4 text-center">
                         <button
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-bold transition-all group-hover:bg-primary-500 group-hover:text-white"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20 text-accent text-xs font-bold transition-all group-hover:bg-accent group-hover:text-white"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           عرض
@@ -390,33 +390,33 @@ export default function Leads() {
             </div>
 
             {/* Mobile: stacked cards (no hidden columns — everything visible) */}
-            <div className="md:hidden divide-y divide-dark-800/50">
+            <div className="md:hidden divide-y divide-border/50">
               {loading && !data ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="p-4 animate-pulse space-y-3">
-                    <div className="h-4 w-32 bg-dark-700 rounded" />
-                    <div className="h-3 w-20 bg-dark-700 rounded" />
-                    <div className="h-2 w-full bg-dark-700 rounded-full" />
+                    <div className="h-4 w-32 bg-surface-tertiary rounded" />
+                    <div className="h-3 w-20 bg-surface-tertiary rounded" />
+                    <div className="h-2 w-full bg-surface-tertiary rounded-full" />
                   </div>
                 ))
               ) : leads.length === 0 ? (
                 <div className="py-16 text-center">
-                  <Users className="w-10 h-10 text-dark-700 mx-auto mb-3" />
-                  <p className="text-dark-500 font-bold">لا توجد نتائج</p>
+                  <Users className="w-10 h-10 text-muted mx-auto mb-3" />
+                  <p className="text-muted font-bold">لا توجد نتائج</p>
                 </div>
               ) : leads.map((lead, i) => (
                 <button
                   key={lead.user_id}
                   onClick={() => navigate(`/leads/${lead.user_id}`)}
-                  className="w-full text-right p-4 active:bg-dark-800/50 transition-colors"
+                  className="w-full text-right p-4 active:bg-surface-secondary/50 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="min-w-0">
-                      <p className="text-white font-bold truncate">
-                        <span className="text-dark-600 text-xs tabular-nums ml-1">{pageStart + i}.</span>
+                      <p className="text-foreground font-bold truncate">
+                        <span className="text-muted text-xs tabular-nums ml-1">{pageStart + i}.</span>
                         {lead.first_name || '—'}
                       </p>
-                      <p className="text-dark-500 text-[10px] font-mono truncate">{lead.user_id}</p>
+                      <p className="text-muted text-[10px] font-mono truncate">{lead.user_id}</p>
                     </div>
                     <span className={`badge text-[11px] px-2.5 py-0.5 rounded-full font-black flex-shrink-0 ${getLeadBadgeClass(lead.lead_class)}`}>
                       {formatLeadClass(lead.lead_class)}
@@ -424,10 +424,10 @@ export default function Leads() {
                   </div>
                   <div className="mb-3"><ScoreBar score={lead.total_score} /></div>
                   <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
-                    <div><span className="text-dark-600">الفرع: </span><span className="text-dark-300">{formatBranch(lead.preferred_branch || lead.requested_branch) || '—'}</span></div>
-                    <div><span className="text-dark-600">آخر نشاط: </span><span className="text-dark-300"><RelativeTime iso={lead.last_activity} /></span></div>
-                    <div className="truncate"><span className="text-dark-600">الحملة: </span><span className="text-primary-300 font-mono">{lead.campaign_source || '—'}</span></div>
-                    <div><span className="text-dark-600">رقم التليفون: </span>{(lead.phone || lead.visit_code) ? <code className="text-emerald-400 tracking-wider" dir="ltr">{lead.phone || lead.visit_code}</code> : <span className="text-dark-600">—</span>}</div>
+                    <div><span className="text-muted">الفرع: </span><span className="text-foreground">{formatBranch(lead.preferred_branch || lead.requested_branch) || '—'}</span></div>
+                    <div><span className="text-muted">آخر نشاط: </span><span className="text-foreground"><RelativeTime iso={lead.last_activity} /></span></div>
+                    <div className="truncate"><span className="text-muted">الحملة: </span><span className="text-accent font-mono">{lead.campaign_source || '—'}</span></div>
+                    <div><span className="text-muted">رقم التليفون: </span>{(lead.phone || lead.visit_code) ? <code className="text-emerald-400 tracking-wider" dir="ltr">{lead.phone || lead.visit_code}</code> : <span className="text-muted">—</span>}</div>
                   </div>
                 </button>
               ))}
@@ -435,8 +435,8 @@ export default function Leads() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t border-dark-800">
-                <p className="text-dark-500 text-xs">
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                <p className="text-muted text-xs">
                   {pageStart}–{pageEnd} من {total.toLocaleString()}
                 </p>
 
@@ -444,7 +444,7 @@ export default function Leads() {
                   <button
                     onClick={() => setParam('page', String(page - 1))}
                     disabled={page <= 1}
-                    className="p-1.5 rounded-lg text-dark-400 hover:text-white hover:bg-dark-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -459,8 +459,8 @@ export default function Leads() {
                         onClick={() => setParam('page', String(p))}
                         className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors ${
                           p === page
-                            ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                            : 'text-dark-400 hover:text-white hover:bg-dark-800'
+                            ? 'bg-accent/20 text-accent border border-accent/30'
+                            : 'text-muted hover:text-foreground hover:bg-surface-secondary'
                         }`}
                       >
                         {p}
@@ -471,7 +471,7 @@ export default function Leads() {
                   <button
                     onClick={() => setParam('page', String(page + 1))}
                     disabled={page >= totalPages}
-                    className="p-1.5 rounded-lg text-dark-400 hover:text-white hover:bg-dark-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>

@@ -96,11 +96,11 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
         <div className="min-w-0">
           <button
             onClick={() => navigate(`/leads/${c.user_id}`)}
-            className="text-white font-black text-sm hover:text-primary-400 transition-colors"
+            className="text-foreground font-black text-sm hover:text-accent transition-colors"
           >
             {customerName(c)}
           </button>
-          <div className="flex items-center gap-3 mt-1 text-[11px] text-dark-400 flex-wrap">
+          <div className="flex items-center gap-3 mt-1 text-[11px] text-muted flex-wrap">
             <CrossBranchTags c={c} />
             {c.phone && (
               <span dir="ltr" className="font-mono font-bold text-emerald-400">📱 {c.phone}</span>
@@ -112,12 +112,12 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
             <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />زار {timeAgo(c.visit_at)}</span>
             <span className="flex items-center gap-0.5"><Star className="w-3 h-3 text-amber-400" />{c.total_score}</span>
           </div>
-          <div className="flex items-center gap-3 mt-1 text-[11px] text-dark-500 flex-wrap">
+          <div className="flex items-center gap-3 mt-1 text-[11px] text-muted flex-wrap">
             {c.last_product && <span>🛋️ {c.last_product}</span>}
             {c.last_category && <span>{c.last_category}</span>}
             {c.campaign_source && <span>📣 {c.campaign_source}</span>}
             {c.manychat_source === 'walkin' && (
-              <span className="text-primary-400 font-bold">عميل استقبال</span>
+              <span className="text-accent font-bold">عميل استقبال</span>
             )}
           </div>
         </div>
@@ -132,8 +132,8 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
           <span
             className={`text-[10px] font-black px-2 py-0.5 rounded-full whitespace-nowrap ${
               followupCount > 0
-                ? 'bg-primary-500/15 text-primary-300'
-                : 'bg-dark-700 text-dark-400'
+                ? 'bg-accent/15 text-accent'
+                : 'bg-surface-tertiary text-muted'
             }`}
           >
             {followupCount > 0 ? `تابعها ${followupCount} مرة` : 'لسه متتابعش'}
@@ -143,39 +143,39 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
 
       {/* Last follow-up summary + history */}
       {followupCount > 0 && (
-        <div className="bg-dark-900/60 border border-dark-800 rounded-lg p-2.5">
+        <div className="bg-surface/60 border border-border rounded-lg p-2.5">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] text-dark-300 font-bold flex items-center gap-1">
-              <PhoneCall className="w-3 h-3 text-primary-400" />
+            <p className="text-[11px] text-foreground font-bold flex items-center gap-1">
+              <PhoneCall className="w-3 h-3 text-accent" />
               آخر متابعة {timeAgo(c.last_followup_at)}
               {c.last_followup_by ? ` · ${c.last_followup_by}` : ''}
             </p>
             <button
               onClick={toggleHistory}
-              className="text-[10px] text-primary-400 font-bold flex items-center gap-0.5 hover:text-primary-300"
+              className="text-[10px] text-accent font-bold flex items-center gap-0.5 hover:text-accent"
             >
               السجل
               <ChevronDown className={`w-3 h-3 transition-transform ${histOpen ? 'rotate-180' : ''}`} />
             </button>
           </div>
           {c.last_followup_note && (
-            <p className="text-dark-200 text-xs mt-1 leading-relaxed">💬 {c.last_followup_note}</p>
+            <p className="text-foreground text-xs mt-1 leading-relaxed">💬 {c.last_followup_note}</p>
           )}
           {histOpen && (
-            <div className="mt-2 pt-2 border-t border-dark-800 space-y-1.5">
+            <div className="mt-2 pt-2 border-t border-border space-y-1.5">
               {histLoading ? (
-                <p className="text-dark-500 text-[11px]">جاري التحميل…</p>
+                <p className="text-muted text-[11px]">جاري التحميل…</p>
               ) : (history && history.length > 0) ? (
                 history.map((h) => (
                   <div key={h.id} className="text-[11px]">
-                    <span className="text-dark-400 font-bold">
+                    <span className="text-muted font-bold">
                       {timeAgo(h.created_at)}{h.followed_up_by ? ` · ${h.followed_up_by}` : ''}
                     </span>
-                    {h.note && <span className="text-dark-300"> — {h.note}</span>}
+                    {h.note && <span className="text-foreground"> — {h.note}</span>}
                   </div>
                 ))
               ) : (
-                <p className="text-dark-500 text-[11px]">مفيش سجل</p>
+                <p className="text-muted text-[11px]">مفيش سجل</p>
               )}
             </div>
           )}
@@ -189,7 +189,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
             اتقفل بواسطة {c.revisit_updated_by || '—'} · {timeAgo(c.revisit_updated_at)}
           </p>
           {c.revisit_note && (
-            <p className="text-dark-200 text-xs mt-1 leading-relaxed">{c.revisit_note}</p>
+            <p className="text-foreground text-xs mt-1 leading-relaxed">{c.revisit_note}</p>
           )}
         </div>
       )}
@@ -198,8 +198,8 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
       {status === 'pending' && (
         <>
           {panel === 'followup' && (
-            <div className="bg-primary-500/5 border border-primary-500/20 rounded-lg p-3 space-y-2">
-              <label className="text-primary-300 text-xs font-bold">ملاحظة المتابعة (اختياري)</label>
+            <div className="bg-accent/5 border border-accent/20 rounded-lg p-3 space-y-2">
+              <label className="text-accent text-xs font-bold">ملاحظة المتابعة (اختياري)</label>
               <textarea
                 value={fuNote}
                 onChange={(e) => setFuNote(e.target.value)}
@@ -214,7 +214,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
                     setHistory(null); setHistOpen(false); // force history refetch
                   })}
                   disabled={busy}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 text-primary-300 text-sm font-bold transition-colors disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-accent/15 hover:bg-accent/25 border border-accent/30 text-accent text-sm font-bold transition-colors disabled:opacity-50"
                 >
                   <PhoneCall className="w-4 h-4" /> سجّل المتابعة
                 </button>
@@ -294,7 +294,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => { setFuNote(''); setPanel('followup'); }}
-                className="flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 text-primary-300 text-sm font-bold transition-colors"
+                className="flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-accent/15 hover:bg-accent/25 border border-accent/30 text-accent text-sm font-bold transition-colors"
               >
                 <PhoneCall className="w-4 h-4" /> سجّل متابعة
               </button>
@@ -306,7 +306,7 @@ function CustomerCard({ c, status, busy, onBuy, onClose, onReopen, onFollowup })
               </button>
               <button
                 onClick={() => { setNote(''); setPanel('close'); }}
-                className="flex-1 min-w-[100px] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors"
+                className="flex-1 min-w-[100px] flex items-center justify-center gap-1.5 py-2 rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-border text-foreground hover:text-foreground text-sm font-bold transition-colors"
               >
                 <XCircle className="w-4 h-4" /> مش هيشتري
               </button>
@@ -427,16 +427,16 @@ export default function RevisitView() {
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">
+            <span className="w-6 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">
               متابعة ما بعد الزيارة
             </span>
           </div>
-          <h1 className="text-3xl font-black text-white flex items-center gap-2">
+          <h1 className="text-3xl font-black text-foreground flex items-center gap-2">
             <Icon className={`w-7 h-7 ${meta.accent}`} />
             {meta.title}
           </h1>
-          <p className="text-dark-400 text-sm mt-1">{meta.subtitle}</p>
+          <p className="text-muted text-sm mt-1">{meta.subtitle}</p>
         </div>
         <button onClick={load} disabled={loading} className="btn-secondary">
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -455,8 +455,8 @@ export default function RevisitView() {
               onClick={() => setStatus(t)}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-black transition-all ${
                 active
-                  ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                  : 'text-dark-400 hover:text-white hover:bg-dark-800/50 border border-transparent'
+                  ? 'bg-accent/20 text-accent border border-accent/30'
+                  : 'text-muted hover:text-foreground hover:bg-surface-secondary/50 border border-transparent'
               }`}
             >
               <TabIcon className="w-4 h-4" />
@@ -468,18 +468,18 @@ export default function RevisitView() {
 
       {/* Count */}
       {!loading && (
-        <p className="text-dark-500 text-sm font-bold">{customers.length} عميل</p>
+        <p className="text-muted text-sm font-bold">{customers.length} عميل</p>
       )}
 
       {/* List */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : customers.length === 0 ? (
         <div className="card p-12 text-center">
-          <Icon className="w-12 h-12 text-dark-600 mx-auto mb-3" />
-          <p className="text-dark-400 font-bold">{meta.empty}</p>
+          <Icon className="w-12 h-12 text-muted mx-auto mb-3" />
+          <p className="text-muted font-bold">{meta.empty}</p>
         </div>
       ) : (
         <div className="space-y-3">

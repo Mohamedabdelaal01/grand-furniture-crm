@@ -84,7 +84,7 @@ const LEAD_META = {
 // GUIDE CONTENT (accordion)
 // ─────────────────────────────────────────────────────────────────────────────
 const TONES = {
-  primary: 'text-primary-400 bg-primary-500/10 border-primary-500/20',
+  primary: 'text-accent bg-accent/10 border-accent/20',
   emerald: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
   amber:   'text-amber-400 bg-amber-500/10 border-amber-500/20',
   rose:    'text-rose-400 bg-rose-500/10 border-rose-500/20',
@@ -213,20 +213,20 @@ function GuideCard({ section, open, onToggle }) {
   const tone = TONES[section.tone] || TONES.primary;
   return (
     <div className="card overflow-hidden">
-      <button onClick={onToggle} className="w-full flex items-center gap-3 p-4 text-right hover:bg-dark-800/30 transition-colors">
+      <button onClick={onToggle} className="w-full flex items-center gap-3 p-4 text-right hover:bg-surface-secondary/30 transition-colors">
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border flex-shrink-0 ${tone}`}>
           <Icon className="w-5 h-5" />
         </div>
-        <h3 className="flex-1 text-white font-black text-sm">{section.title}</h3>
-        <ChevronDown className={`w-5 h-5 text-dark-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        <h3 className="flex-1 text-foreground font-black text-sm">{section.title}</h3>
+        <ChevronDown className={`w-5 h-5 text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
-        <div className="px-4 pb-4 space-y-3 border-t border-dark-800/60 pt-3">
+        <div className="px-4 pb-4 space-y-3 border-t border-border/60 pt-3">
           <ol className="space-y-2.5">
             {section.steps.map((step, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-lg bg-dark-800 text-dark-300 text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
-                <p className="text-dark-200 text-sm leading-relaxed">{step}</p>
+                <span className="w-6 h-6 rounded-lg bg-surface-secondary text-foreground text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
+                <p className="text-foreground text-sm leading-relaxed">{step}</p>
               </li>
             ))}
           </ol>
@@ -235,7 +235,7 @@ function GuideCard({ section, open, onToggle }) {
               <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-amber-300 text-[11px] font-black mb-0.5">تلميح هام</p>
-                <p className="text-dark-200 text-xs leading-relaxed">{section.tip}</p>
+                <p className="text-foreground text-xs leading-relaxed">{section.tip}</p>
               </div>
             </div>
           )}
@@ -248,12 +248,12 @@ function GuideCard({ section, open, onToggle }) {
 function GuideDivider() {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-1 h-px bg-dark-800" />
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-900 border border-dark-800">
-        <BookOpen className="w-3.5 h-3.5 text-dark-500" />
-        <span className="text-dark-500 text-xs font-bold">دليل الأدوار المرجعي</span>
+      <div className="flex-1 h-px bg-surface-secondary" />
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface border border-border">
+        <BookOpen className="w-3.5 h-3.5 text-muted" />
+        <span className="text-muted text-xs font-bold">دليل الأدوار المرجعي</span>
       </div>
-      <div className="flex-1 h-px bg-dark-800" />
+      <div className="flex-1 h-px bg-surface-secondary" />
     </div>
   );
 }
@@ -342,11 +342,11 @@ function ReceptionArena() {
     <div className="max-w-lg mx-auto space-y-6 py-4" dir="rtl">
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="w-16 h-16 bg-primary-500/10 border border-primary-500/20 rounded-3xl flex items-center justify-center mx-auto">
-          <Phone className="w-8 h-8 text-primary-400" />
+        <div className="w-16 h-16 bg-accent/10 border border-accent/20 rounded-3xl flex items-center justify-center mx-auto">
+          <Phone className="w-8 h-8 text-accent" />
         </div>
-        <h2 className="text-2xl font-black text-white">استقبال الزيارات</h2>
-        <p className="text-dark-400 text-sm">اسأل العميل عن رقم تليفونه واكتبه هنا لتأكيد وصوله للمعرض</p>
+        <h2 className="text-2xl font-black text-foreground">استقبال الزيارات</h2>
+        <p className="text-muted text-sm">اسأل العميل عن رقم تليفونه واكتبه هنا لتأكيد وصوله للمعرض</p>
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold">
           <Lightbulb className="w-3.5 h-3.5" />
           جرّب: 01012345678 · 01098765432 · 01155443322 · أو رقم غير موجود
@@ -356,8 +356,8 @@ function ReceptionArena() {
       {/* Input card */}
       <div className="card p-6 space-y-4">
         <div>
-          <label className="flex items-center gap-1.5 text-dark-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Building2 className="w-3.5 h-3.5 text-primary-400" />
+          <label className="flex items-center gap-1.5 text-muted text-xs font-bold uppercase tracking-wider mb-1">
+            <Building2 className="w-3.5 h-3.5 text-accent" />
             الفرع اللي إنت فيه
           </label>
           <select
@@ -369,11 +369,11 @@ function ReceptionArena() {
             <option value="">— اختار الفرع —</option>
             {BRANCHES.map(b => <option key={b} value={b}>{b}</option>)}
           </select>
-          <p className="text-dark-600 text-[11px] mt-1">اختاره مرة واحدة — الزيارة هتتسجّل للفرع ده.</p>
+          <p className="text-muted text-[11px] mt-1">اختاره مرة واحدة — الزيارة هتتسجّل للفرع ده.</p>
         </div>
-        <div className="h-px bg-dark-800" />
+        <div className="h-px bg-surface-secondary" />
 
-        <label className="block text-dark-400 text-xs font-bold uppercase tracking-wider">رقم تليفون العميل</label>
+        <label className="block text-muted text-xs font-bold uppercase tracking-wider">رقم تليفون العميل</label>
         <div className="flex gap-3">
           <input
             ref={inputRef}
@@ -396,7 +396,7 @@ function ReceptionArena() {
               : 'تأكيد'}
           </button>
         </div>
-        <p className="text-dark-600 text-xs text-center">اضغط Enter أو انقر تأكيد — أي صيغة للرقم تشتغل</p>
+        <p className="text-muted text-xs text-center">اضغط Enter أو انقر تأكيد — أي صيغة للرقم تشتغل</p>
       </div>
 
       {/* SUCCESS */}
@@ -408,15 +408,15 @@ function ReceptionArena() {
             </div>
             <div className="flex-1">
               <p className="text-emerald-400 text-xs font-black uppercase tracking-wider mb-1">تأكيد الوصول ✓</p>
-              <h3 className="text-2xl font-black text-white mb-1">أهلاً بك، {result.first_name}!</h3>
+              <h3 className="text-2xl font-black text-foreground mb-1">أهلاً بك، {result.first_name}!</h3>
               {result.branch && (
-                <p className="text-sm text-white font-bold mb-1">🏬 جاي لفرع: <span className="text-emerald-300">{result.branch}</span></p>
+                <p className="text-sm text-foreground font-bold mb-1">🏬 جاي لفرع: <span className="text-emerald-300">{result.branch}</span></p>
               )}
               {result.campaign_source && (
-                <div className="flex items-center gap-1.5 text-xs text-dark-400 font-bold">
-                  <Megaphone className="w-3.5 h-3.5 text-primary-400" />
+                <div className="flex items-center gap-1.5 text-xs text-muted font-bold">
+                  <Megaphone className="w-3.5 h-3.5 text-accent" />
                   <span>عبر حملة:</span>
-                  <span className="text-primary-300">{result.campaign_source}</span>
+                  <span className="text-accent">{result.campaign_source}</span>
                 </div>
               )}
               {result.pre_visit_rep && (
@@ -447,8 +447,8 @@ function ReceptionArena() {
                 {result.last_showroom_rep && (
                   <p className="text-[12px] text-amber-300 font-bold mb-2">🧍 وقف معاه في الزيارة السابقة: {result.last_showroom_rep}</p>
                 )}
-                <label className="flex items-center gap-1.5 text-dark-300 text-xs font-bold mb-2">
-                  <Users className="w-3.5 h-3.5 text-primary-400" />
+                <label className="flex items-center gap-1.5 text-foreground text-xs font-bold mb-2">
+                  <Users className="w-3.5 h-3.5 text-accent" />
                   مين السيلز اللي هيقف مع العميل؟
                 </label>
                 <div className="flex gap-3">
@@ -472,7 +472,7 @@ function ReceptionArena() {
             )}
           </div>
 
-          <button onClick={reset} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors">
+          <button onClick={reset} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-border text-foreground hover:text-foreground text-sm font-bold transition-colors">
             <RotateCcw className="w-4 h-4" />
             تسجيل زيارة أخرى
           </button>
@@ -488,15 +488,15 @@ function ReceptionArena() {
             </div>
             <div>
               <p className="text-rose-400 text-xs font-black uppercase tracking-wider mb-1">خطأ</p>
-              <p className="text-white font-bold">{errMsg}</p>
+              <p className="text-foreground font-bold">{errMsg}</p>
             </div>
           </div>
           <div className="flex gap-3">
-            <button onClick={reset} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors">
+            <button onClick={reset} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-border text-foreground hover:text-foreground text-sm font-bold transition-colors">
               <RotateCcw className="w-4 h-4" />
               حاول مرة أخرى
             </button>
-            <button onClick={openWalkInForm} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 text-primary-300 text-sm font-bold transition-colors">
+            <button onClick={openWalkInForm} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-accent/15 hover:bg-accent/25 border border-accent/30 text-accent text-sm font-bold transition-colors">
               <UserPlus className="w-4 h-4" />
               إضافة عميل جديد
             </button>
@@ -506,34 +506,34 @@ function ReceptionArena() {
 
       {/* WALK-IN FORM */}
       {state === R_FORM && (
-        <div className="card p-6 border-primary-500/30 bg-primary-500/5 space-y-4">
+        <div className="card p-6 border-accent/30 bg-accent/5 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-primary-500/15 rounded-2xl flex items-center justify-center flex-shrink-0">
-              <UserPlus className="w-5 h-5 text-primary-400" />
+            <div className="w-11 h-11 bg-accent/15 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <UserPlus className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <h3 className="text-white font-black">إضافة عميل جديد</h3>
-              <p className="text-dark-400 text-xs">عميل مش مسجّل — هيتسجّل كزيارة مؤكدة</p>
+              <h3 className="text-foreground font-black">إضافة عميل جديد</h3>
+              <p className="text-muted text-xs">عميل مش مسجّل — هيتسجّل كزيارة مؤكدة</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1">اسم العميل *</label>
+            <label className="block text-muted text-xs font-bold mb-1">اسم العميل *</label>
             <input value={formName} onChange={e => setFormName(e.target.value)} placeholder="الاسم بالكامل" className="input-field w-full" />
           </div>
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1">رقم التليفون *</label>
+            <label className="block text-muted text-xs font-bold mb-1">رقم التليفون *</label>
             <input value={formPhone} onChange={e => setFormPhone(e.target.value)} placeholder="01012345678" type="tel" dir="ltr" className="input-field w-full font-mono tracking-widest text-center" />
           </div>
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1">مهتم بإيه؟</label>
+            <label className="block text-muted text-xs font-bold mb-1">مهتم بإيه؟</label>
             <select value={formInterest} onChange={e => setFormInterest(e.target.value)} className="input-field w-full">
               <option value="">— اختار الفئة —</option>
               {INTERESTS.map(i => <option key={i} value={i}>{i}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1">عرفنا منين؟</label>
+            <label className="block text-muted text-xs font-bold mb-1">عرفنا منين؟</label>
             <select value={formSource} onChange={e => setFormSource(e.target.value)} className="input-field w-full">
               <option value="">— اختار المصدر —</option>
               {SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -543,7 +543,7 @@ function ReceptionArena() {
           {formErr && <p className="text-rose-400 text-xs font-bold">{formErr}</p>}
 
           <div className="flex gap-3 pt-1">
-            <button onClick={reset} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors">
+            <button onClick={reset} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-border text-foreground hover:text-foreground text-sm font-bold transition-colors">
               إلغاء
             </button>
             <button
@@ -590,17 +590,17 @@ function SalesCallModal({ customer, onConfirm, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" dir="rtl" onClick={onClose}>
       <div className="card p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-black">متابعة العميل</h3>
-          <button onClick={onClose} className="text-dark-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <h3 className="text-foreground font-black">متابعة العميل</h3>
+          <button onClick={onClose} className="text-muted hover:text-foreground"><X className="w-5 h-5" /></button>
         </div>
-        <p className="text-dark-400 text-xs mb-3">{customer.first_name}</p>
-        <label className="block text-dark-400 text-xs mb-1">ملخص المكالمة</label>
+        <p className="text-muted text-xs mb-3">{customer.first_name}</p>
+        <label className="block text-muted text-xs mb-1">ملخص المكالمة</label>
         <textarea
           value={summary}
           onChange={e => setSummary(e.target.value)}
           rows={4}
           placeholder="اكتب اللي حصل في المكالمة مع العميل..."
-          className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-2.5 text-white text-sm mb-5 focus:outline-none focus:border-primary-500 resize-none"
+          className="w-full bg-surface-secondary border border-border rounded-xl px-3 py-2.5 text-foreground text-sm mb-5 focus:outline-none focus:border-accent resize-none"
         />
         <div className="flex gap-2">
           <button onClick={onClose} className="btn-secondary flex-1">إلغاء</button>
@@ -654,13 +654,13 @@ function SalesArena() {
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">
+            <span className="w-6 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">
               مبيعات · {viewLabel}
             </span>
           </div>
-          <h1 className="text-3xl font-black text-white">أهلاً، {repName}</h1>
-          <p className="text-dark-400 text-sm mt-1">فرع {branch}</p>
+          <h1 className="text-3xl font-black text-foreground">أهلاً، {repName}</h1>
+          <p className="text-muted text-sm mt-1">فرع {branch}</p>
         </div>
         {/* View toggle: home ↔ followups */}
         <div className="flex gap-2 flex-wrap">
@@ -668,16 +668,16 @@ function SalesArena() {
             onClick={() => setView('home')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black border transition-all ${
               view === 'home'
-                ? 'bg-primary-500/20 text-primary-300 border-primary-500/30'
-                : 'text-dark-400 border-dark-700 hover:text-white hover:bg-dark-800/50'}`}>
+                ? 'bg-accent/20 text-accent border-accent/30'
+                : 'text-muted border-border hover:text-foreground hover:bg-surface-secondary/50'}`}>
             <Users className="w-4 h-4" />عملائي
           </button>
           <button
             onClick={() => setView('followups')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black border transition-all ${
               view === 'followups'
-                ? 'bg-primary-500/20 text-primary-300 border-primary-500/30'
-                : 'text-dark-400 border-dark-700 hover:text-white hover:bg-dark-800/50'}`}>
+                ? 'bg-accent/20 text-accent border-accent/30'
+                : 'text-muted border-border hover:text-foreground hover:bg-surface-secondary/50'}`}>
             <PhoneCall className="w-4 h-4" />متابعة قبل الزيارة
           </button>
         </div>
@@ -690,9 +690,9 @@ function SalesArena() {
           {/* KPIs — 4 cards exactly like SalesDashboardView */}
           <section className="space-y-4">
             <div className="flex items-center gap-2 mb-1">
-              <BarChart3 className="w-4 h-4 text-primary-400" />
-              <h3 className="text-white font-black text-sm">أرقامي هذا الشهر</h3>
-              <p className="text-dark-500 text-xs mr-1">مبيعاتك وأدائك في الشهر الحالي</p>
+              <BarChart3 className="w-4 h-4 text-accent" />
+              <h3 className="text-foreground font-black text-sm">أرقامي هذا الشهر</h3>
+              <p className="text-muted text-xs mr-1">مبيعاتك وأدائك في الشهر الحالي</p>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {/* مبيعاتي هذا الشهر + TargetProgress bar */}
@@ -700,13 +700,13 @@ function SalesArena() {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 text-emerald-400 bg-emerald-500/10">
                   <Wallet className="w-5 h-5" />
                 </div>
-                <p className="text-2xl font-black text-white">{salesTotal.toLocaleString('en-US')}</p>
-                <p className="text-dark-500 text-xs mt-1">مبيعاتي هذا الشهر (ج.م)</p>
+                <p className="text-2xl font-black text-foreground">{salesTotal.toLocaleString('en-US')}</p>
+                <p className="text-muted text-xs mt-1">مبيعاتي هذا الشهر (ج.م)</p>
                 <div className="mt-3">
-                  <div className="h-2 bg-dark-800 rounded-full overflow-hidden">
+                  <div className="h-2 bg-surface-secondary rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400" style={{ width: '42%' }} />
                   </div>
-                  <div className="flex justify-between text-[10px] text-dark-500 mt-1">
+                  <div className="flex justify-between text-[10px] text-muted mt-1">
                     <span>٤٢٪ مستهدفي</span>
                     <span>٢٠٠,٠٠٠ ج.م</span>
                   </div>
@@ -714,27 +714,27 @@ function SalesArena() {
               </div>
               {/* عملاء وقفت معاهم */}
               <div className="card p-5">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 text-primary-400 bg-primary-500/10">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 text-accent bg-accent/10">
                   <Users className="w-5 h-5" />
                 </div>
-                <p className="text-2xl font-black text-white">{servedCount}</p>
-                <p className="text-dark-500 text-xs mt-1">عملاء وقفت معاهم</p>
+                <p className="text-2xl font-black text-foreground">{servedCount}</p>
+                <p className="text-muted text-xs mt-1">عملاء وقفت معاهم</p>
               </div>
               {/* اشتروا */}
               <div className="card p-5">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 text-sky-400 bg-sky-500/10">
                   <ShoppingBag className="w-5 h-5" />
                 </div>
-                <p className="text-2xl font-black text-white">{boughtCount}</p>
-                <p className="text-dark-500 text-xs mt-1">اشتروا</p>
+                <p className="text-2xl font-black text-foreground">{boughtCount}</p>
+                <p className="text-muted text-xs mt-1">اشتروا</p>
               </div>
               {/* نسبة التقفيل */}
               <div className="card p-5">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 text-amber-400 bg-amber-500/10">
                   <Percent className="w-5 h-5" />
                 </div>
-                <p className="text-2xl font-black text-white">{closeRate}%</p>
-                <p className="text-dark-500 text-xs mt-1">نسبة التقفيل</p>
+                <p className="text-2xl font-black text-foreground">{closeRate}%</p>
+                <p className="text-muted text-xs mt-1">نسبة التقفيل</p>
               </div>
             </div>
           </section>
@@ -743,8 +743,8 @@ function SalesArena() {
           <section className="space-y-4">
             <div className="flex items-center gap-2 mb-1">
               <Users className="w-4 h-4 text-violet-400" />
-              <h3 className="text-white font-black text-sm">عملائي ({customers.length})</h3>
-              <p className="text-dark-500 text-xs mr-1">العملاء اللي الاستقبال حدّدك معاهم</p>
+              <h3 className="text-foreground font-black text-sm">عملائي ({customers.length})</h3>
+              <p className="text-muted text-xs mr-1">العملاء اللي الاستقبال حدّدك معاهم</p>
             </div>
             <div className="card p-5">
               <div className="space-y-2.5">
@@ -756,13 +756,13 @@ function SalesArena() {
                       className={`flex items-center gap-3 p-4 rounded-xl border transition-all ${
                         bought
                           ? 'bg-emerald-500/5 border-emerald-500/25'
-                          : 'bg-dark-800/40 border-dark-700 hover:border-dark-600'}`}>
+                          : 'bg-surface-secondary/40 border-border hover:border-border'}`}>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-black text-sm truncate">{c.first_name}</p>
+                        <p className="text-foreground font-black text-sm truncate">{c.first_name}</p>
                         <div className="flex items-center gap-2 mt-1 flex-wrap text-[11px]">
                           <span className={`px-2 py-0.5 rounded-full border ${meta.badge}`}>{meta.label}</span>
-                          {c.phones && <span className="text-dark-300 font-mono" dir="ltr">{c.phones}</span>}
-                          <span className="text-dark-500 flex items-center gap-1">
+                          {c.phones && <span className="text-foreground font-mono" dir="ltr">{c.phones}</span>}
+                          <span className="text-muted flex items-center gap-1">
                             <Clock className="w-3 h-3" />{c.visited_at}
                           </span>
                         </div>
@@ -772,13 +772,13 @@ function SalesArena() {
                           <CheckCircle2 className="w-4 h-4" /> اشترى • {c.my_sales_total.toLocaleString('en-US')} ج.م
                         </span>
                       ) : (
-                        <span className="text-primary-400 text-xs font-bold flex-shrink-0">سجّل البيع ←</span>
+                        <span className="text-accent text-xs font-bold flex-shrink-0">سجّل البيع ←</span>
                       )}
                     </div>
                   );
                 })}
               </div>
-              <p className="text-dark-600 text-[11px] mt-4 text-center">
+              <p className="text-muted text-[11px] mt-4 text-center">
                 اضغط على العميل عشان تسجّل بيع أو تضيف ملاحظة من ملفه
               </p>
             </div>
@@ -801,8 +801,8 @@ function SalesArena() {
                   <button key={t.id} onClick={() => setFupTab(t.id)}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-black transition-all ${
                       active
-                        ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                        : 'text-dark-400 hover:text-white hover:bg-dark-800/50 border border-transparent'}`}>
+                        ? 'bg-accent/20 text-accent border border-accent/30'
+                        : 'text-muted hover:text-foreground hover:bg-surface-secondary/50 border border-transparent'}`}>
                     <TIcon className="w-4 h-4" />
                     {t.label}
                     <span className="text-xs opacity-70">({lists[t.id].length})</span>
@@ -813,19 +813,19 @@ function SalesArena() {
 
             {/* Followup list card */}
             <div className="card overflow-hidden">
-              <div className="p-4 flex items-center gap-2 border-b border-dark-800">
+              <div className="p-4 flex items-center gap-2 border-b border-border">
                 <TabIcon className={`w-4 h-4 ${tab.tone}`} />
-                <h4 className="text-white font-black text-sm">{tab.title}</h4>
-                <span className="text-xs text-dark-400 font-bold">({lists[tab.id].length})</span>
+                <h4 className="text-foreground font-black text-sm">{tab.title}</h4>
+                <span className="text-xs text-muted font-bold">({lists[tab.id].length})</span>
               </div>
               {lists[tab.id].length === 0 ? (
-                <p className="text-center text-dark-500 text-sm py-16">{tab.empty}</p>
+                <p className="text-center text-muted text-sm py-16">{tab.empty}</p>
               ) : (
-                <div className="divide-y divide-dark-800/60">
+                <div className="divide-y divide-border/60">
                   {lists[tab.id].map(c => {
                     const meta = LEAD_META[c.lead_class] || LEAD_META.cold;
                     return (
-                      <div key={c.user_id} className="px-4 py-3 flex items-start gap-3 hover:bg-dark-800/20 transition-colors">
+                      <div key={c.user_id} className="px-4 py-3 flex items-start gap-3 hover:bg-surface-secondary/20 transition-colors">
                         {fupTab === 'pending' ? (
                           <button
                             onClick={() => { setBusy(b => ({ ...b, [c.user_id]: true })); setCallFor(c); }}
@@ -838,7 +838,7 @@ function SalesArena() {
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-white font-bold text-sm truncate">{c.first_name}</span>
+                            <span className="text-foreground font-bold text-sm truncate">{c.first_name}</span>
                             <span className={`px-2 py-0.5 rounded-full border text-[10px] font-black ${meta.badge}`}>{meta.label}</span>
                             {fupTab !== 'pending' && (
                               c.visited
@@ -846,7 +846,7 @@ function SalesArena() {
                                 : <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">لسه مزارش</span>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 mt-0.5 text-[11px] text-dark-400 flex-wrap">
+                          <div className="flex items-center gap-3 mt-0.5 text-[11px] text-muted flex-wrap">
                             {c.phones && <span className="font-mono" dir="ltr">{c.phones}</span>}
                             <span className="flex items-center gap-0.5">
                               <Star className="w-3 h-3 text-amber-400" />{c.total_score}
@@ -857,7 +857,7 @@ function SalesArena() {
                             </span>
                           </div>
                           {fupTab !== 'pending' && c.call_summary && (
-                            <p className="mt-1.5 text-[12px] text-dark-200 bg-dark-800/60 rounded-lg px-3 py-2 leading-relaxed">
+                            <p className="mt-1.5 text-[12px] text-foreground bg-surface-secondary/60 rounded-lg px-3 py-2 leading-relaxed">
                               {c.call_summary}
                             </p>
                           )}
@@ -890,9 +890,9 @@ const ADMIN_SLIDES = [
   { id: 'sales',     icon: Briefcase,      label: 'محاكاة السيلز في المعرض',         sublabel: 'Showroom Sales',    color: 'rose',   component: SalesArena      },
 ];
 const SLIDE_COLORS = {
-  sky:    { active: 'bg-sky-500/20    text-sky-300    border-sky-500/40',    inactive: 'text-dark-400 border-transparent hover:text-sky-300    hover:bg-sky-500/10'    },
-  rose:   { active: 'bg-rose-500/20   text-rose-300   border-rose-500/40',   inactive: 'text-dark-400 border-transparent hover:text-rose-300   hover:bg-rose-500/10'   },
-  violet: { active: 'bg-violet-500/20 text-violet-300 border-violet-500/40', inactive: 'text-dark-400 border-transparent hover:text-violet-300 hover:bg-violet-500/10' },
+  sky:    { active: 'bg-sky-500/20    text-sky-300    border-sky-500/40',    inactive: 'text-muted border-transparent hover:text-sky-300    hover:bg-sky-500/10'    },
+  rose:   { active: 'bg-rose-500/20   text-rose-300   border-rose-500/40',   inactive: 'text-muted border-transparent hover:text-rose-300   hover:bg-rose-500/10'   },
+  violet: { active: 'bg-violet-500/20 text-violet-300 border-violet-500/40', inactive: 'text-muted border-transparent hover:text-violet-300 hover:bg-violet-500/10' },
 };
 
 function AdminTrainingPanel() {
@@ -905,16 +905,16 @@ function AdminTrainingPanel() {
     <div className="space-y-6">
       <div className="card p-5">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500/30 to-violet-500/20 border border-primary-500/30 flex items-center justify-center">
-            <GraduationCap className="w-6 h-6 text-primary-300" />
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/30 to-violet-500/20 border border-accent/30 flex items-center justify-center">
+            <GraduationCap className="w-6 h-6 text-accent" />
           </div>
           <div>
-            <h2 className="text-white font-black text-lg">لوحة التحكم في التدريب الشاملة</h2>
-            <p className="text-dark-400 text-xs mt-0.5">محاكاة تفاعلية كاملة لكل أدوار النظام — بدون أي تأثير على البيانات الحقيقية</p>
+            <h2 className="text-foreground font-black text-lg">لوحة التحكم في التدريب الشاملة</h2>
+            <p className="text-muted text-xs mt-0.5">محاكاة تفاعلية كاملة لكل أدوار النظام — بدون أي تأثير على البيانات الحقيقية</p>
           </div>
         </div>
 
-        <div className="flex gap-2 p-1.5 bg-dark-950 rounded-xl border border-dark-800">
+        <div className="flex gap-2 p-1.5 bg-background rounded-xl border border-border">
           {ADMIN_SLIDES.map((s, i) => {
             const Icon = s.icon;
             const isActive = activeSlide === i;
@@ -929,11 +929,11 @@ function AdminTrainingPanel() {
           })}
         </div>
 
-        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-dark-800">
-          <Layers className="w-3.5 h-3.5 text-dark-500" />
-          <span className="text-dark-500 text-[11px]">الشريحة النشطة:</span>
-          <span className="text-dark-300 text-[11px] font-black">{slide.label}</span>
-          <span className="text-dark-600 text-[10px] mr-auto" dir="ltr">{slide.sublabel}</span>
+        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+          <Layers className="w-3.5 h-3.5 text-muted" />
+          <span className="text-muted text-[11px]">الشريحة النشطة:</span>
+          <span className="text-foreground text-[11px] font-black">{slide.label}</span>
+          <span className="text-muted text-[10px] mr-auto" dir="ltr">{slide.sublabel}</span>
         </div>
       </div>
 
@@ -968,8 +968,8 @@ function GenericGuidePage({ initialRole }) {
           return (
             <button key={r.id} onClick={() => setActiveRole(r.id)}
               className={`flex-1 min-w-[130px] py-2.5 rounded-xl text-sm font-black transition-all ${
-                active ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                       : 'text-dark-400 hover:text-white hover:bg-dark-800/50 border border-transparent'}`}>
+                active ? 'bg-accent/20 text-accent border border-accent/30'
+                       : 'text-muted hover:text-foreground hover:bg-surface-secondary/50 border border-transparent'}`}>
               {r.label}
             </button>
           );
@@ -997,14 +997,14 @@ export default function SystemGuide() {
     <div className="max-w-3xl mx-auto space-y-6 pb-12" dir="rtl">
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="w-6 h-1 bg-primary-600 rounded-full" />
-          <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">مساعدة</span>
+          <span className="w-6 h-1 bg-accent rounded-full" />
+          <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">مساعدة</span>
         </div>
-        <h1 className="text-3xl font-black text-white flex items-center gap-2">
-          <BookOpen className="w-7 h-7 text-primary-400" />
+        <h1 className="text-3xl font-black text-foreground flex items-center gap-2">
+          <BookOpen className="w-7 h-7 text-accent" />
           دليل استخدام النظام
         </h1>
-        <p className="text-dark-400 text-sm mt-1">{subtitle}</p>
+        <p className="text-muted text-sm mt-1">{subtitle}</p>
       </div>
 
       {role === 'admin' && <AdminTrainingPanel />}

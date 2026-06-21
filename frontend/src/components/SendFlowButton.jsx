@@ -59,7 +59,7 @@ export default function SendFlowButton({
 
   const padding = size === 'sm' ? 'px-2.5 py-1.5 text-xs' : 'px-4 py-2 text-sm';
 
-  let cls = 'bg-primary-600 hover:bg-primary-500 text-white border-primary-500/40';
+  let cls = 'bg-accent hover:bg-accent text-white border-accent/40';
   let Icon = Send;
   let label = actionType ? (LABELS[actionType] || 'إرسال') : 'إرسال';
 

@@ -71,10 +71,10 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
   if (loaded && catalog.length === 0) {
     return (
       <div>
-        <label className="block text-dark-400 text-xs font-bold mb-1.5">
+        <label className="block text-muted text-xs font-bold mb-1.5">
           {label || 'المنتجات في العقد'}
         </label>
-        <p className="text-dark-500 text-xs p-3 rounded-xl bg-dark-900/40 border border-dark-800">
+        <p className="text-muted text-xs p-3 rounded-xl bg-surface/40 border border-border">
           لسه مفيش منتجات في الكاتالوج. الأدمن لازم يضيفها من "إدارة المنتجات".
         </p>
       </div>
@@ -83,10 +83,10 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
 
   return (
     <div>
-      <label className="block text-dark-400 text-xs font-bold mb-1.5">
+      <label className="block text-muted text-xs font-bold mb-1.5">
         {label || 'المنتجات في العقد'}
         {selectedIds.length > 0 && (
-          <span className="text-primary-300 mr-2">({selectedIds.length} مختار)</span>
+          <span className="text-accent mr-2">({selectedIds.length} مختار)</span>
         )}
       </label>
 
@@ -98,13 +98,13 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
             return (
               <span
                 key={id}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-primary-500/15 border border-primary-500/30 text-primary-200 text-xs font-bold"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-accent/15 border border-accent/30 text-accent text-xs font-bold"
               >
                 {p.name}
                 <button
                   type="button"
                   onClick={() => toggle(id)}
-                  className="hover:text-white"
+                  className="hover:text-foreground"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -121,9 +121,9 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
         className="input-field w-full text-sm mb-2"
       />
 
-      <div className={`${pickerHeight} overflow-y-auto rounded-xl border border-dark-800 bg-dark-900/40 p-1.5 space-y-1`}>
+      <div className={`${pickerHeight} overflow-y-auto rounded-xl border border-border bg-surface/40 p-1.5 space-y-1`}>
         {Object.keys(grouped).length === 0 ? (
-          <p className="text-dark-500 text-xs text-center py-4">
+          <p className="text-muted text-xs text-center py-4">
             {loaded ? 'مفيش نتائج' : 'جاري التحميل…'}
           </p>
         ) : (
@@ -135,20 +135,20 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
                 <button
                   type="button"
                   onClick={() => toggleCat(catName)}
-                  className="w-full flex items-center gap-2 px-2.5 py-2 bg-dark-800/40 hover:bg-dark-800/70 transition-colors"
+                  className="w-full flex items-center gap-2 px-2.5 py-2 bg-surface-secondary/40 hover:bg-surface-secondary/70 transition-colors"
                 >
                   <ChevronDown
-                    className={`w-4 h-4 text-dark-400 transition-transform ${open ? '' : '-rotate-90'}`}
+                    className={`w-4 h-4 text-muted transition-transform ${open ? '' : '-rotate-90'}`}
                   />
-                  <span className="flex-1 text-right text-white text-sm font-bold">
+                  <span className="flex-1 text-right text-foreground text-sm font-bold">
                     {catName}
                   </span>
                   {selectedCount > 0 && (
-                    <span className="text-[10px] font-bold bg-primary-500/20 text-primary-300 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] font-bold bg-accent/20 text-accent px-1.5 py-0.5 rounded">
                       {selectedCount}
                     </span>
                   )}
-                  <span className="text-dark-500 text-[10px] font-bold">
+                  <span className="text-muted text-[10px] font-bold">
                     {items.length}
                   </span>
                 </button>
@@ -162,14 +162,14 @@ const ProductMultiSelect = ({ selectedIds = [], onChange, compact = false, label
                           key={p.id}
                           className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer text-sm transition-colors
                             ${checked
-                              ? 'bg-primary-500/15 text-primary-200'
-                              : 'hover:bg-dark-800/60 text-dark-200'}`}
+                              ? 'bg-accent/15 text-accent'
+                              : 'hover:bg-surface-secondary/60 text-foreground'}`}
                         >
                           <input
                             type="checkbox"
                             checked={checked}
                             onChange={() => toggle(p.id)}
-                            className="w-3.5 h-3.5 accent-primary-500"
+                            className="w-3.5 h-3.5 accent-accent"
                           />
                           <span className="flex-1">{p.name}</span>
                         </label>

@@ -28,7 +28,7 @@ const PlatformBadge = ({ platform }) => {
   if (platform === 'instagram') {
     return (
       <span
-        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-white"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-foreground"
         style={{ background: 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)' }}
         title="جاء من إنستاجرام"
       >
@@ -42,7 +42,7 @@ const PlatformBadge = ({ platform }) => {
   if (platform === 'facebook') {
     return (
       <span
-        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-white"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-foreground"
         style={{ background: '#1877F2' }}
         title="جاء من فيسبوك"
       >
@@ -87,11 +87,11 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="card w-full max-w-lg p-6 space-y-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-black text-white flex items-center gap-2">
+          <h3 className="text-lg font-black text-foreground flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-violet-400" />
             تسجيل عملية شراء
           </h3>
-          <button onClick={onClose} className="text-dark-500 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-muted hover:text-foreground transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -109,7 +109,7 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
           )}
 
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1.5">الفرع</label>
+            <label className="block text-muted text-xs font-bold mb-1.5">الفرع</label>
             <select
               value={form.branch}
               onChange={(e) => setForm((f) => ({ ...f, branch: e.target.value }))}
@@ -124,7 +124,7 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
             </select>
           </div>
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1.5">رقم العقد</label>
+            <label className="block text-muted text-xs font-bold mb-1.5">رقم العقد</label>
             <input
               value={form.contract_number}
               onChange={(e) => setForm((f) => ({ ...f, contract_number: e.target.value }))}
@@ -134,7 +134,7 @@ const PurchaseModal = ({ userId, onClose, onSuccess }) => {
             />
           </div>
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1.5">ملاحظات</label>
+            <label className="block text-muted text-xs font-bold mb-1.5">ملاحظات</label>
             <textarea
               rows={2}
               value={form.notes}
@@ -224,8 +224,8 @@ const LeadDetail = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh]">
-        <div className="w-16 h-16 border-4 border-primary-900/20 border-t-primary-600 rounded-full animate-spin" />
-        <p className="text-dark-400 mt-6 font-bold tracking-widest uppercase text-xs">
+        <div className="w-16 h-16 border-4 border-accent/20 border-t-accent rounded-full animate-spin" />
+        <p className="text-muted mt-6 font-bold tracking-widest uppercase text-xs">
           جاري تحميل ملف العميل...
         </p>
       </div>
@@ -236,8 +236,8 @@ const LeadDetail = () => {
     return (
       <div className="flex items-center justify-center h-[60vh]">
         <div className="card p-10 text-center max-w-md border-rose-500/20">
-          <h3 className="text-xl font-black text-white mb-3">خطأ في تحميل البيانات</h3>
-          <p className="text-dark-400 mb-8 text-sm leading-relaxed">{error || 'لم يتم العثور على العميل'}</p>
+          <h3 className="text-xl font-black text-foreground mb-3">خطأ في تحميل البيانات</h3>
+          <p className="text-muted mb-8 text-sm leading-relaxed">{error || 'لم يتم العثور على العميل'}</p>
           <button onClick={() => navigate('/')} className="btn-primary w-full">
             العودة للرئيسية
           </button>
@@ -267,24 +267,24 @@ const LeadDetail = () => {
         <div className="flex items-center gap-6">
           <button
             onClick={() => navigate('/')}
-            className="w-12 h-12 flex items-center justify-center bg-dark-900 hover:bg-primary-600 text-dark-400 hover:text-white rounded-2xl border border-dark-800 transition-all active:scale-95 group"
+            className="w-12 h-12 flex items-center justify-center bg-surface hover:bg-accent text-muted hover:text-white rounded-2xl border border-border transition-all active:scale-95 group"
           >
             <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
           </button>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-6 h-1 bg-primary-600 rounded-full" />
-              <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">
+              <span className="w-6 h-1 bg-accent rounded-full" />
+              <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">
                 تفاصيل العميل
               </span>
             </div>
-            <h1 className="text-3xl font-black text-white tracking-tight">ملف العميل</h1>
+            <h1 className="text-3xl font-black text-foreground tracking-tight">ملف العميل</h1>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-dark-900 rounded-xl border border-dark-800">
-            <Clock className="w-4 h-4 text-dark-500" />
-            <span className="text-dark-400 text-xs font-bold">
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-surface rounded-xl border border-border">
+            <Clock className="w-4 h-4 text-muted" />
+            <span className="text-muted text-xs font-bold">
               آخر نشاط:{' '}
               {profile.last_activity
                 ? format(parseSqliteDate(profile.last_activity), 'd MMM yyyy', { locale: ar })
@@ -309,19 +309,19 @@ const LeadDetail = () => {
         <div className="p-8 md:p-10 relative z-10">
           <div className="flex flex-col md:flex-row items-start gap-8">
 
-            <div className="w-28 h-28 rounded-3xl bg-dark-800 border border-dark-700 flex items-center justify-center text-white text-4xl font-black">
+            <div className="w-28 h-28 rounded-3xl bg-surface-secondary border border-border flex items-center justify-center text-foreground text-4xl font-black">
               {profile.first_name?.charAt(0) || <User className="w-12 h-12" />}
             </div>
 
             <div className="flex-1 w-full">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="text-3xl font-black text-white mb-1">
+                  <h2 className="text-3xl font-black text-foreground mb-1">
                     {profile.first_name || 'غير معروف'}
                   </h2>
-                  <div className="flex items-center gap-2 text-dark-500 font-bold text-xs uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-muted font-bold text-xs uppercase tracking-wider">
                     <span>المعرف: {profile.user_id}</span>
-                    <span className="w-1 h-1 rounded-full bg-dark-700" />
+                    <span className="w-1 h-1 rounded-full bg-surface-tertiary" />
                     <span>
                       تاريخ الانضمام:{' '}
                       {profile.created_at
@@ -362,20 +362,20 @@ const LeadDetail = () => {
               {/* Core stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 <div>
-                  <p className="text-dark-500 text-xs">النقاط</p>
-                  <p className="text-white font-bold">{profile.total_score}</p>
+                  <p className="text-muted text-xs">النقاط</p>
+                  <p className="text-foreground font-bold">{profile.total_score}</p>
                 </div>
                 <div>
-                  <p className="text-dark-500 text-xs">مشاهدات</p>
-                  <p className="text-white font-bold">{profile.product_view_count}</p>
+                  <p className="text-muted text-xs">مشاهدات</p>
+                  <p className="text-foreground font-bold">{profile.product_view_count}</p>
                 </div>
                 <div>
-                  <p className="text-dark-500 text-xs">جلسات</p>
-                  <p className="text-white font-bold">{profile.session_count}</p>
+                  <p className="text-muted text-xs">جلسات</p>
+                  <p className="text-foreground font-bold">{profile.session_count}</p>
                 </div>
                 <div>
-                  <p className="text-dark-500 text-xs">الفرع</p>
-                  <p className="text-white font-bold">
+                  <p className="text-muted text-xs">الفرع</p>
+                  <p className="text-foreground font-bold">
                     {profile.preferred_branch ? formatBranch(profile.preferred_branch) : '—'}
                   </p>
                 </div>
@@ -383,26 +383,26 @@ const LeadDetail = () => {
 
               {/* O2O Attribution + phone row */}
               {(profile.campaign_source || profile.ad_id || profile.phone || profile.visit_code) && (
-                <div className="grid grid-cols-3 gap-4 p-4 rounded-xl bg-dark-900/60 border border-dark-800">
+                <div className="grid grid-cols-3 gap-4 p-4 rounded-xl bg-surface/60 border border-border">
                   <div>
-                    <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold flex items-center gap-1 mb-1">
+                    <p className="text-muted text-[10px] uppercase tracking-wider font-bold flex items-center gap-1 mb-1">
                       <Megaphone className="w-3 h-3" />
                       الحملة
                     </p>
-                    <p className="text-primary-300 text-sm font-bold">
+                    <p className="text-accent text-sm font-bold">
                       {profile.campaign_source || '—'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+                    <p className="text-muted text-[10px] uppercase tracking-wider font-bold mb-1">
                       Ad ID
                     </p>
-                    <p className="text-dark-300 text-sm font-mono">
+                    <p className="text-foreground text-sm font-mono">
                       {profile.ad_id || '—'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+                    <p className="text-muted text-[10px] uppercase tracking-wider font-bold mb-1">
                       📱 أرقام التليفون
                     </p>
                     {phones.length > 0 ? (
@@ -424,17 +424,17 @@ const LeadDetail = () => {
 
               {/* Every branch the customer asked about (compares branches) */}
               {requestedBranches.length > 0 && (
-                <div className="mt-4 p-4 rounded-xl bg-primary-500/5 border border-primary-500/20">
-                  <p className="text-primary-400 text-[10px] uppercase tracking-wider font-bold mb-2">
+                <div className="mt-4 p-4 rounded-xl bg-accent/5 border border-accent/20">
+                  <p className="text-accent text-[10px] uppercase tracking-wider font-bold mb-2">
                     📍 الفروع اللي طلبها
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {requestedBranches.map((b) => (
                       <span key={b.branch}
-                        className="text-xs bg-primary-500/10 border border-primary-500/25 text-primary-300 px-3 py-1 rounded-full font-bold">
+                        className="text-xs bg-accent/10 border border-accent/25 text-accent px-3 py-1 rounded-full font-bold">
                         {formatBranch(b.branch)}
                         {b.last_at && (
-                          <span className="text-primary-400/60 font-normal mr-1">
+                          <span className="text-accent/60 font-normal mr-1">
                             • {String(b.last_at).split(' ')[0]}
                           </span>
                         )}
@@ -476,20 +476,20 @@ const LeadDetail = () => {
           {/* Extra flags */}
           <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
-              <p className="text-dark-500 text-xs">آخر منتج</p>
-              <p className="text-white">{profile.last_product || '—'}</p>
+              <p className="text-muted text-xs">آخر منتج</p>
+              <p className="text-foreground">{profile.last_product || '—'}</p>
             </div>
             <div>
-              <p className="text-dark-500 text-xs">الفئة المهتم بيها</p>
-              <p className="text-white">{profile.last_category || '—'}</p>
+              <p className="text-muted text-xs">الفئة المهتم بيها</p>
+              <p className="text-foreground">{profile.last_category || '—'}</p>
             </div>
             <div>
-              <p className="text-dark-500 text-xs">طلب موقع</p>
-              <p className="text-white">{profile.location_requested ? '✔' : '—'}</p>
+              <p className="text-muted text-xs">طلب موقع</p>
+              <p className="text-foreground">{profile.location_requested ? '✔' : '—'}</p>
             </div>
             <div>
-              <p className="text-dark-500 text-xs">زيارة</p>
-              <p className="text-white">
+              <p className="text-muted text-xs">زيارة</p>
+              <p className="text-foreground">
                 {profile.visit_confirmed ? (
                   profile.visit_at
                     ? format(parseSqliteDate(profile.visit_at), 'd MMM yyyy', { locale: ar })
@@ -501,11 +501,11 @@ const LeadDetail = () => {
 
           {/* Last message the customer typed in chat */}
           {profile.last_input_text && (
-            <div className="mt-4 p-3 rounded-xl bg-dark-900/60 border border-dark-800">
-              <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+            <div className="mt-4 p-3 rounded-xl bg-surface/60 border border-border">
+              <p className="text-muted text-[10px] uppercase tracking-wider font-bold mb-1">
                 💬 آخر رسالة كتبها العميل
               </p>
-              <p className="text-dark-200 text-sm leading-relaxed">{profile.last_input_text}</p>
+              <p className="text-foreground text-sm leading-relaxed">{profile.last_input_text}</p>
             </div>
           )}
         </div>
@@ -514,7 +514,7 @@ const LeadDetail = () => {
       {/* ── Cross-branch journey ───────────────────────────────────────── */}
       {journey && (journey.visits?.length > 0 || journey.purchases?.length > 0) && (
         <div className={`card p-8 ${journey.multi_branch ? 'border-amber-500/30 bg-amber-500/[0.03]' : ''}`}>
-          <h3 className="text-xl font-black text-white mb-1 flex items-center gap-2">
+          <h3 className="text-xl font-black text-foreground mb-1 flex items-center gap-2">
             <MapPin className="w-5 h-5 text-amber-400" />
             رحلة العميل عبر الفروع
           </h3>
@@ -523,16 +523,16 @@ const LeadDetail = () => {
               🔀 العميل قارن بين {journey.branches.length} فروع — العمولة والملكية للسيلز اللي قفّل البيعة.
             </p>
           ) : (
-            <p className="text-dark-500 text-xs mb-5">كل تعاملات العميل في المعرض.</p>
+            <p className="text-muted text-xs mb-5">كل تعاملات العميل في المعرض.</p>
           )}
 
           {journey.owner && (
             <div className="mb-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
               <span className="text-emerald-300 text-xs font-black">المالك الحالي:</span>
-              <span className="text-white text-xs font-bold">
+              <span className="text-foreground text-xs font-bold">
                 {journey.owner.rep || '—'} · {formatBranch(journey.owner.branch)}
               </span>
-              <span className="text-dark-500 text-[10px]">
+              <span className="text-muted text-[10px]">
                 ({journey.owner.via === 'purchase' ? 'اشترى منه' : 'آخر زيارة'})
               </span>
             </div>
@@ -545,13 +545,13 @@ const LeadDetail = () => {
             ]
               .sort((a, b) => new Date(a.at || 0) - new Date(b.at || 0))
               .map((item, i) => (
-                <div key={i} className="flex items-start gap-3 py-2 border-b border-dark-800/60 last:border-0">
+                <div key={i} className="flex items-start gap-3 py-2 border-b border-border/60 last:border-0">
                   <span className="text-lg mt-0.5">{item.kind === 'purchase' ? '🛒' : '🏬'}</span>
                   <div className="flex-1">
-                    <p className="text-white text-sm font-bold">
+                    <p className="text-foreground text-sm font-bold">
                       {item.kind === 'purchase' ? 'اشترى من' : 'زار'} فرع {item.branch ? formatBranch(item.branch) : '—'}
                     </p>
-                    <p className="text-dark-400 text-xs">
+                    <p className="text-muted text-xs">
                       {item.who ? `وقف مع ${item.who}` : 'سيلز غير محدد'}
                       {item.at ? ` · ${new Date(item.at).toLocaleDateString('ar-EG')}` : ''}
                     </p>
@@ -565,27 +565,27 @@ const LeadDetail = () => {
       {/* ── Purchases ──────────────────────────────────────────────────── */}
       {purchases.length > 0 && (
         <div className="card p-8">
-          <h3 className="text-xl font-black text-white mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-black text-foreground mb-6 flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-violet-400" />
             سجل المشتريات
           </h3>
           <div className="space-y-3">
             {purchases.map((p) => (
-              <div key={p.id} className="py-3 border-b border-dark-800 last:border-0">
+              <div key={p.id} className="py-3 border-b border-border last:border-0">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <p className="text-white font-bold">
+                    <p className="text-foreground font-bold">
                       {p.items?.length
                         ? `${p.items.length} منتج`
                         : (p.product_id ? p.product_id.replace(/_/g, ' ') : 'منتج غير محدد')}
                     </p>
-                    <p className="text-dark-400 text-xs">
+                    <p className="text-muted text-xs">
                       {p.branch ? formatBranch(p.branch) : ''}{p.rep ? ` • ${p.rep}` : ''}
                       {p.contract_number ? ` • عقد ${p.contract_number}` : ''}
                     </p>
                   </div>
                   <div className="text-left">
-                    <p className="text-dark-500 text-xs">
+                    <p className="text-muted text-xs">
                       {format(parseSqliteDate(p.created_at), 'd MMM yyyy', { locale: ar })}
                     </p>
                   </div>
@@ -612,20 +612,20 @@ const LeadDetail = () => {
       {/* ── Follow-up activity (manager assignment + sales call log) ────── */}
       {(followups.length > 0 || followupLog.length > 0) && (
         <div className="card p-8">
-          <h3 className="text-xl font-black text-white mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-black text-foreground mb-6 flex items-center gap-2">
             <PhoneCall className="w-5 h-5 text-amber-400" />
             متابعة العميل
           </h3>
 
           {followups.map((f, i) => (
-            <div key={`fu-${i}`} className="mb-4 p-4 rounded-xl bg-dark-800/50 border border-dark-700">
+            <div key={`fu-${i}`} className="mb-4 p-4 rounded-xl bg-surface-secondary/50 border border-border">
               <div className="flex flex-wrap items-center gap-3 text-sm">
-                <span className="text-dark-400">الفرع:
-                  <b className="text-white mr-1">{f.branch ? formatBranch(f.branch) : '—'}</b>
+                <span className="text-muted">الفرع:
+                  <b className="text-foreground mr-1">{f.branch ? formatBranch(f.branch) : '—'}</b>
                 </span>
                 {f.assigned_sales && (
-                  <span className="text-dark-400">مسنود لـ:
-                    <b className="text-primary-400 mr-1">{f.assigned_sales}</b>
+                  <span className="text-muted">مسنود لـ:
+                    <b className="text-accent mr-1">{f.assigned_sales}</b>
                   </span>
                 )}
                 {f.followed_up ? (
@@ -638,7 +638,7 @@ const LeadDetail = () => {
                 )}
               </div>
               {f.call_summary && (
-                <p className="mt-3 text-sm text-dark-200 bg-dark-900/60 rounded-lg px-3 py-2 leading-relaxed">
+                <p className="mt-3 text-sm text-foreground bg-surface/60 rounded-lg px-3 py-2 leading-relaxed">
                   {f.call_summary}
                 </p>
               )}
@@ -647,15 +647,15 @@ const LeadDetail = () => {
 
           {followupLog.length > 0 && (
             <>
-              <p className="text-dark-500 text-[11px] uppercase tracking-wider font-bold mb-3 mt-2">
+              <p className="text-muted text-[11px] uppercase tracking-wider font-bold mb-3 mt-2">
                 سجل المكالمات
               </p>
               <div className="space-y-3">
                 {followupLog.map((l, i) => (
-                  <div key={`log-${i}`} className="border-b border-dark-800 pb-3 last:border-0">
+                  <div key={`log-${i}`} className="border-b border-border pb-3 last:border-0">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-white font-bold">{l.sales || '—'}</span>
-                      <span className="text-dark-500">
+                      <span className="text-foreground font-bold">{l.sales || '—'}</span>
+                      <span className="text-muted">
                         {l.followed_up_at
                           ? format(parseSqliteDate(l.followed_up_at), 'd MMM yyyy', { locale: ar })
                           : ''}
@@ -663,7 +663,7 @@ const LeadDetail = () => {
                       </span>
                     </div>
                     {l.call_summary && (
-                      <p className="mt-1.5 text-sm text-dark-300 leading-relaxed">{l.call_summary}</p>
+                      <p className="mt-1.5 text-sm text-foreground leading-relaxed">{l.call_summary}</p>
                     )}
                   </div>
                 ))}
@@ -678,17 +678,17 @@ const LeadDetail = () => {
 
       {/* ── Activity Timeline ───────────────────────────────────────────── */}
       <div className="card p-8">
-        <h3 className="text-xl font-black text-white mb-6">سجل النشاط</h3>
+        <h3 className="text-xl font-black text-foreground mb-6">سجل النشاط</h3>
 
         {history?.length > 0 ? (
           <div className="space-y-4">
             {history.map((event, index) => (
-              <div key={index} className="border-b border-dark-800 pb-4">
+              <div key={index} className="border-b border-border pb-4">
                 <div className="flex justify-between">
-                  <span className="text-white font-bold">
+                  <span className="text-foreground font-bold">
                     {formatEventType(event.event_type)}
                   </span>
-                  <span className="text-dark-400 text-xs">
+                  <span className="text-muted text-xs">
                     {format(
                       parseSqliteDate(event.created_at),
                       'd MMMM yyyy، hh:mm a',
@@ -702,7 +702,7 @@ const LeadDetail = () => {
                     ? `${event.event_value} • ${event.category}`
                     : (event.event_value || event.category);
                   return detail
-                    ? <p className="text-dark-300 text-sm mt-1">{detail}</p>
+                    ? <p className="text-foreground text-sm mt-1">{detail}</p>
                     : null;
                 })()}
                 <p className="text-emerald-400 text-xs mt-1">
@@ -712,7 +712,7 @@ const LeadDetail = () => {
             ))}
           </div>
         ) : (
-          <p className="text-dark-400">لا يوجد نشاط</p>
+          <p className="text-muted">لا يوجد نشاط</p>
         )}
       </div>
 
@@ -729,13 +729,13 @@ const LeadDetail = () => {
       {confirmDel && (
         <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
              role="dialog" aria-modal="true">
-          <div className="bg-dark-900 border border-rose-500/30 rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center" dir="rtl">
+          <div className="bg-surface border border-rose-500/30 rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center" dir="rtl">
             <div className="w-16 h-16 bg-rose-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-8 h-8 text-rose-500" />
             </div>
-            <h3 className="text-white font-black text-lg mb-2">تأكيد حذف العميل</h3>
-            <p className="text-dark-400 text-sm mb-1">
-              هتمسح <span className="text-white font-bold">{profile.first_name || 'العميل'}</span> وكل
+            <h3 className="text-foreground font-black text-lg mb-2">تأكيد حذف العميل</h3>
+            <p className="text-muted text-sm mb-1">
+              هتمسح <span className="text-foreground font-bold">{profile.first_name || 'العميل'}</span> وكل
               داتاه (الأحداث، التليفونات، الزيارات، المهام، المشتريات).
             </p>
             <p className="text-rose-400 text-xs font-bold mb-6">ده نهائي ومش هينفع يترجع.</p>

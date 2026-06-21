@@ -25,7 +25,7 @@ const STAGE_COLORS = {
   visit_confirmed:  { bar: '#4ade80', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
 };
 
-const DEFAULT_COLOR = { bar: '#64748b', text: 'text-dark-400', bg: 'bg-dark-800/40', border: 'border-dark-700/50' };
+const DEFAULT_COLOR = { bar: '#64748b', text: 'text-muted', bg: 'bg-surface-secondary/40', border: 'border-border/50' };
 
 // ── Drop-off indicator between two stages ─────────────────────────────────────
 const DropOff = ({ from, to }) => {
@@ -37,7 +37,7 @@ const DropOff = ({ from, to }) => {
 
   return (
     <div className="flex items-center justify-center py-1 gap-2 opacity-80">
-      <ArrowDown className="w-3 h-3 text-dark-600" />
+      <ArrowDown className="w-3 h-3 text-muted" />
       {dropped > 0 && (
         <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md inline-flex items-center gap-1
           ${isBad ? 'text-rose-400 bg-rose-500/10' : isMed ? 'text-amber-400 bg-amber-500/10' : 'text-emerald-400 bg-emerald-500/10'}
@@ -95,7 +95,7 @@ const FunnelChart = ({ data }) => {
   if (!mainStages.length) {
     return (
       <div className="card p-6 flex items-center justify-center min-h-[320px]">
-        <p className="text-dark-400 font-bold text-sm">لا توجد بيانات قمع بعد</p>
+        <p className="text-muted font-bold text-sm">لا توجد بيانات قمع بعد</p>
       </div>
     );
   }
@@ -107,20 +107,20 @@ const FunnelChart = ({ data }) => {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-bold text-dark-50">قمع التحويل</h3>
-          <p className="text-dark-500 text-xs mt-0.5">
+          <h3 className="text-lg font-bold text-foreground">قمع التحويل</h3>
+          <p className="text-muted text-xs mt-0.5">
             من مشاهدة المنتج → تأكيد الزيارة
           </p>
         </div>
         <div className="flex gap-3 flex-shrink-0">
           <div className="text-center px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
             <p className="text-emerald-400 text-lg font-black tabular-nums">{summary.overallConv}%</p>
-            <p className="text-dark-500 text-[9px] uppercase font-bold tracking-wide">تحويل كلي</p>
+            <p className="text-muted text-[9px] uppercase font-bold tracking-wide">تحويل كلي</p>
           </div>
           {summary.bestDrop?.pct > 0 && (
             <div className="text-center px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/20">
               <p className="text-rose-400 text-lg font-black tabular-nums">{summary.bestDrop.pct.toFixed(0)}%</p>
-              <p className="text-dark-500 text-[9px] uppercase font-bold tracking-wide">أعلى تسرّب</p>
+              <p className="text-muted text-[9px] uppercase font-bold tracking-wide">أعلى تسرّب</p>
             </div>
           )}
         </div>
@@ -129,11 +129,11 @@ const FunnelChart = ({ data }) => {
       {/* Awareness mini row */}
       {awarenessStages.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-dark-500 text-[10px] font-black uppercase tracking-widest ml-1">وعي:</span>
+          <span className="text-muted text-[10px] font-black uppercase tracking-widest ml-1">وعي:</span>
           {awarenessStages.map(s => (
-            <div key={s.type} className="flex items-center gap-1.5 px-2.5 py-1 bg-dark-800/40 rounded-lg border border-dark-700/50">
-              <span className="text-dark-300 text-[11px] font-bold">{s.name}</span>
-              <span className="text-dark-500 text-[10px] font-black tabular-nums">{s.value}</span>
+            <div key={s.type} className="flex items-center gap-1.5 px-2.5 py-1 bg-surface-secondary/40 rounded-lg border border-border/50">
+              <span className="text-foreground text-[11px] font-bold">{s.name}</span>
+              <span className="text-muted text-[10px] font-black tabular-nums">{s.value}</span>
             </div>
           ))}
         </div>
@@ -163,7 +163,7 @@ const FunnelChart = ({ data }) => {
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     {idx > 0 && prev.value > 0 && (
-                      <span className="text-dark-500 text-[10px] font-bold tabular-nums">
+                      <span className="text-muted text-[10px] font-bold tabular-nums">
                         {((stage.value / prev.value) * 100).toFixed(0)}% بقاء
                       </span>
                     )}
@@ -174,7 +174,7 @@ const FunnelChart = ({ data }) => {
                 </div>
 
                 {/* Bar */}
-                <div className="relative h-7 bg-dark-800/60 rounded-lg overflow-hidden">
+                <div className="relative h-7 bg-surface-secondary/60 rounded-lg overflow-hidden">
                   {/* Base fill */}
                   <div
                     className="absolute inset-y-0 right-0 rounded-lg transition-all duration-700 ease-out flex items-center justify-end px-3"
@@ -184,7 +184,7 @@ const FunnelChart = ({ data }) => {
                     }}
                   >
                     {pct > 18 && (
-                      <span className="text-[10px] font-black text-white/90">
+                      <span className="text-[10px] font-black text-foreground/90">
                         {pct.toFixed(0)}%
                       </span>
                     )}
@@ -200,10 +200,10 @@ const FunnelChart = ({ data }) => {
       {summary.bestDrop?.from && (
         <div className="p-3 rounded-xl bg-rose-500/5 border border-rose-500/15 flex items-start gap-2">
           <TrendingDown className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
-          <p className="text-dark-300 text-[11px] leading-relaxed">
+          <p className="text-foreground text-[11px] leading-relaxed">
             <span className="font-black text-rose-400">أكبر نقطة تسرّب</span>{' '}
-            بين <span className="text-white font-bold">{summary.bestDrop.from}</span>{' '}
-            و <span className="text-white font-bold">{summary.bestDrop.to}</span>{' '}
+            بين <span className="text-foreground font-bold">{summary.bestDrop.from}</span>{' '}
+            و <span className="text-foreground font-bold">{summary.bestDrop.to}</span>{' '}
             — {summary.bestDrop.pct.toFixed(0)}% من العملاء لم يكملوا هذه الخطوة.
           </p>
         </div>

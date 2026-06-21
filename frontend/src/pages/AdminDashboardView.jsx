@@ -54,7 +54,7 @@ const fmtNum = (n) => new Intl.NumberFormat('en-US').format(Math.round(n || 0));
 // ── Skeleton loader ───────────────────────────────────────────────────────────
 const Skeleton = ({ className = '' }) => (
   <div
-    className={`animate-pulse bg-gradient-to-r from-dark-800 via-dark-700 to-dark-800 rounded-xl ${className}`}
+    className={`animate-pulse bg-gradient-to-r from-surface-secondary via-surface-tertiary to-surface-secondary rounded-xl ${className}`}
     style={{ animation: 'shimmer 1.8s infinite', backgroundSize: '200% 100%' }}
   />
 );
@@ -163,7 +163,7 @@ const CustomersDomain = ({ data, navigate }) => {
 
   const StatTile = ({ icon: Icon, label, value, hint, color = 'primary' }) => {
     const tones = {
-      primary: 'text-primary-400 bg-primary-500/10',
+      primary: 'text-accent bg-accent/10',
       sky:     'text-sky-400 bg-sky-500/10',
       emerald: 'text-emerald-400 bg-emerald-500/10',
       amber:   'text-amber-400 bg-amber-500/10',
@@ -175,9 +175,9 @@ const CustomersDomain = ({ data, navigate }) => {
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${tones[color]}`}>
           <Icon className="w-5 h-5" />
         </div>
-        <p className="text-2xl font-black text-white">{value}</p>
-        <p className="text-dark-500 text-xs mt-1">{label}</p>
-        {hint && <p className="text-dark-600 text-[10px] mt-1">{hint}</p>}
+        <p className="text-2xl font-black text-foreground">{value}</p>
+        <p className="text-muted text-xs mt-1">{label}</p>
+        {hint && <p className="text-muted text-[10px] mt-1">{hint}</p>}
       </div>
     );
   };
@@ -219,7 +219,7 @@ const CustomersDomain = ({ data, navigate }) => {
           />
           {agingLoading ? (
             <div className="card p-12 flex items-center justify-center">
-              <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
             </div>
           ) : (
             <>
@@ -229,11 +229,11 @@ const CustomersDomain = ({ data, navigate }) => {
                 <StatTile icon={Activity} label="آخر شهر"        value={ages.month} hint="8-30 يوم"     color="amber" />
                 <StatTile icon={Activity} label="أقدم من شهر"    value={ages.older} hint="فوق 30 يوم"   color="slate" />
               </div>
-              <div className="card p-5 text-dark-400 text-xs leading-relaxed">
-                المجموع: <b className="text-white">{ages.total}</b> عميل بتاريخ إنشاء.
+              <div className="card p-5 text-muted text-xs leading-relaxed">
+                المجموع: <b className="text-foreground">{ages.total}</b> عميل بتاريخ إنشاء.
                 <br />
                 💡 العملاء القدامى (أقدم من شهر) لو لسه باردين، غالباً مش هيتحوّلوا.
-                راجع <b className="text-white">إعدادات النظام → lead_expiry_days</b> عشان تظبط مدة الصلاحية.
+                راجع <b className="text-foreground">إعدادات النظام → lead_expiry_days</b> عشان تظبط مدة الصلاحية.
               </div>
             </>
           )}
@@ -250,8 +250,8 @@ const CustomersDomain = ({ data, navigate }) => {
           />
           <div className="card p-6 text-center">
             <Megaphone className="w-10 h-10 text-amber-400 mx-auto mb-3" />
-            <p className="text-white font-black mb-2">تحليل المصادر متاح في قسم الحملات</p>
-            <p className="text-dark-400 text-xs mb-4">صفحة الحملات بتعرض أداء كل حملة وعدد العملاء منها</p>
+            <p className="text-foreground font-black mb-2">تحليل المصادر متاح في قسم الحملات</p>
+            <p className="text-muted text-xs mb-4">صفحة الحملات بتعرض أداء كل حملة وعدد العملاء منها</p>
             <button onClick={() => navigate('/campaigns')} className="btn-primary text-xs">
               افتح قسم الحملات ←
             </button>
@@ -260,7 +260,7 @@ const CustomersDomain = ({ data, navigate }) => {
       )}
 
       <div className="card p-4 flex items-center justify-between gap-4 flex-wrap text-xs">
-        <div className="text-dark-400">
+        <div className="text-muted">
           📂 محتاج تشوف القائمة الكاملة بالفلاتر والتصدير؟
         </div>
         <button onClick={() => navigate('/leads')} className="btn-secondary">
@@ -303,11 +303,11 @@ const BranchesDomain = ({ data }) => {
           />
           {/* Date filter for this section */}
           <div className="card p-4 flex flex-wrap items-end gap-4">
-            <div className="flex items-center gap-2 text-dark-400 text-xs font-black">
+            <div className="flex items-center gap-2 text-muted text-xs font-black">
               <BarChart3 className="w-4 h-4" /> فلترة بالتاريخ
             </div>
             <div className="space-y-1">
-              <label className="text-dark-500 text-[10px] font-black uppercase">من تاريخ</label>
+              <label className="text-muted text-[10px] font-black uppercase">من تاريخ</label>
               <input
                 type="date" dir="ltr"
                 value={dateRange.startDate}
@@ -316,7 +316,7 @@ const BranchesDomain = ({ data }) => {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-dark-500 text-[10px] font-black uppercase">إلى تاريخ</label>
+              <label className="text-muted text-[10px] font-black uppercase">إلى تاريخ</label>
               <input
                 type="date" dir="ltr"
                 value={dateRange.endDate}
@@ -423,13 +423,13 @@ const RepsDomain = () => {
           />
           {loading ? (
             <div className="card p-12 flex items-center justify-center">
-              <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
             </div>
           ) : data.rows.length === 0 ? (
             <div className="card p-12 text-center">
-              <Headset className="w-10 h-10 text-dark-700 mx-auto mb-3" />
-              <p className="text-dark-400 font-bold">لسه مفيش مناديب</p>
-              <p className="text-dark-600 text-xs mt-1">
+              <Headset className="w-10 h-10 text-muted mx-auto mb-3" />
+              <p className="text-muted font-bold">لسه مفيش مناديب</p>
+              <p className="text-muted text-xs mt-1">
                 ضيف مستخدمين بصلاحية "مندوب" من إعدادات النظام عشان تظهر بياناتهم هنا
               </p>
             </div>
@@ -438,7 +438,7 @@ const RepsDomain = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs whitespace-nowrap">
                   <thead>
-                    <tr className="bg-dark-800/60 text-dark-400 text-right font-black uppercase tracking-wider">
+                    <tr className="bg-surface-secondary/60 text-muted text-right font-black uppercase tracking-wider">
                       <th className="py-3 px-3">المندوب</th>
                       <th className="py-3 px-3 text-center">عملاء معيّنين</th>
                       <th className="py-3 px-3 text-center">ساخنين</th>
@@ -453,25 +453,25 @@ const RepsDomain = () => {
                   </thead>
                   <tbody>
                     {data.rows.map((r) => (
-                      <tr key={r.email} className="border-t border-dark-800/60 hover:bg-dark-800/20">
-                        <td className="py-3 px-3 text-white font-black">
+                      <tr key={r.email} className="border-t border-border/60 hover:bg-surface-secondary/20">
+                        <td className="py-3 px-3 text-foreground font-black">
                           {r.name}
                           {!r.active && <span className="mr-2 text-[10px] text-rose-400">(موقوف)</span>}
                         </td>
-                        <td className="py-3 px-3 text-center text-dark-200 font-bold">{r.leads_assigned}</td>
+                        <td className="py-3 px-3 text-center text-foreground font-bold">{r.leads_assigned}</td>
                         <td className="py-3 px-3 text-center text-rose-400 font-bold">{r.hot_leads}</td>
                         <td className="py-3 px-3 text-center text-sky-400 font-bold">{r.visited}</td>
                         <td className="py-3 px-3 text-center text-emerald-400 font-bold">{r.purchased}</td>
-                        <td className="py-3 px-3 text-center text-primary-400 font-bold">{r.messages_sent}</td>
+                        <td className="py-3 px-3 text-center text-accent font-bold">{r.messages_sent}</td>
                         <td className="py-3 px-3 text-center text-amber-400 font-bold">{r.tasks_pending}</td>
-                        <td className="py-3 px-3 text-center text-dark-300 font-bold">{r.tasks_done}</td>
+                        <td className="py-3 px-3 text-center text-muted font-bold">{r.tasks_done}</td>
                         <td className="py-3 px-3 text-center">
-                          <span className={`font-black ${r.conversion_rate >= 30 ? 'text-emerald-400' : r.conversion_rate >= 10 ? 'text-amber-400' : 'text-dark-500'}`}>
+                          <span className={`font-black ${r.conversion_rate >= 30 ? 'text-emerald-400' : r.conversion_rate >= 10 ? 'text-amber-400' : 'text-muted'}`}>
                             {r.conversion_rate}%
                           </span>
                         </td>
                         <td className="py-3 px-3 text-center">
-                          <span className={`font-black ${r.close_rate >= 30 ? 'text-emerald-400' : r.close_rate >= 10 ? 'text-amber-400' : 'text-dark-500'}`}>
+                          <span className={`font-black ${r.close_rate >= 30 ? 'text-emerald-400' : r.close_rate >= 10 ? 'text-amber-400' : 'text-muted'}`}>
                             {r.close_rate}%
                           </span>
                         </td>
@@ -480,7 +480,7 @@ const RepsDomain = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="px-4 py-3 border-t border-dark-800 text-[11px] text-dark-500">
+              <div className="px-4 py-3 border-t border-border text-[11px] text-muted">
                 <b>التعيين تلقائي:</b> كل عميل يتوزّع على أقل مندوب حِملاً (auto-assign).
                 مدير النظام بيراقب الأداء بس، التشغيل في حسابات المناديب نفسهم.
               </div>
@@ -539,9 +539,9 @@ const ProductsDomain = ({ data, navigate }) => {
       )}
       {tab === 'categories' && (
         <div className="card p-6 text-center">
-          <Layers className="w-10 h-10 text-primary-400 mx-auto mb-3" />
-          <p className="text-white font-black mb-2">تحليل الفئات والـ drill-down للمنتجات</p>
-          <p className="text-dark-400 text-xs mb-4">صفحة كاملة فيها 6 فئات + drill-down لكل موديل</p>
+          <Layers className="w-10 h-10 text-accent mx-auto mb-3" />
+          <p className="text-foreground font-black mb-2">تحليل الفئات والـ drill-down للمنتجات</p>
+          <p className="text-muted text-xs mb-4">صفحة كاملة فيها 6 فئات + drill-down لكل موديل</p>
           <button onClick={() => navigate('/analytics')} className="btn-primary text-xs">
             افتح تحليل الفئات الكامل ←
           </button>
@@ -644,8 +644,8 @@ const AdminDashboardView = ({ view = 'overview' }) => {
           <div className="w-20 h-20 bg-rose-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <Activity className="w-10 h-10 text-rose-500" />
           </div>
-          <h3 className="text-xl font-black text-white mb-3">عذراً، حدث خطأ في الاتصال</h3>
-          <p className="text-dark-400 mb-8 text-sm leading-relaxed">{error}</p>
+          <h3 className="text-xl font-black text-foreground mb-3">عذراً، حدث خطأ في الاتصال</h3>
+          <p className="text-muted mb-8 text-sm leading-relaxed">{error}</p>
           <button onClick={refresh} className="btn-primary w-full py-4">إعادة محاولة الاتصال</button>
         </div>
       </div>
@@ -668,8 +668,8 @@ const AdminDashboardView = ({ view = 'overview' }) => {
               Admin — {VIEW_LABELS[view] || 'لوحة التحكم'}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">{VIEW_LABELS[view] || 'لوحة التحكم'}</h1>
-          <p className="text-dark-400 mt-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground">{VIEW_LABELS[view] || 'لوحة التحكم'}</h1>
+          <p className="text-muted mt-2">
             <span className="text-emerald-400 font-bold">{user?.name || 'مدير النظام'}</span>
             {' • '}مدير النظام
           </p>
@@ -680,7 +680,7 @@ const AdminDashboardView = ({ view = 'overview' }) => {
             className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold ${
               isVisible
                 ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400'
-                : 'bg-dark-800/50 border-dark-700 text-dark-400'
+                : 'bg-surface-secondary/50 border-border text-muted'
             }`}
           >
             {isVisible ? <Wifi className="w-3.5 h-3.5" /> : <WifiOff className="w-3.5 h-3.5" />}
@@ -710,11 +710,11 @@ const AdminDashboardView = ({ view = 'overview' }) => {
         <div className="space-y-10">
           {/* Filter bar — date range + branch (re-fetches the KPIs) */}
           <div className="card p-4 flex flex-wrap items-end gap-4">
-            <div className="flex items-center gap-2 text-dark-400 text-xs font-black">
+            <div className="flex items-center gap-2 text-muted text-xs font-black">
               <BarChart3 className="w-4 h-4" /> فلترة المؤشرات
             </div>
             <div className="space-y-1">
-              <label className="text-dark-500 text-[10px] font-black uppercase">من تاريخ</label>
+              <label className="text-muted text-[10px] font-black uppercase">من تاريخ</label>
               <input
                 type="date" dir="ltr"
                 value={kpiFilters.startDate}
@@ -723,7 +723,7 @@ const AdminDashboardView = ({ view = 'overview' }) => {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-dark-500 text-[10px] font-black uppercase">إلى تاريخ</label>
+              <label className="text-muted text-[10px] font-black uppercase">إلى تاريخ</label>
               <input
                 type="date" dir="ltr"
                 value={kpiFilters.endDate}
@@ -732,7 +732,7 @@ const AdminDashboardView = ({ view = 'overview' }) => {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-dark-500 text-[10px] font-black uppercase">الفرع</label>
+              <label className="text-muted text-[10px] font-black uppercase">الفرع</label>
               <select
                 value={kpiFilters.branch}
                 onChange={(e) => setKpiFilters(f => ({ ...f, branch: e.target.value }))}
@@ -821,11 +821,11 @@ const AdminDashboardView = ({ view = 'overview' }) => {
               accent="primary"
             />
             <div className="card p-4 flex flex-wrap items-end gap-4">
-              <div className="flex items-center gap-2 text-dark-400 text-xs font-black">
+              <div className="flex items-center gap-2 text-muted text-xs font-black">
                 <MapPin className="w-4 h-4" /> فلترة بالتاريخ
               </div>
               <div className="space-y-1">
-                <label className="text-dark-500 text-[10px] font-black uppercase">من تاريخ</label>
+                <label className="text-muted text-[10px] font-black uppercase">من تاريخ</label>
                 <input
                   type="date" dir="ltr"
                   value={branchRange.startDate}
@@ -834,7 +834,7 @@ const AdminDashboardView = ({ view = 'overview' }) => {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-dark-500 text-[10px] font-black uppercase">إلى تاريخ</label>
+                <label className="text-muted text-[10px] font-black uppercase">إلى تاريخ</label>
                 <input
                   type="date" dir="ltr"
                   value={branchRange.endDate}
@@ -889,9 +889,9 @@ const AdminDashboardView = ({ view = 'overview' }) => {
       {activeTab === 'guide'     && <ManyChatGuide />}
 
       {/* ── Footer ────────────────────────────────────── */}
-      <div className="text-center text-xs text-dark-500 print:hidden">
+      <div className="text-center text-xs text-muted print:hidden">
         آخر تحديث: <RelativeTime lastUpdated={lastUpdated} />
-        <span className="mx-2 text-dark-700">•</span>
+        <span className="mx-2 text-muted">•</span>
         {lastUpdated?.toLocaleTimeString('ar-EG')}
       </div>
 

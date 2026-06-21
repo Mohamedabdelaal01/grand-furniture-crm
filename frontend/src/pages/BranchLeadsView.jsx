@@ -25,7 +25,7 @@ import {
 
 const leadClassLabel = { cold: 'بارد', warm: 'دافئ', hot: 'ساخن', visited: 'زار', purchased: 'اشترى' };
 const leadClassBg = {
-  cold: 'bg-dark-700 text-dark-300', warm: 'bg-amber-500/10 text-amber-400',
+  cold: 'bg-surface-tertiary text-foreground', warm: 'bg-amber-500/10 text-amber-400',
   hot: 'bg-rose-500/10 text-rose-400', visited: 'bg-sky-500/10 text-sky-400',
   purchased: 'bg-emerald-500/10 text-emerald-400',
 };
@@ -52,9 +52,9 @@ function InlineEdit({ value, placeholder, onSave, type = 'text' }) {
       <button
         type="button"
         onClick={() => setEditing(true)}
-        className="group inline-flex items-center gap-1.5 text-right hover:text-primary-400 transition-colors"
+        className="group inline-flex items-center gap-1.5 text-right hover:text-accent transition-colors"
       >
-        <span className={value ? '' : 'text-dark-500'}>{value || placeholder}</span>
+        <span className={value ? '' : 'text-muted'}>{value || placeholder}</span>
         <Pencil className="w-3 h-3 opacity-0 group-hover:opacity-60 shrink-0" />
       </button>
     );
@@ -71,7 +71,7 @@ function InlineEdit({ value, placeholder, onSave, type = 'text' }) {
           if (e.key === 'Escape') { setDraft(value ?? ''); setEditing(false); }
         }}
         onBlur={commit}
-        className="w-32 bg-dark-900 border border-dark-600 rounded-lg px-2 py-1 text-sm text-white focus:border-primary-500 outline-none"
+        className="w-32 bg-surface border border-border rounded-lg px-2 py-1 text-sm text-foreground focus:border-accent outline-none"
       />
       <Check className="w-4 h-4 text-emerald-400 cursor-pointer" onMouseDown={commit} />
     </div>
@@ -85,7 +85,7 @@ function RepSelect({ value, reps, disabled, onChange }) {
       value={value || ''}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-dark-900 border border-dark-600 rounded-lg px-2 py-1 text-xs text-white focus:border-primary-500 outline-none disabled:opacity-40 max-w-[8.5rem]"
+      className="bg-surface border border-border rounded-lg px-2 py-1 text-xs text-foreground focus:border-accent outline-none disabled:opacity-40 max-w-[8.5rem]"
     >
       <option value="">— غير مسند —</option>
       {value && !reps.some((r) => r.name === value) && (
@@ -196,21 +196,21 @@ export default function BranchLeadsView() {
       {/* Search + refresh */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-dark-500 absolute top-1/2 -translate-y-1/2 right-3" />
+          <Search className="w-4 h-4 text-muted absolute top-1/2 -translate-y-1/2 right-3" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="ابحث بالاسم أو رقم التليفون..."
-            className="w-full bg-dark-800 border border-dark-700 rounded-xl pr-10 pl-4 py-2.5 text-sm text-white focus:border-primary-500 outline-none"
+            className="w-full bg-surface-secondary border border-border rounded-xl pr-10 pl-4 py-2.5 text-sm text-foreground focus:border-accent outline-none"
           />
           {q && (
-            <X className="w-4 h-4 text-dark-500 absolute top-1/2 -translate-y-1/2 left-3 cursor-pointer hover:text-white"
+            <X className="w-4 h-4 text-muted absolute top-1/2 -translate-y-1/2 left-3 cursor-pointer hover:text-foreground"
                onClick={() => setQ('')} />
           )}
         </div>
         <button
           onClick={() => load(q.trim())}
-          className="flex items-center gap-2 text-sm text-dark-300 bg-dark-800 border border-dark-700 rounded-xl px-4 py-2.5 hover:text-white hover:border-dark-600"
+          className="flex items-center gap-2 text-sm text-foreground bg-surface-secondary border border-border rounded-xl px-4 py-2.5 hover:text-foreground hover:border-border"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> تحديث
         </button>
@@ -220,7 +220,7 @@ export default function BranchLeadsView() {
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-dark-500 text-xs border-b border-dark-700">
+            <tr className="text-muted text-xs border-b border-border">
               <th className="text-right font-medium px-4 py-3">العميل</th>
               <th className="text-right font-medium px-4 py-3">التليفون</th>
               <th className="text-right font-medium px-4 py-3">التصنيف</th>
@@ -231,17 +231,17 @@ export default function BranchLeadsView() {
           </thead>
           <tbody>
             {loading && rows.length === 0 && (
-              <tr><td colSpan={6} className="text-center text-dark-500 py-10">جاري التحميل...</td></tr>
+              <tr><td colSpan={6} className="text-center text-muted py-10">جاري التحميل...</td></tr>
             )}
             {!loading && rows.length === 0 && (
-              <tr><td colSpan={6} className="text-center text-dark-500 py-10">
+              <tr><td colSpan={6} className="text-center text-muted py-10">
                 {q ? 'مفيش نتائج للبحث ده' : 'مفيش عملاء في الفرع ده'}
               </td></tr>
             )}
             {rows.map((r) => (
               <tr
                 key={r.user_id}
-                className={`border-b border-dark-800 hover:bg-dark-800/40 ${r.is_duplicate ? 'opacity-60' : ''}`}
+                className={`border-b border-border hover:bg-surface-secondary/40 ${r.is_duplicate ? 'opacity-60' : ''}`}
               >
                 {/* Name (inline-edit) */}
                 <td className="px-4 py-3">
@@ -260,7 +260,7 @@ export default function BranchLeadsView() {
                 </td>
 
                 {/* Phone (inline-edit) */}
-                <td className="px-4 py-3 font-mono text-dark-200" dir="ltr">
+                <td className="px-4 py-3 font-mono text-foreground" dir="ltr">
                   <InlineEdit
                     value={r.phone || ''}
                     placeholder="—"
@@ -280,7 +280,7 @@ export default function BranchLeadsView() {
                 <td className="px-4 py-3">
                   <RepSelect value={r.pre_visit_rep} reps={reps} onChange={(v) => changePre(r, v)} />
                   {r.pre_auto_assigned ? (
-                    <span className="block text-[10px] text-dark-500 mt-1">اسناد تلقائي</span>
+                    <span className="block text-[10px] text-muted mt-1">اسناد تلقائي</span>
                   ) : null}
                 </td>
 
@@ -289,7 +289,7 @@ export default function BranchLeadsView() {
                   {r.visited ? (
                     <RepSelect value={r.post_visit_rep} reps={reps} onChange={(v) => changePost(r, v)} />
                   ) : (
-                    <span className="text-xs text-dark-600">لسه مزارش</span>
+                    <span className="text-xs text-muted">لسه مزارش</span>
                   )}
                 </td>
 
@@ -302,7 +302,7 @@ export default function BranchLeadsView() {
                     className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-colors ${
                       r.is_duplicate
                         ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
-                        : 'bg-dark-700 text-dark-300 hover:bg-rose-500/15 hover:text-rose-400'
+                        : 'bg-surface-tertiary text-foreground hover:bg-rose-500/15 hover:text-rose-400'
                     }`}
                   >
                     {r.is_duplicate

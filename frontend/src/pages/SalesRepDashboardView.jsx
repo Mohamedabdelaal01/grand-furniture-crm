@@ -57,7 +57,7 @@ function TodaysVisitorsPanel({ repName }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-10">
-        <div className="w-6 h-6 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+        <div className="w-6 h-6 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -65,9 +65,9 @@ function TodaysVisitorsPanel({ repName }) {
   if (visitors.length === 0) {
     return (
       <div className="text-center py-10">
-        <Users className="w-10 h-10 text-dark-700 mx-auto mb-3" />
-        <p className="text-dark-400 font-bold text-sm">لسه محدش وقف معاك النهارده</p>
-        <p className="text-dark-600 text-xs mt-1">أول ما الاستقبال يسجّل زيارة ليك هتظهر هنا تلقائي</p>
+        <Users className="w-10 h-10 text-muted mx-auto mb-3" />
+        <p className="text-muted font-bold text-sm">لسه محدش وقف معاك النهارده</p>
+        <p className="text-muted text-xs mt-1">أول ما الاستقبال يسجّل زيارة ليك هتظهر هنا تلقائي</p>
       </div>
     );
   }
@@ -80,17 +80,17 @@ function TodaysVisitorsPanel({ repName }) {
           className={`flex items-center gap-3 p-3.5 rounded-xl border ${
             v.my_purchases > 0
               ? 'bg-emerald-500/5 border-emerald-500/20'
-              : 'bg-dark-800/40 border-dark-700'
+              : 'bg-surface-secondary/40 border-border'
           }`}
         >
           <div className="flex-1 min-w-0">
             <button
               onClick={() => navigate(`/leads/${v.user_id}`)}
-              className="text-white font-black text-sm hover:text-primary-400 transition-colors truncate block text-right"
+              className="text-foreground font-black text-sm hover:text-accent transition-colors truncate block text-right"
             >
               {v.first_name || 'عميل'}
             </button>
-            <div className="flex items-center gap-2 mt-0.5 flex-wrap text-[11px] text-dark-400">
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap text-[11px] text-muted">
               {v.phones && (
                 <span className="font-mono flex items-center gap-1" dir="ltr">
                   <Phone className="w-3 h-3" />{v.phones}
@@ -119,7 +119,7 @@ function TodaysVisitorsPanel({ repName }) {
                 <button
                   onClick={() => navigate('/revisit')}
                   title="روح صفحة المتابعة"
-                  className="flex items-center gap-1 text-[11px] font-black px-2 py-1 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 text-primary-300 transition-colors"
+                  className="flex items-center gap-1 text-[11px] font-black px-2 py-1 rounded-lg bg-accent/15 hover:bg-accent/25 border border-accent/30 text-accent transition-colors"
                 >
                   <PhoneCall className="w-3 h-3" />
                   تابعه
@@ -133,7 +133,7 @@ function TodaysVisitorsPanel({ repName }) {
       {/* Quick link to the full revisit page */}
       <button
         onClick={() => navigate('/revisit')}
-        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dark-700 bg-dark-800/30 hover:bg-dark-800 text-dark-400 hover:text-white text-xs font-bold transition-colors mt-1"
+        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border bg-surface-secondary/30 hover:bg-surface-secondary text-muted hover:text-foreground text-xs font-bold transition-colors mt-1"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         فتح صفحة المتابعة الكاملة
@@ -158,7 +158,7 @@ const RelativeTime = ({ lastUpdated }) => {
 // ── Personal quick-stat card ──────────────────────────────────────────────────
 const StatChip = ({ icon: Icon, label, value, color = 'primary' }) => {
   const colors = {
-    primary: 'bg-primary-500/10 border-primary-500/20 text-primary-400',
+    primary: 'bg-accent/10 border-accent/20 text-accent',
     amber:   'bg-amber-500/10 border-amber-500/20 text-amber-400',
     emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
   };
@@ -219,14 +219,14 @@ const SalesRepDashboardView = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <span className="w-8 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-xs uppercase tracking-[0.2em]">
+            <span className="w-8 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-xs uppercase tracking-[0.2em]">
               Sales Rep Dashboard
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">أهلاً، {repName}</h1>
-          <p className="text-dark-400 mt-1">
-            Level <span className="text-primary-400 font-bold">{gamification.level.level}</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground">أهلاً، {repName}</h1>
+          <p className="text-muted mt-1">
+            Level <span className="text-accent font-bold">{gamification.level.level}</span>
             {' • '}
             <span className="text-amber-400 font-bold">{gamification.totalXp} XP</span>
             {' • '}مندوب مبيعات
@@ -239,7 +239,7 @@ const SalesRepDashboardView = () => {
             className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold ${
               isVisible
                 ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400'
-                : 'bg-dark-800/50 border-dark-700 text-dark-400'
+                : 'bg-surface-secondary/50 border-border text-muted'
             }`}
           >
             {isVisible ? <Wifi className="w-3.5 h-3.5" /> : <WifiOff className="w-3.5 h-3.5" />}
@@ -303,8 +303,8 @@ const SalesRepDashboardView = () => {
         {/* Personal sales target — motivational progress bar */}
         <div className="card p-5">
           <div className="flex items-center gap-2 mb-1">
-            <Target className="w-4 h-4 text-primary-400" />
-            <span className="text-white font-black text-sm">تعاقداتي</span>
+            <Target className="w-4 h-4 text-accent" />
+            <span className="text-foreground font-black text-sm">تعاقداتي</span>
             <span className="text-emerald-400 font-black text-sm mr-auto">
               {myTarget?.contracts ?? 0} تعاقد
             </span>
@@ -328,8 +328,8 @@ const SalesRepDashboardView = () => {
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-black transition-all ${
                 active
-                  ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                  : 'text-dark-400 hover:text-white hover:bg-dark-800/50 border border-transparent'
+                  ? 'bg-accent/20 text-accent border border-accent/30'
+                  : 'text-muted hover:text-foreground hover:bg-surface-secondary/50 border border-transparent'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -380,9 +380,9 @@ const SalesRepDashboardView = () => {
       )}
 
       {/* ── Footer ────────────────────────────────────── */}
-      <div className="text-center text-xs text-dark-500">
+      <div className="text-center text-xs text-muted">
         آخر تحديث: <RelativeTime lastUpdated={lastUpdated} />
-        <span className="mx-2 text-dark-700">•</span>
+        <span className="mx-2 text-muted">•</span>
         {lastUpdated?.toLocaleTimeString('ar-EG')}
       </div>
 

@@ -56,7 +56,7 @@ export default function LeadTasks({ userId }) {
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xl font-black text-white flex items-center gap-2">
+        <h3 className="text-xl font-black text-foreground flex items-center gap-2">
           <Bell className="w-5 h-5 text-amber-400" />
           المهام والتذكيرات
         </h3>
@@ -68,16 +68,16 @@ export default function LeadTasks({ userId }) {
       </div>
 
       {adding && (
-        <div className="bg-dark-800/50 border border-dark-700 rounded-xl p-4 mb-4 space-y-3" dir="rtl">
+        <div className="bg-surface-secondary/50 border border-border rounded-xl p-4 mb-4 space-y-3" dir="rtl">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-dark-300 text-xs font-bold mb-1.5">التاريخ</label>
+              <label className="block text-foreground text-xs font-bold mb-1.5">التاريخ</label>
               <input type="date" value={due} min={today}
                 onChange={(e) => setDue(e.target.value)}
                 className="input-field w-full" dir="ltr" />
             </div>
             <div>
-              <label className="block text-dark-300 text-xs font-bold mb-1.5">ملاحظة</label>
+              <label className="block text-foreground text-xs font-bold mb-1.5">ملاحظة</label>
               <input type="text" value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="مثال: متابعة عرض الأنتريه"
@@ -94,7 +94,7 @@ export default function LeadTasks({ userId }) {
       )}
 
       {tasks.length === 0 ? (
-        <p className="text-dark-500 text-sm text-center py-6">لا توجد مهام لهذا العميل</p>
+        <p className="text-muted text-sm text-center py-6">لا توجد مهام لهذا العميل</p>
       ) : (
         <div className="space-y-2">
           {tasks.map(t => {
@@ -103,30 +103,30 @@ export default function LeadTasks({ userId }) {
               <div key={t.id}
                 className={`flex items-center gap-3 p-3 rounded-xl border ${
                   t.status === 'done'
-                    ? 'border-dark-800 bg-dark-800/30 opacity-60'
+                    ? 'border-border bg-surface-secondary/30 opacity-60'
                     : overdue
                       ? 'border-rose-500/30 bg-rose-500/5'
-                      : 'border-dark-700 bg-dark-800/40'
+                      : 'border-border bg-surface-secondary/40'
                 }`}>
                 <button onClick={() => toggle(t)} title="تبديل الحالة"
-                  className={`flex-shrink-0 ${t.status === 'done' ? 'text-emerald-400' : 'text-dark-500 hover:text-emerald-400'}`}>
+                  className={`flex-shrink-0 ${t.status === 'done' ? 'text-emerald-400' : 'text-muted hover:text-emerald-400'}`}>
                   <CheckCircle2 className="w-5 h-5" />
                 </button>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${t.status === 'done' ? 'text-dark-500 line-through' : 'text-white'}`}>
+                  <p className={`text-sm ${t.status === 'done' ? 'text-muted line-through' : 'text-foreground'}`}>
                     {t.note || 'متابعة'}
                   </p>
                   <p className="text-[11px] mt-0.5 flex items-center gap-1.5">
                     {overdue
                       ? <span className="text-rose-400 font-bold flex items-center gap-1"><AlertCircle className="w-3 h-3" />متأخرة</span>
-                      : <Clock className="w-3 h-3 text-dark-500" />}
-                    <span className="text-dark-400">{t.due_at}</span>
-                    <span className="text-dark-600">• {t.rep_name}</span>
-                    {t.source === 'reschedule' && <span className="text-dark-600">• من مكالمة</span>}
+                      : <Clock className="w-3 h-3 text-muted" />}
+                    <span className="text-muted">{t.due_at}</span>
+                    <span className="text-muted">• {t.rep_name}</span>
+                    {t.source === 'reschedule' && <span className="text-muted">• من مكالمة</span>}
                   </p>
                 </div>
                 <button onClick={() => remove(t.id)} title="حذف"
-                  className="flex-shrink-0 p-1.5 rounded-lg text-dark-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+                  className="flex-shrink-0 p-1.5 rounded-lg text-muted hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>

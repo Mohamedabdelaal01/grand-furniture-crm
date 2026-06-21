@@ -54,18 +54,18 @@ export default function CrossBranchTags({ c }) {
         </span>
       )}
       {open && (
-        <div className="basis-full w-full mt-1.5 rounded-lg bg-dark-800/60 border border-amber-500/20 px-3 py-2 space-y-1" dir="rtl">
+        <div className="basis-full w-full mt-1.5 rounded-lg bg-surface-secondary/60 border border-amber-500/20 px-3 py-2 space-y-1" dir="rtl">
           {loading ? (
-            <p className="text-dark-500 text-[11px]">جاري التحميل...</p>
+            <p className="text-muted text-[11px]">جاري التحميل...</p>
           ) : items.length ? (
             items.map((it, i) => (
-              <p key={i} className="text-[11px] text-dark-200 leading-relaxed">
+              <p key={i} className="text-[11px] text-foreground leading-relaxed">
                 <span className="font-bold">{it.kind === 'purchase' ? '🛒 اشترى من' : '🏬 زار'} {it.branch ? formatBranch(it.branch) : '—'}</span>
-                {it.who ? <span className="text-dark-400"> — وقف مع {it.who}</span> : null}
+                {it.who ? <span className="text-muted"> — وقف مع {it.who}</span> : null}
               </p>
             ))
           ) : (
-            <p className="text-dark-500 text-[11px]">مفيش تفاصيل</p>
+            <p className="text-muted text-[11px]">مفيش تفاصيل</p>
           )}
         </div>
       )}

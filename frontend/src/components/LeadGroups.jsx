@@ -19,10 +19,10 @@ const GROUP_CONFIG = {
   highOpportunity: {
     title: 'فرصة عالية',
     icon: TrendingUp,
-    color: 'text-primary-400',
-    bg: 'bg-primary-500/5',
-    border: 'border-primary-500/20',
-    accent: 'bg-primary-500',
+    color: 'text-accent',
+    bg: 'bg-accent/5',
+    border: 'border-accent/20',
+    accent: 'bg-accent',
     description: 'احتمال تحويل عالي — تابع اليوم',
   },
   atRisk: {
@@ -37,10 +37,10 @@ const GROUP_CONFIG = {
   lowPriority: {
     title: 'أولوية منخفضة',
     icon: Layers,
-    color: 'text-dark-400',
-    bg: 'bg-dark-800/40',
-    border: 'border-dark-700',
-    accent: 'bg-dark-600',
+    color: 'text-muted',
+    bg: 'bg-surface-secondary/40',
+    border: 'border-border',
+    accent: 'bg-surface-tertiary',
     description: 'nurture — حملات عامة',
   },
 };
@@ -52,26 +52,26 @@ const LeadCard = ({ lead, assignee, onClick }) => {
       ? 'text-rose-400'
       : nextAction.priority === 'medium'
       ? 'text-amber-400'
-      : 'text-dark-400';
+      : 'text-muted';
 
   return (
     <div
       onClick={() => onClick(lead.user_id)}
-      className="bg-dark-900/50 hover:bg-dark-800/60 border border-dark-800 hover:border-primary-500/30 rounded-xl p-3 cursor-pointer transition-all"
+      className="bg-surface/50 hover:bg-surface-secondary/60 border border-border hover:border-accent/30 rounded-xl p-3 cursor-pointer transition-all"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="min-w-0 flex-1">
-          <p className="text-white font-black text-sm truncate">
+          <p className="text-foreground font-black text-sm truncate">
             {lead.first_name || 'غير معروف'}
           </p>
-          <p className="text-dark-400 text-[11px] mt-0.5">
+          <p className="text-muted text-[11px] mt-0.5">
             {formatBranch(lead.preferred_branch) || 'لم يحدد'}
           </p>
         </div>
         <BehaviorBadge behavior={lead.behavior} size="sm" />
       </div>
 
-      <div className="flex items-start gap-2 bg-dark-950/40 rounded-lg p-2 mb-2 border border-dark-800/50">
+      <div className="flex items-start gap-2 bg-background/40 rounded-lg p-2 mb-2 border border-border/50">
         <span className="text-base flex-shrink-0">{nextAction.icon}</span>
         <p className={`text-[11px] font-bold leading-snug ${prioClass}`}>
           {nextAction.action}
@@ -80,10 +80,10 @@ const LeadCard = ({ lead, assignee, onClick }) => {
 
       <div className="flex items-center justify-between text-[11px]">
         <div className="flex items-center gap-3">
-          <span className="text-primary-400 font-black">
+          <span className="text-accent font-black">
             {lead.conversion_probability}%
           </span>
-          <span className="text-dark-500">
+          <span className="text-muted">
             urgency: {lead.urgency_score}
           </span>
         </div>
@@ -114,10 +114,10 @@ const GroupSection = ({ groupKey, leads, assignments, onLeadClick }) => {
           </div>
           <div>
             <h3 className={`font-black ${cfg.color}`}>{cfg.title}</h3>
-            <p className="text-dark-500 text-[11px] mt-0.5">{cfg.description}</p>
+            <p className="text-muted text-[11px] mt-0.5">{cfg.description}</p>
           </div>
         </div>
-        <span className={`${cfg.accent} text-white font-black text-sm px-3 py-1 rounded-full`}>
+        <span className={`${cfg.accent} text-foreground font-black text-sm px-3 py-1 rounded-full`}>
           {leads.length}
         </span>
       </div>
@@ -147,7 +147,7 @@ const LeadGroups = ({ leads }) => {
   if (!leads || leads.length === 0) {
     return (
       <div className="card p-10 text-center">
-        <p className="text-dark-400">لا توجد بيانات عملاء</p>
+        <p className="text-muted">لا توجد بيانات عملاء</p>
       </div>
     );
   }

@@ -35,7 +35,7 @@ const AlertToast = ({ toasts = [], onDismiss, onClick }) => {
           <div
             key={toast.id}
             role="status"
-            className={`pointer-events-auto animate-toast-in bg-dark-900/95 backdrop-blur-md border ${meta.border} rounded-2xl shadow-2xl ${meta.shadow} overflow-hidden`}
+            className={`pointer-events-auto animate-toast-in bg-surface/95 backdrop-blur-md border ${meta.border} rounded-2xl shadow-2xl ${meta.shadow} overflow-hidden`}
             onClick={() => onClick?.(toast)}
             style={{ cursor: onClick ? 'pointer' : 'default' }}
           >
@@ -50,11 +50,11 @@ const AlertToast = ({ toasts = [], onDismiss, onClick }) => {
                 <div className={`text-[10px] font-black uppercase tracking-wider mb-1 ${meta.color}`}>
                   {meta.label}
                 </div>
-                <p className="text-white text-sm font-bold leading-snug">
+                <p className="text-foreground text-sm font-bold leading-snug">
                   {toast.message}
                 </p>
                 {toast.lead?.preferred_branch && (
-                  <p className="text-dark-400 text-xs mt-1">
+                  <p className="text-muted text-xs mt-1">
                     Priority: {toast.lead.priority_score}
                   </p>
                 )}
@@ -65,7 +65,7 @@ const AlertToast = ({ toasts = [], onDismiss, onClick }) => {
                   e.stopPropagation();
                   onDismiss?.(toast.id);
                 }}
-                className="text-dark-500 hover:text-white transition-colors p-1"
+                className="text-muted hover:text-foreground transition-colors p-1"
                 title="إغلاق"
                 aria-label="إغلاق الإشعار"
               >

@@ -66,11 +66,11 @@ export default function AuditLedger() {
               النظام والرقابة
             </span>
           </div>
-          <h1 className="text-3xl font-black text-white flex items-center gap-2">
+          <h1 className="text-3xl font-black text-foreground flex items-center gap-2">
             <ScrollText className="w-7 h-7 text-amber-400" />
             سجل العمليات
           </h1>
-          <p className="text-dark-400 text-sm mt-1">
+          <p className="text-muted text-sm mt-1">
             كل عمليات التعيين — تقدر تتراجع عن أي إجراء غلط وترجّع الحالة زي ما كانت
           </p>
         </div>
@@ -84,18 +84,18 @@ export default function AuditLedger() {
       <div className="card overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
           </div>
         ) : logs.length === 0 ? (
           <div className="p-12 text-center">
-            <ScrollText className="w-12 h-12 text-dark-600 mx-auto mb-3" />
-            <p className="text-dark-400 font-bold">لا توجد عمليات مسجّلة بعد</p>
+            <ScrollText className="w-12 h-12 text-muted mx-auto mb-3" />
+            <p className="text-muted font-bold">لا توجد عمليات مسجّلة بعد</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs whitespace-nowrap">
               <thead>
-                <tr className="bg-dark-800/60 text-dark-400 text-right font-black uppercase tracking-wider">
+                <tr className="bg-surface-secondary/60 text-muted text-right font-black uppercase tracking-wider">
                   <th className="py-3 px-4">التاريخ والوقت</th>
                   <th className="py-3 px-4">الموظف</th>
                   <th className="py-3 px-4">نوع الإجراء</th>
@@ -105,15 +105,15 @@ export default function AuditLedger() {
               </thead>
               <tbody>
                 {logs.map((log) => (
-                  <tr key={log.id} className="border-t border-dark-800/60 hover:bg-dark-800/20">
-                    <td className="py-3 px-4 text-dark-300">{fmtDateTime(log.created_at)}</td>
-                    <td className="py-3 px-4 text-white font-bold">{log.operator_name || '—'}</td>
+                  <tr key={log.id} className="border-t border-border/60 hover:bg-surface-secondary/20">
+                    <td className="py-3 px-4 text-foreground">{fmtDateTime(log.created_at)}</td>
+                    <td className="py-3 px-4 text-foreground font-bold">{log.operator_name || '—'}</td>
                     <td className="py-3 px-4">
-                      <span className="text-[11px] font-black px-2.5 py-1 rounded-full bg-primary-500/15 text-primary-300">
+                      <span className="text-[11px] font-black px-2.5 py-1 rounded-full bg-accent/15 text-accent">
                         {ACTION_LABELS[log.action_type] || log.action_type}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-dark-200 font-mono" dir="ltr">{log.target_id || '—'}</td>
+                    <td className="py-3 px-4 text-foreground font-mono" dir="ltr">{log.target_id || '—'}</td>
                     <td className="py-3 px-4">
                       <div className="flex justify-center">
                         {log.reverted ? (
@@ -153,25 +153,25 @@ export default function AuditLedger() {
                 <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />
                 </div>
-                <h3 className="text-white font-black">تأكيد التراجع</h3>
+                <h3 className="text-foreground font-black">تأكيد التراجع</h3>
               </div>
               <button
                 onClick={() => !busy && setConfirmLog(null)}
-                className="text-dark-400 hover:text-white"
+                className="text-muted hover:text-foreground"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-dark-300 text-sm leading-relaxed mb-2">
+            <p className="text-foreground text-sm leading-relaxed mb-2">
               هتتراجع عن إجراء
               <span className="text-amber-300 font-black mx-1">
                 {ACTION_LABELS[confirmLog.action_type] || confirmLog.action_type}
               </span>
               اللي عمله
-              <span className="text-white font-bold mx-1">{confirmLog.operator_name || '؟'}</span>.
+              <span className="text-foreground font-bold mx-1">{confirmLog.operator_name || '؟'}</span>.
             </p>
-            <p className="text-dark-500 text-xs mb-6">
+            <p className="text-muted text-xs mb-6">
               السيستم هيرجّع البيانات للحالة اللي كانت عليها قبل الإجراء ده.
             </p>
 

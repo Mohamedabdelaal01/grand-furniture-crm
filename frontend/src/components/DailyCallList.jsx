@@ -45,11 +45,11 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
   if (totalCount === 0) {
     return (
       <div className="card p-10 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-dark-800 flex items-center justify-center mx-auto mb-4">
-          <Phone className="w-7 h-7 text-dark-500" />
+        <div className="w-16 h-16 rounded-2xl bg-surface-secondary flex items-center justify-center mx-auto mb-4">
+          <Phone className="w-7 h-7 text-muted" />
         </div>
-        <p className="text-white font-black mb-1">لا توجد مكالمات مطلوبة النهارده</p>
-        <p className="text-dark-400 text-sm">هنعرضلك الأولويات أول ما تظهر</p>
+        <p className="text-foreground font-black mb-1">لا توجد مكالمات مطلوبة النهارده</p>
+        <p className="text-muted text-sm">هنعرضلك الأولويات أول ما تظهر</p>
       </div>
     );
   }
@@ -62,8 +62,8 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
     return (
       <div
         key={lead.user_id}
-        className={`flex items-start gap-3 py-3 px-4 border-b border-dark-800/50 last:border-0 transition-all ${
-          called ? 'opacity-50' : 'hover:bg-dark-800/30'
+        className={`flex items-start gap-3 py-3 px-4 border-b border-border/50 last:border-0 transition-all ${
+          called ? 'opacity-50' : 'hover:bg-surface-secondary/30'
         } print:border-b print:border-gray-300 print:opacity-100 print:py-2`}
       >
         {/* Check */}
@@ -72,15 +72,15 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
           className={`w-6 h-6 rounded-md flex-shrink-0 flex items-center justify-center border-2 transition-all mt-1 ${
             called
               ? 'bg-emerald-500 border-emerald-500'
-              : 'border-dark-600 hover:border-emerald-500'
+              : 'border-border hover:border-emerald-500'
           } print:border-black print:bg-white`}
           aria-label="تم الاتصال"
         >
-          {called && <Check className="w-4 h-4 text-white print:text-black" />}
+          {called && <Check className="w-4 h-4 text-foreground print:text-black" />}
         </button>
 
         {/* Rank */}
-        <span className="text-dark-500 font-black text-sm w-5 text-center flex-shrink-0 mt-1 print:text-black">
+        <span className="text-muted font-black text-sm w-5 text-center flex-shrink-0 mt-1 print:text-black">
           {index + 1}
         </span>
 
@@ -89,13 +89,13 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <div className="flex items-center gap-2">
               <span
-                className={`text-white font-black ${
-                  called ? 'line-through text-dark-500' : ''
+                className={`text-foreground font-black ${
+                  called ? 'line-through text-muted' : ''
                 } print:text-black print:no-underline`}
               >
                 {lead.first_name || 'غير معروف'}
               </span>
-              <span className="text-dark-500 text-xs print:text-gray-600">
+              <span className="text-muted text-xs print:text-gray-600">
                 • {formatBranch(lead.preferred_branch) || '—'}
               </span>
             </div>
@@ -104,42 +104,42 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
                 {formatLeadClass(lead.lead_class)}
               </span>
               <BehaviorBadge behavior={lead.behavior} size="sm" />
-              <span className="text-primary-400 font-black text-xs print:text-black">
+              <span className="text-accent font-black text-xs print:text-black">
                 U:{lead.urgency_score}
               </span>
             </div>
           </div>
 
-          <p className="text-dark-400 text-xs mt-1 leading-relaxed print:text-gray-700">
+          <p className="text-muted text-xs mt-1 leading-relaxed print:text-gray-700">
             {explanation}
           </p>
 
           <div className="flex items-center gap-3 mt-1.5 text-[11px]">
-            <span className={lead.next_action.priority === 'high' ? 'text-rose-400' : 'text-dark-500'}>
+            <span className={lead.next_action.priority === 'high' ? 'text-rose-400' : 'text-muted'}>
               {lead.next_action.icon} {lead.next_action.action}
             </span>
           </div>
 
           {/* Customer data — phone, product, sessions, ad source */}
-          <div className="flex items-center gap-x-3 gap-y-1 mt-1.5 text-[11px] text-dark-400 flex-wrap print:text-gray-700">
+          <div className="flex items-center gap-x-3 gap-y-1 mt-1.5 text-[11px] text-muted flex-wrap print:text-gray-700">
             {lead.phone && (
               <span dir="ltr" className="font-mono font-bold text-emerald-400 print:text-black">
                 📱 {lead.phone}
               </span>
             )}
             {lead.last_product && <span>🛋️ {lead.last_product}</span>}
-            {lead.last_category && <span className="text-dark-500">{lead.last_category}</span>}
+            {lead.last_category && <span className="text-muted">{lead.last_category}</span>}
             {lead.session_count != null && <span>جلسات: {lead.session_count}</span>}
             {lead.product_view_count != null && <span>مشاهدات: {lead.product_view_count}</span>}
             {lead.campaign_source && <span>📣 {lead.campaign_source}</span>}
           </div>
           {lead.last_input_text && (
-            <p className="text-[11px] text-dark-300 mt-1 leading-snug print:text-gray-700">
+            <p className="text-[11px] text-foreground mt-1 leading-snug print:text-gray-700">
               💬 {lead.last_input_text}
             </p>
           )}
 
-          <div className="flex items-center gap-3 mt-1 text-[11px] text-dark-500 print:text-gray-600">
+          <div className="flex items-center gap-3 mt-1 text-[11px] text-muted print:text-gray-600">
             <span>Conv: {lead.conversion_probability}%</span>
             <span>•</span>
             <span>Priority: {lead.priority_score}</span>
@@ -165,19 +165,19 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
       <div className="card p-5 print:shadow-none print:border-b print:border-black">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h2 className="text-2xl font-black text-white print:text-black">
+            <h2 className="text-2xl font-black text-foreground print:text-black">
               قائمة مكالمات اليوم
             </h2>
-            <p className="text-dark-400 text-sm mt-1 print:text-gray-700">{today}</p>
-            <p className="text-dark-500 text-xs mt-1 print:text-gray-700">
-              المندوب: <span className="text-white font-bold print:text-black">{currentRep}</span>
+            <p className="text-muted text-sm mt-1 print:text-gray-700">{today}</p>
+            <p className="text-muted text-xs mt-1 print:text-gray-700">
+              المندوب: <span className="text-foreground font-bold print:text-black">{currentRep}</span>
             </p>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-3 bg-dark-800/50 border border-dark-700 rounded-xl px-4 py-2 print:hidden">
+            <div className="flex items-center gap-3 bg-surface-secondary/50 border border-border rounded-xl px-4 py-2 print:hidden">
               <div>
-                <p className="text-dark-500 text-[10px] uppercase tracking-wider">تمّ</p>
+                <p className="text-muted text-[10px] uppercase tracking-wider">تمّ</p>
                 <p className="text-emerald-400 font-black text-lg">
                   {calledCount}/{totalCount}
                 </p>
@@ -204,7 +204,7 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
         </div>
 
         {/* Progress bar */}
-        <div className="mt-4 h-1.5 bg-dark-800 rounded-full overflow-hidden print:hidden">
+        <div className="mt-4 h-1.5 bg-surface-secondary rounded-full overflow-hidden print:hidden">
           <div
             className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all"
             style={{ width: `${totalCount > 0 ? (calledCount / totalCount) * 100 : 0}%` }}
@@ -221,24 +221,24 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
           <div
             key={rep}
             className={`card overflow-hidden print:shadow-none ${
-              isCurrentRep ? 'border-primary-500/30' : ''
+              isCurrentRep ? 'border-accent/30' : ''
             }`}
           >
             <div
-              className={`flex items-center justify-between px-5 py-3 border-b border-dark-800 ${
-                isCurrentRep ? 'bg-primary-500/5' : 'bg-dark-900/40'
+              className={`flex items-center justify-between px-5 py-3 border-b border-border ${
+                isCurrentRep ? 'bg-accent/5' : 'bg-surface/40'
               } print:bg-white print:border-black`}
             >
               <div className="flex items-center gap-2">
-                <Users className={`w-4 h-4 ${isCurrentRep ? 'text-primary-400' : 'text-dark-400'} print:text-black`} />
-                <span className="text-white font-black print:text-black">{rep}</span>
+                <Users className={`w-4 h-4 ${isCurrentRep ? 'text-accent' : 'text-muted'} print:text-black`} />
+                <span className="text-foreground font-black print:text-black">{rep}</span>
                 {isCurrentRep && (
-                  <span className="text-primary-400 text-[10px] font-black uppercase print:text-black">
+                  <span className="text-accent text-[10px] font-black uppercase print:text-black">
                     (أنت)
                   </span>
                 )}
               </div>
-              <span className="text-dark-400 text-xs font-bold print:text-black">
+              <span className="text-muted text-xs font-bold print:text-black">
                 {list.length} عميل
               </span>
             </div>
@@ -250,12 +250,12 @@ const DailyCallList = ({ leads, currentRep, onStartSession }) => {
       {/* Unassigned */}
       {groupedByRep.__unassigned__.length > 0 && (
         <div className="card overflow-hidden print:shadow-none">
-          <div className="flex items-center justify-between px-5 py-3 border-b border-dark-800 bg-dark-900/40 print:bg-white print:border-black">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-surface/40 print:bg-white print:border-black">
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-dark-400 print:text-black" />
-              <span className="text-white font-black print:text-black">بدون تعيين</span>
+              <Users className="w-4 h-4 text-muted print:text-black" />
+              <span className="text-foreground font-black print:text-black">بدون تعيين</span>
             </div>
-            <span className="text-dark-400 text-xs font-bold print:text-black">
+            <span className="text-muted text-xs font-bold print:text-black">
               {groupedByRep.__unassigned__.length} عميل
             </span>
           </div>

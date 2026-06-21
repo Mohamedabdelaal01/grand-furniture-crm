@@ -185,11 +185,11 @@ export default function ReceptionDesk({ lockedBranch = null }) {
 
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="w-16 h-16 bg-primary-500/10 border border-primary-500/20 rounded-3xl flex items-center justify-center mx-auto">
-          <Phone className="w-8 h-8 text-primary-400" />
+        <div className="w-16 h-16 bg-accent/10 border border-accent/20 rounded-3xl flex items-center justify-center mx-auto">
+          <Phone className="w-8 h-8 text-accent" />
         </div>
-        <h2 className="text-2xl font-black text-white">استقبال الزيارات</h2>
-        <p className="text-dark-400 text-sm">
+        <h2 className="text-2xl font-black text-foreground">استقبال الزيارات</h2>
+        <p className="text-muted text-sm">
           اسأل العميل عن رقم تليفونه واكتبه هنا لتأكيد وصوله للمعرض
         </p>
       </div>
@@ -200,8 +200,8 @@ export default function ReceptionDesk({ lockedBranch = null }) {
         {!lockedBranch && (
           <>
             <div>
-              <label className="block text-dark-400 text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-primary-400" />
+              <label className="block text-muted text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5 text-accent" />
                 الفرع اللي إنت فيه
               </label>
               <select
@@ -215,15 +215,15 @@ export default function ReceptionDesk({ lockedBranch = null }) {
                   <option key={b.id} value={b.id}>{b.name}</option>
                 ))}
               </select>
-              <p className="text-dark-600 text-[11px] mt-1">
+              <p className="text-muted text-[11px] mt-1">
                 اختاره مرة واحدة — السيستم هيفتكره. الزيارة هتتسجّل للفرع ده.
               </p>
             </div>
-            <div className="h-px bg-dark-800" />
+            <div className="h-px bg-surface-secondary" />
           </>
         )}
 
-        <label className="block text-dark-400 text-xs font-bold uppercase tracking-wider mb-1">
+        <label className="block text-muted text-xs font-bold uppercase tracking-wider mb-1">
           رقم تليفون العميل
         </label>
 
@@ -257,7 +257,7 @@ export default function ReceptionDesk({ lockedBranch = null }) {
           </button>
         </div>
 
-        <p className="text-dark-600 text-xs text-center">
+        <p className="text-muted text-xs text-center">
           اضغط Enter أو انقر تأكيد — أي صيغة للرقم تشتغل (01… أو ‎+20…)
         </p>
       </div>
@@ -273,20 +273,20 @@ export default function ReceptionDesk({ lockedBranch = null }) {
               <p className="text-emerald-400 text-xs font-black uppercase tracking-wider mb-1">
                 تأكيد الوصول ✓
               </p>
-              <h3 className="text-2xl font-black text-white mb-1">
+              <h3 className="text-2xl font-black text-foreground mb-1">
                 أهلاً بك، {result.first_name}!
               </h3>
               {result.branch && (
-                <div className="flex items-center gap-1.5 text-sm text-white font-bold mb-1">
+                <div className="flex items-center gap-1.5 text-sm text-foreground font-bold mb-1">
                   <span>🏬 جاي لفرع:</span>
                   <span className="text-emerald-300">{formatBranch(result.branch)}</span>
                 </div>
               )}
               {result.campaign_source && (
-                <div className="flex items-center gap-1.5 text-xs text-dark-400 font-bold">
-                  <Megaphone className="w-3.5 h-3.5 text-primary-400" />
+                <div className="flex items-center gap-1.5 text-xs text-muted font-bold">
+                  <Megaphone className="w-3.5 h-3.5 text-accent" />
                   <span>عبر حملة:</span>
-                  <span className="text-primary-300">{result.campaign_source}</span>
+                  <span className="text-accent">{result.campaign_source}</span>
                 </div>
               )}
               {result.pre_visit_rep && (
@@ -343,8 +343,8 @@ export default function ReceptionDesk({ lockedBranch = null }) {
                     🧍 وقف معاه في الزيارة السابقة: {result.last_showroom_rep}
                   </p>
                 )}
-                <label className="text-dark-300 text-xs font-bold mb-2 flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-primary-400" />
+                <label className="text-foreground text-xs font-bold mb-2 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-accent" />
                   مين السيلز اللي هيقف مع العميل؟
                   <span className="text-rose-400">(مطلوب)</span>
                 </label>
@@ -397,7 +397,7 @@ export default function ReceptionDesk({ lockedBranch = null }) {
           <button
             onClick={reset}
             disabled={!salesSaved && salesReps.length > 0}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-dark-800/60 disabled:hover:text-dark-300"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-border text-foreground hover:text-foreground text-sm font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface-secondary/60 disabled:hover:text-foreground"
           >
             <RotateCcw className="w-4 h-4" />
             تسجيل زيارة أخرى
@@ -416,20 +416,20 @@ export default function ReceptionDesk({ lockedBranch = null }) {
               <p className="text-rose-400 text-xs font-black uppercase tracking-wider mb-1">
                 خطأ
               </p>
-              <p className="text-white font-bold">{errMsg}</p>
+              <p className="text-foreground font-bold">{errMsg}</p>
             </div>
           </div>
           <div className="flex gap-3">
             <button
               onClick={reset}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-border text-foreground hover:text-foreground text-sm font-bold transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               حاول مرة أخرى
             </button>
             <button
               onClick={openWalkInForm}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 text-primary-300 text-sm font-bold transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-accent/15 hover:bg-accent/25 border border-accent/30 text-accent text-sm font-bold transition-colors"
             >
               <UserPlus className="w-4 h-4" />
               إضافة عميل جديد
@@ -440,19 +440,19 @@ export default function ReceptionDesk({ lockedBranch = null }) {
 
       {/* ── Walk-in customer form ───────────────────────── */}
       {state === FORM && (
-        <div className="card p-6 border-primary-500/30 bg-primary-500/5 space-y-4 animate-[fadeIn_0.3s_ease]">
+        <div className="card p-6 border-accent/30 bg-accent/5 space-y-4 animate-[fadeIn_0.3s_ease]">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-primary-500/15 rounded-2xl flex items-center justify-center flex-shrink-0">
-              <UserPlus className="w-5 h-5 text-primary-400" />
+            <div className="w-11 h-11 bg-accent/15 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <UserPlus className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <h3 className="text-white font-black">إضافة عميل جديد</h3>
-              <p className="text-dark-400 text-xs">عميل مش مسجّل على السيستم — هيتسجل كزيارة مؤكدة</p>
+              <h3 className="text-foreground font-black">إضافة عميل جديد</h3>
+              <p className="text-muted text-xs">عميل مش مسجّل على السيستم — هيتسجل كزيارة مؤكدة</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1">اسم العميل *</label>
+            <label className="block text-muted text-xs font-bold mb-1">اسم العميل *</label>
             <input
               value={formName}
               onChange={(e) => setFormName(e.target.value)}
@@ -463,7 +463,7 @@ export default function ReceptionDesk({ lockedBranch = null }) {
           </div>
 
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1">رقم التليفون *</label>
+            <label className="block text-muted text-xs font-bold mb-1">رقم التليفون *</label>
             <input
               value={formPhone}
               onChange={(e) => setFormPhone(e.target.value)}
@@ -477,7 +477,7 @@ export default function ReceptionDesk({ lockedBranch = null }) {
           </div>
 
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1">مهتم بإيه؟</label>
+            <label className="block text-muted text-xs font-bold mb-1">مهتم بإيه؟</label>
             <select
               value={formInterest}
               onChange={(e) => setFormInterest(e.target.value)}
@@ -491,7 +491,7 @@ export default function ReceptionDesk({ lockedBranch = null }) {
           </div>
 
           <div>
-            <label className="block text-dark-400 text-xs font-bold mb-1">عرفنا منين؟</label>
+            <label className="block text-muted text-xs font-bold mb-1">عرفنا منين؟</label>
             <select
               value={formSource}
               onChange={(e) => setFormSource(e.target.value)}
@@ -509,7 +509,7 @@ export default function ReceptionDesk({ lockedBranch = null }) {
           <div className="flex gap-3 pt-1">
             <button
               onClick={reset}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800/60 hover:bg-dark-800 border border-dark-700 text-dark-300 hover:text-white text-sm font-bold transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-secondary/60 hover:bg-surface-secondary border border-border text-foreground hover:text-foreground text-sm font-bold transition-colors"
             >
               إلغاء
             </button>

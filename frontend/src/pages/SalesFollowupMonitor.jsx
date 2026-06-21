@@ -20,7 +20,7 @@ const fmtDate = (iso) => {
 /** A small labelled count chip. tone ∈ assigned|good|warn|bad */
 function Stat({ label, value, tone = 'assigned' }) {
   const tones = {
-    assigned: 'text-dark-100 bg-dark-800/60',
+    assigned: 'text-foreground bg-surface-secondary/60',
     good: 'text-emerald-400 bg-emerald-500/10',
     warn: 'text-amber-400 bg-amber-500/10',
     bad: 'text-rose-400 bg-rose-500/10',
@@ -36,16 +36,16 @@ function Stat({ label, value, tone = 'assigned' }) {
 /** One follow-up note line (recent activity). */
 function NoteLine({ name, note, at }) {
   return (
-    <div className="flex items-start gap-2 py-1.5 border-b border-dark-800/40 last:border-0">
-      <MessageSquareText className="w-3.5 h-3.5 text-primary-400 mt-0.5 shrink-0" />
+    <div className="flex items-start gap-2 py-1.5 border-b border-border/40 last:border-0">
+      <MessageSquareText className="w-3.5 h-3.5 text-accent mt-0.5 shrink-0" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-white font-bold text-xs truncate">{name || '—'}</span>
-          <span className="text-dark-500 text-[10px] shrink-0" dir="ltr">{fmtDate(at)}</span>
+          <span className="text-foreground font-bold text-xs truncate">{name || '—'}</span>
+          <span className="text-muted text-[10px] shrink-0" dir="ltr">{fmtDate(at)}</span>
         </div>
         {note
-          ? <p className="text-dark-300 text-xs mt-0.5 leading-relaxed">{note}</p>
-          : <p className="text-dark-600 text-xs mt-0.5 italic">— من غير ملاحظة —</p>}
+          ? <p className="text-foreground text-xs mt-0.5 leading-relaxed">{note}</p>
+          : <p className="text-muted text-xs mt-0.5 italic">— من غير ملاحظة —</p>}
       </div>
     </div>
   );
@@ -54,11 +54,11 @@ function NoteLine({ name, note, at }) {
 /** A pending customer line (not yet followed up). */
 function PendingLine({ name, phone }) {
   return (
-    <div className="flex items-center justify-between gap-2 py-1.5 border-b border-dark-800/40 last:border-0">
-      <span className="text-dark-200 text-xs font-bold truncate flex items-center gap-1.5">
+    <div className="flex items-center justify-between gap-2 py-1.5 border-b border-border/40 last:border-0">
+      <span className="text-foreground text-xs font-bold truncate flex items-center gap-1.5">
         <Clock className="w-3 h-3 text-amber-400 shrink-0" /> {name || '—'}
       </span>
-      {phone && <span className="text-dark-500 font-mono text-[11px] shrink-0" dir="ltr">{phone}</span>}
+      {phone && <span className="text-muted font-mono text-[11px] shrink-0" dir="ltr">{phone}</span>}
     </div>
   );
 }
@@ -69,10 +69,10 @@ function FollowupPanel({ kind, data }) {
   const Icon  = isPre ? PhoneCall : MapPinned;
   const total = isPre ? data.assigned : data.total;
   return (
-    <div className="flex-1 rounded-2xl border border-dark-800 bg-dark-900/40 p-4 space-y-3">
+    <div className="flex-1 rounded-2xl border border-border bg-surface/40 p-4 space-y-3">
       <div className="flex items-center gap-2">
         <Icon className={`w-4 h-4 ${isPre ? 'text-sky-400' : 'text-violet-400'}`} />
-        <h4 className="text-white font-black text-sm">
+        <h4 className="text-foreground font-black text-sm">
           {isPre ? 'متابعة قبل الزيارة' : 'متابعة بعد الزيارة'}
         </h4>
       </div>
@@ -85,13 +85,13 @@ function FollowupPanel({ kind, data }) {
 
       {/* Recent notes the rep wrote */}
       <div>
-        <div className="text-dark-400 text-[11px] font-black mb-1 flex items-center gap-1.5">
+        <div className="text-muted text-[11px] font-black mb-1 flex items-center gap-1.5">
           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> آخر المتابعات اللي كتبها
         </div>
         {data.recent.length === 0 ? (
-          <p className="text-dark-600 text-xs italic py-1">لسه مكتبش أي متابعة</p>
+          <p className="text-muted text-xs italic py-1">لسه مكتبش أي متابعة</p>
         ) : (
-          <div className="rounded-xl bg-dark-950/40 px-3">
+          <div className="rounded-xl bg-background/40 px-3">
             {data.recent.map((n, i) => (
               <NoteLine key={i} name={n.first_name} at={isPre ? n.followed_up_at : n.created_at}
                         note={isPre ? n.call_summary : n.note} />
@@ -103,10 +103,10 @@ function FollowupPanel({ kind, data }) {
       {/* Still-pending customers */}
       {data.pending_list.length > 0 && (
         <div>
-          <div className="text-dark-400 text-[11px] font-black mb-1 flex items-center gap-1.5">
+          <div className="text-muted text-[11px] font-black mb-1 flex items-center gap-1.5">
             <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> لسه متابعهمش ({data.pending})
           </div>
-          <div className="rounded-xl bg-dark-950/40 px-3">
+          <div className="rounded-xl bg-background/40 px-3">
             {data.pending_list.map((c, i) => (
               <PendingLine key={i} name={c.first_name} phone={c.phone} />
             ))}
@@ -131,15 +131,15 @@ function RepCard({ rep, open, onToggle }) {
     <div className="card overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-3 p-4 text-right hover:bg-dark-800/30 transition-colors"
+        className="w-full flex items-center gap-3 p-4 text-right hover:bg-surface-secondary/30 transition-colors"
       >
-        <div className="w-10 h-10 rounded-xl bg-primary-600/20 text-primary-300 flex items-center justify-center font-black shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-accent/20 text-accent flex items-center justify-center font-black shrink-0">
           {(rep.sales_rep || '?').trim().slice(0, 2)}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-white font-black truncate">{rep.sales_rep}</span>
-            <span className="text-dark-500 text-xs">{formatBranch(rep.branch) || '—'}</span>
+            <span className="text-foreground font-black truncate">{rep.sales_rep}</span>
+            <span className="text-muted text-xs">{formatBranch(rep.branch) || '—'}</span>
             {idle && (
               <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400 flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" /> مش بيتابع
@@ -152,7 +152,7 @@ function RepCard({ rep, open, onToggle }) {
             {totalPending > 0 && <span className="text-amber-400">لسه {totalPending}</span>}
           </div>
         </div>
-        <ChevronDown className={`w-5 h-5 text-dark-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-5 h-5 text-muted shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
@@ -218,14 +218,14 @@ export default function SalesFollowupMonitor() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">الرقابة والمتابعة</span>
+            <span className="w-6 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">الرقابة والمتابعة</span>
           </div>
-          <h1 className="text-3xl font-black text-white flex items-center gap-2">
-            <Headset className="w-7 h-7 text-primary-400" />
+          <h1 className="text-3xl font-black text-foreground flex items-center gap-2">
+            <Headset className="w-7 h-7 text-accent" />
             متابعات السيلز
           </h1>
-          <p className="text-dark-400 text-sm mt-1">
+          <p className="text-muted text-sm mt-1">
             شوف كل سيلز بيتابع ولا لأ — متابعات قبل الزيارة وبعدها، والملاحظات اللي كتبها.
           </p>
         </div>
@@ -239,19 +239,19 @@ export default function SalesFollowupMonitor() {
       {!loading && reps.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="card p-4">
-            <div className="text-dark-400 text-[11px] font-bold mb-1">متابعة قبل الزيارة</div>
-            <div className="text-white font-black text-xl">{totals.preFollowed}<span className="text-dark-500 text-sm">/{totals.preAssigned}</span></div>
+            <div className="text-muted text-[11px] font-bold mb-1">متابعة قبل الزيارة</div>
+            <div className="text-foreground font-black text-xl">{totals.preFollowed}<span className="text-muted text-sm">/{totals.preAssigned}</span></div>
           </div>
           <div className="card p-4">
-            <div className="text-dark-400 text-[11px] font-bold mb-1">متابعة بعد الزيارة</div>
-            <div className="text-white font-black text-xl">{totals.postFollowed}<span className="text-dark-500 text-sm">/{totals.postTotal}</span></div>
+            <div className="text-muted text-[11px] font-bold mb-1">متابعة بعد الزيارة</div>
+            <div className="text-foreground font-black text-xl">{totals.postFollowed}<span className="text-muted text-sm">/{totals.postTotal}</span></div>
           </div>
           <div className="card p-4">
-            <div className="text-dark-400 text-[11px] font-bold mb-1">عدد السيلز</div>
-            <div className="text-white font-black text-xl">{reps.length}</div>
+            <div className="text-muted text-[11px] font-bold mb-1">عدد السيلز</div>
+            <div className="text-foreground font-black text-xl">{reps.length}</div>
           </div>
           <div className="card p-4">
-            <div className="text-dark-400 text-[11px] font-bold mb-1">مش بيتابعوا</div>
+            <div className="text-muted text-[11px] font-bold mb-1">مش بيتابعوا</div>
             <div className={`font-black text-xl ${totals.idle ? 'text-rose-400' : 'text-emerald-400'}`}>{totals.idle}</div>
           </div>
         </div>
@@ -260,7 +260,7 @@ export default function SalesFollowupMonitor() {
       {/* Search + expand all */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-dark-500 absolute right-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-muted absolute right-3 top-1/2 -translate-y-1/2" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -278,12 +278,12 @@ export default function SalesFollowupMonitor() {
       {/* List */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="card p-12 text-center">
-          <Headset className="w-12 h-12 text-dark-600 mx-auto mb-3" />
-          <p className="text-dark-400 font-bold">لا يوجد سيلز بمتابعات لعرضها</p>
+          <Headset className="w-12 h-12 text-muted mx-auto mb-3" />
+          <p className="text-muted font-bold">لا يوجد سيلز بمتابعات لعرضها</p>
         </div>
       ) : (
         <div className="space-y-3">

@@ -7,7 +7,7 @@ import { Award } from 'lucide-react';
 const BadgeShelf = ({ badges = [], compact = false }) => {
   if (!badges.length) {
     return compact ? null : (
-      <p className="text-dark-600 text-[11px]">لسه مفيش إنجازات مكتسبة</p>
+      <p className="text-muted text-[11px]">لسه مفيش إنجازات مكتسبة</p>
     );
   }
   return (

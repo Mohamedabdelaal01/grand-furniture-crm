@@ -62,20 +62,20 @@ function getEventTypes(series) {
 
 // Skeleton card
 const Skeleton = () => (
-  <div className="animate-pulse bg-dark-800 rounded-xl h-24" />
+  <div className="animate-pulse bg-surface-secondary rounded-xl h-24" />
 );
 
 // ── Custom tooltip for events chart ────────────────────────────────────────
 function EventsTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-dark-900 border border-dark-700 rounded-xl p-3 text-xs space-y-1 shadow-2xl">
-      <p className="text-dark-300 font-bold mb-2">{label}</p>
+    <div className="bg-surface border border-border rounded-xl p-3 text-xs space-y-1 shadow-2xl">
+      <p className="text-foreground font-bold mb-2">{label}</p>
       {payload.map(p => (
         <div key={p.dataKey} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className="text-dark-400">{p.dataKey}:</span>
-          <span className="text-white font-bold">{p.value}</span>
+          <span className="text-muted">{p.dataKey}:</span>
+          <span className="text-foreground font-bold">{p.value}</span>
         </div>
       ))}
     </div>
@@ -188,18 +188,18 @@ export default function Analytics() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="w-6 h-1 bg-primary-600 rounded-full" />
-          <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">التقارير والبيانات</span>
+          <span className="w-6 h-1 bg-accent rounded-full" />
+          <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">التقارير والبيانات</span>
         </div>
-        <h1 className="text-3xl font-black text-white">التحليلات المتقدمة</h1>
+        <h1 className="text-3xl font-black text-foreground">التحليلات المتقدمة</h1>
       </div>
 
       {/* Filter bar */}
       <div className="card p-4 flex flex-wrap gap-3 items-end sticky top-4 z-20 backdrop-blur-md">
-        <Filter className="w-4 h-4 text-dark-500 flex-shrink-0 self-center" />
+        <Filter className="w-4 h-4 text-muted flex-shrink-0 self-center" />
 
         <div className="space-y-1">
-          <label className="text-dark-500 text-[10px] font-black uppercase tracking-wider">من</label>
+          <label className="text-muted text-[10px] font-black uppercase tracking-wider">من</label>
           <input
             type="date"
             value={from}
@@ -210,7 +210,7 @@ export default function Analytics() {
         </div>
 
         <div className="space-y-1">
-          <label className="text-dark-500 text-[10px] font-black uppercase tracking-wider">إلى</label>
+          <label className="text-muted text-[10px] font-black uppercase tracking-wider">إلى</label>
           <input
             type="date"
             value={to}
@@ -221,7 +221,7 @@ export default function Analytics() {
         </div>
 
         <div className="space-y-1">
-          <label className="text-dark-500 text-[10px] font-black uppercase tracking-wider">الفرع</label>
+          <label className="text-muted text-[10px] font-black uppercase tracking-wider">الفرع</label>
           <select
             value={branch}
             onChange={(e) => setBranch(e.target.value)}
@@ -232,7 +232,7 @@ export default function Analytics() {
         </div>
 
         <div className="space-y-1">
-          <label className="text-dark-500 text-[10px] font-black uppercase tracking-wider">الحملة</label>
+          <label className="text-muted text-[10px] font-black uppercase tracking-wider">الحملة</label>
           <input
             type="text"
             value={campaign}
@@ -260,8 +260,8 @@ export default function Analytics() {
           <div className="w-16 h-16 bg-rose-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <BarChart3 className="w-8 h-8 text-rose-500" />
           </div>
-          <p className="text-white font-black mb-1">تعذّر تحميل التحليلات</p>
-          <p className="text-dark-400 text-sm mb-6">{error}</p>
+          <p className="text-foreground font-black mb-1">تعذّر تحميل التحليلات</p>
+          <p className="text-muted text-sm mb-6">{error}</p>
           <button onClick={load} className="btn-primary">
             <RefreshCw className="w-4 h-4" /> إعادة المحاولة
           </button>
@@ -285,11 +285,11 @@ export default function Analytics() {
       {/* Events trend */}
       {eventSeries.length > 0 && (
         <div className="card p-6">
-          <h3 className="text-white font-black text-lg mb-1 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-primary-400" />
+          <h3 className="text-foreground font-black text-lg mb-1 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-accent" />
             حركة الأحداث اليومية
           </h3>
-          <p className="text-dark-400 text-xs mb-6">
+          <p className="text-muted text-xs mb-6">
             {data?.meta?.from} — {data?.meta?.to}
           </p>
           <ResponsiveContainer width="100%" height={260}>
@@ -324,11 +324,11 @@ export default function Analytics() {
 
       {/* ── Categories framework — always visible (all 6) ──────── */}
       <div className="card p-6">
-        <h3 className="text-white font-black text-lg mb-1 flex items-center gap-2">
-          <Layers className="w-5 h-5 text-primary-400" />
+        <h3 className="text-foreground font-black text-lg mb-1 flex items-center gap-2">
+          <Layers className="w-5 h-5 text-accent" />
           تحليل الفئات
         </h3>
-        <p className="text-dark-500 text-xs mb-6">
+        <p className="text-muted text-xs mb-6">
           اضغط على أي فئة لعرض تحليل الموديلات بداخلها — كل عميل يُحتسب مرة واحدة لكل منتج/فئة
         </p>
 
@@ -343,36 +343,36 @@ export default function Analytics() {
                 onClick={() => setActiveCat(c.category)}
                 className={`text-right p-4 rounded-2xl border transition-all ${
                   active
-                    ? 'bg-primary-500/10 border-primary-500/40'
-                    : 'bg-dark-800/40 border-dark-700 hover:border-dark-600'
+                    ? 'bg-accent/10 border-accent/40'
+                    : 'bg-surface-secondary/40 border-border hover:border-border'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-2xl">{c.emoji}</span>
                   {total === 0 && (
-                    <span className="text-[10px] text-dark-600 bg-dark-800 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] text-muted bg-surface-secondary px-2 py-0.5 rounded-full">
                       لا بيانات بعد
                     </span>
                   )}
                 </div>
-                <p className="text-white font-black text-sm">{c.category}</p>
-                {c.note && <p className="text-dark-600 text-[10px] mb-2">{c.note}</p>}
+                <p className="text-foreground font-black text-sm">{c.category}</p>
+                {c.note && <p className="text-muted text-[10px] mb-2">{c.note}</p>}
                 <div className="grid grid-cols-2 gap-2 mt-3">
                   <div>
                     <p className="text-sky-400 font-black text-lg leading-none">{c.product_views}</p>
-                    <p className="text-dark-500 text-[10px] mt-1">مشاهدات منتجات</p>
+                    <p className="text-muted text-[10px] mt-1">مشاهدات منتجات</p>
                   </div>
                   <div>
                     <p className="text-violet-400 font-black text-lg leading-none">{c.category_requests}</p>
-                    <p className="text-dark-500 text-[10px] mt-1">طلبات الكتالوج</p>
+                    <p className="text-muted text-[10px] mt-1">طلبات الكتالوج</p>
                   </div>
                   <div>
-                    <p className="text-primary-400 font-black text-lg leading-none">{c.models_viewed}</p>
-                    <p className="text-dark-500 text-[10px] mt-1">موديلات</p>
+                    <p className="text-accent font-black text-lg leading-none">{c.models_viewed}</p>
+                    <p className="text-muted text-[10px] mt-1">موديلات</p>
                   </div>
                   <div>
                     <p className="text-emerald-400 font-black text-lg leading-none">{c.unique_users}</p>
-                    <p className="text-dark-500 text-[10px] mt-1">عملاء</p>
+                    <p className="text-muted text-[10px] mt-1">عملاء</p>
                   </div>
                 </div>
               </button>
@@ -381,8 +381,8 @@ export default function Analytics() {
         </div>
 
         {/* Comparison chart */}
-        <div className="mt-6 pt-6 border-t border-dark-800">
-          <p className="text-dark-400 text-xs font-bold mb-4">مقارنة الفئات</p>
+        <div className="mt-6 pt-6 border-t border-border">
+          <p className="text-muted text-xs font-bold mb-4">مقارنة الفئات</p>
           <ResponsiveContainer width="100%" height={categories.length * 52}>
             <BarChart data={categories} layout="vertical" margin={{ right: 24, left: 24 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
@@ -413,13 +413,13 @@ export default function Analytics() {
       {/* ── Per-category product drill-down (always visible) ────── */}
       {selectedCat && (
         <div className="card p-6">
-          <h3 className="text-white font-black text-lg mb-1 flex items-center gap-2">
+          <h3 className="text-foreground font-black text-lg mb-1 flex items-center gap-2">
             <Package className="w-5 h-5 text-sky-400" />
             موديلات فئة: <span className="text-sky-400">{selectedCat}</span>
           </h3>
           {catProducts.length > 0 ? (
             <>
-              <p className="text-dark-500 text-xs mb-6">
+              <p className="text-muted text-xs mb-6">
                 أعلى {catProducts.length} موديل مشاهدةً داخل هذه الفئة
               </p>
               <ResponsiveContainer width="100%" height={Math.max(200, catProducts.length * 34)}>
@@ -444,9 +444,9 @@ export default function Analytics() {
             </>
           ) : (
             <div className="py-12 text-center">
-              <Package className="w-10 h-10 text-dark-700 mx-auto mb-3" />
-              <p className="text-dark-400 text-sm font-bold">لا توجد مشاهدات منتجات في فئة "{selectedCat}" بعد</p>
-              <p className="text-dark-600 text-xs mt-1">
+              <Package className="w-10 h-10 text-muted mx-auto mb-3" />
+              <p className="text-muted text-sm font-bold">لا توجد مشاهدات منتجات في فئة "{selectedCat}" بعد</p>
+              <p className="text-muted text-xs mt-1">
                 هتظهر هنا أول ما عميل يضغط "عرض التفاصيل" على منتج من الفئة دي
               </p>
             </div>
@@ -457,8 +457,8 @@ export default function Analytics() {
       {/* Top products */}
       {topProducts.length > 0 && (
         <div className="card p-6">
-          <h3 className="text-white font-black text-lg mb-6 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-primary-400" />
+          <h3 className="text-foreground font-black text-lg mb-6 flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-accent" />
             أكثر المنتجات مشاهدةً (كل الفئات)
           </h3>
           <ResponsiveContainer width="100%" height={Math.max(200, topProducts.length * 36)}>
@@ -485,19 +485,19 @@ export default function Analytics() {
 
       {/* ── SALES: best-selling products (overall + per category) ───────────── */}
       <div className="card p-6">
-        <h3 className="text-white font-black text-lg mb-1 flex items-center gap-2">
+        <h3 className="text-foreground font-black text-lg mb-1 flex items-center gap-2">
           <ShoppingBag className="w-5 h-5 text-emerald-400" />
           أكثر المنتجات مبيعاً
         </h3>
-        <p className="text-dark-500 text-xs mb-6">
+        <p className="text-muted text-xs mb-6">
           من المبيعات الفعلية المسجّلة (المنتجات اللي اتباعت في العقود) — العدد = قطع مباعة. اضغط فئة لتفصيلها.
         </p>
 
         {totalUnitsSold === 0 ? (
           <div className="py-12 text-center">
-            <ShoppingBag className="w-10 h-10 text-dark-700 mx-auto mb-3" />
-            <p className="text-dark-400 text-sm font-bold">لسه مفيش مبيعات مسجّلة بمنتجات في الفترة دي</p>
-            <p className="text-dark-600 text-xs mt-1">
+            <ShoppingBag className="w-10 h-10 text-muted mx-auto mb-3" />
+            <p className="text-muted text-sm font-bold">لسه مفيش مبيعات مسجّلة بمنتجات في الفترة دي</p>
+            <p className="text-muted text-xs mt-1">
               هتظهر هنا أول ما السيلز يسجّل بيعة ويختار المنتج المباع
             </p>
           </div>
@@ -506,7 +506,7 @@ export default function Analytics() {
             {/* Best-selling overall */}
             {topSelling.length > 0 && (
               <div className="mb-6">
-                <p className="text-dark-400 text-xs font-bold mb-4">الأكثر مبيعاً (كل الفئات)</p>
+                <p className="text-muted text-xs font-bold mb-4">الأكثر مبيعاً (كل الفئات)</p>
                 <ResponsiveContainer width="100%" height={Math.max(180, topSelling.length * 36)}>
                   <BarChart data={topSelling} layout="vertical" margin={{ right: 20, left: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
@@ -524,8 +524,8 @@ export default function Analytics() {
             )}
 
             {/* Sales per category (clickable cards) */}
-            <div className="pt-6 border-t border-dark-800">
-              <p className="text-dark-400 text-xs font-bold mb-4">المبيعات حسب الفئة</p>
+            <div className="pt-6 border-t border-border">
+              <p className="text-muted text-xs font-bold mb-4">المبيعات حسب الفئة</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {salesCategories.map((c) => {
                   const active = selectedSalesCat === c.category;
@@ -534,28 +534,28 @@ export default function Analytics() {
                       key={c.category}
                       onClick={() => setActiveSalesCat(c.category)}
                       className={`text-right p-4 rounded-2xl border transition-all ${
-                        active ? 'bg-emerald-500/10 border-emerald-500/40' : 'bg-dark-800/40 border-dark-700 hover:border-dark-600'
+                        active ? 'bg-emerald-500/10 border-emerald-500/40' : 'bg-surface-secondary/40 border-border hover:border-border'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-2xl">{c.emoji}</span>
                         {c.units === 0 && (
-                          <span className="text-[10px] text-dark-600 bg-dark-800 px-2 py-0.5 rounded-full">مفيش مبيعات</span>
+                          <span className="text-[10px] text-muted bg-surface-secondary px-2 py-0.5 rounded-full">مفيش مبيعات</span>
                         )}
                       </div>
-                      <p className="text-white font-black text-sm">{c.category}</p>
+                      <p className="text-foreground font-black text-sm">{c.category}</p>
                       <div className="grid grid-cols-3 gap-2 mt-3">
                         <div>
                           <p className="text-emerald-400 font-black text-lg leading-none">{c.units}</p>
-                          <p className="text-dark-500 text-[10px] mt-1">قطع مباعة</p>
+                          <p className="text-muted text-[10px] mt-1">قطع مباعة</p>
                         </div>
                         <div>
                           <p className="text-sky-400 font-black text-lg leading-none">{c.products_sold}</p>
-                          <p className="text-dark-500 text-[10px] mt-1">منتجات</p>
+                          <p className="text-muted text-[10px] mt-1">منتجات</p>
                         </div>
                         <div>
-                          <p className="text-primary-400 font-black text-lg leading-none">{c.buyers}</p>
-                          <p className="text-dark-500 text-[10px] mt-1">عملاء</p>
+                          <p className="text-accent font-black text-lg leading-none">{c.buyers}</p>
+                          <p className="text-muted text-[10px] mt-1">عملاء</p>
                         </div>
                       </div>
                     </button>
@@ -566,8 +566,8 @@ export default function Analytics() {
 
             {/* Best-selling within the selected category */}
             {selectedSalesCat && (
-              <div className="mt-6 pt-6 border-t border-dark-800">
-                <p className="text-dark-300 text-sm font-black mb-4 flex items-center gap-2">
+              <div className="mt-6 pt-6 border-t border-border">
+                <p className="text-foreground text-sm font-black mb-4 flex items-center gap-2">
                   <Package className="w-4 h-4 text-emerald-400" />
                   الأكثر مبيعاً في: <span className="text-emerald-400">{selectedSalesCat}</span>
                 </p>
@@ -586,7 +586,7 @@ export default function Analytics() {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <p className="py-8 text-center text-dark-500 text-sm">مفيش مبيعات في فئة "{selectedSalesCat}" في الفترة دي</p>
+                  <p className="py-8 text-center text-muted text-sm">مفيش مبيعات في فئة "{selectedSalesCat}" في الفترة دي</p>
                 )}
               </div>
             )}
@@ -597,8 +597,8 @@ export default function Analytics() {
       {/* Platform performance — Instagram vs Facebook */}
       {platforms.length > 0 && (
         <div className="card p-6">
-          <h3 className="text-white font-black text-lg mb-6 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-primary-400" />
+          <h3 className="text-foreground font-black text-lg mb-6 flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-accent" />
             أداء المنصات
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -617,10 +617,10 @@ export default function Analytics() {
               return (
                 <div
                   key={p.platform}
-                  className="rounded-2xl overflow-hidden border border-dark-800 bg-dark-900/40"
+                  className="rounded-2xl overflow-hidden border border-border bg-surface/40"
                 >
                   <div
-                    className="px-5 py-3 flex items-center justify-between text-white"
+                    className="px-5 py-3 flex items-center justify-between text-foreground"
                     style={{ background: headerBg }}
                   >
                     <span className="font-black text-base">{label}</span>
@@ -630,25 +630,25 @@ export default function Analytics() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 p-5">
                     <div>
-                      <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+                      <p className="text-muted text-[10px] uppercase tracking-wider font-bold mb-1">
                         زيارات
                       </p>
-                      <p className="text-white font-black text-xl">{p.visits}</p>
-                      <p className="text-dark-400 text-xs font-bold">{visitRate}%</p>
+                      <p className="text-foreground font-black text-xl">{p.visits}</p>
+                      <p className="text-muted text-xs font-bold">{visitRate}%</p>
                     </div>
                     <div>
-                      <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+                      <p className="text-muted text-[10px] uppercase tracking-wider font-bold mb-1">
                         مبيعات
                       </p>
                       <p className="text-emerald-400 font-black text-xl">{p.purchases}</p>
-                      <p className="text-dark-400 text-xs font-bold">{conversion}%</p>
+                      <p className="text-muted text-xs font-bold">{conversion}%</p>
                     </div>
                     <div>
-                      <p className="text-dark-500 text-[10px] uppercase tracking-wider font-bold mb-1">
+                      <p className="text-muted text-[10px] uppercase tracking-wider font-bold mb-1">
                         تحويل لزيارة
                       </p>
-                      <p className="text-primary-300 font-black text-xl">{visitRate}%</p>
-                      <p className="text-dark-400 text-xs font-bold">من العملاء</p>
+                      <p className="text-accent font-black text-xl">{visitRate}%</p>
+                      <p className="text-muted text-xs font-bold">من العملاء</p>
                     </div>
                   </div>
                 </div>
@@ -661,9 +661,9 @@ export default function Analytics() {
       {/* Empty state */}
       {!loading && !error && !data?.eventsSeries?.length && (
         <div className="card p-16 text-center">
-          <BarChart3 className="w-12 h-12 text-dark-700 mx-auto mb-4" />
-          <p className="text-dark-400 font-bold">لا توجد بيانات في هذه الفترة</p>
-          <p className="text-dark-600 text-sm mt-1">جرّب تغيير نطاق التاريخ</p>
+          <BarChart3 className="w-12 h-12 text-muted mx-auto mb-4" />
+          <p className="text-muted font-bold">لا توجد بيانات في هذه الفترة</p>
+          <p className="text-muted text-sm mt-1">جرّب تغيير نطاق التاريخ</p>
         </div>
       )}
     </div>

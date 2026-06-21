@@ -15,18 +15,18 @@ const CustomTooltip = ({ active, payload, label }) => {
 
   return (
     <div className="card p-4 shadow-premium min-w-[160px] space-y-2">
-      <p className="text-dark-200 text-sm font-bold border-b border-dark-700 pb-2 mb-2">{label}</p>
+      <p className="text-foreground text-sm font-bold border-b border-border pb-2 mb-2">{label}</p>
       <div className="flex items-center justify-between gap-4">
-        <span className="text-dark-400 text-xs">طلبات</span>
+        <span className="text-muted text-xs">طلبات</span>
         <span className="text-amber-400 font-black">{demand}</span>
       </div>
       <div className="flex items-center justify-between gap-4">
-        <span className="text-dark-400 text-xs">زيارات فعلية</span>
+        <span className="text-muted text-xs">زيارات فعلية</span>
         <span className="text-emerald-400 font-black">{visits}</span>
       </div>
-      <div className="pt-2 border-t border-dark-700 flex items-center justify-between gap-4">
-        <span className="text-dark-400 text-xs">معدل التحويل</span>
-        <span className="text-primary-400 font-black">{convPct}%</span>
+      <div className="pt-2 border-t border-border flex items-center justify-between gap-4">
+        <span className="text-muted text-xs">معدل التحويل</span>
+        <span className="text-accent font-black">{convPct}%</span>
       </div>
     </div>
   );
@@ -36,8 +36,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 const InsightChip = ({ icon: Icon, label, value, color }) => (
   <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold ${color}`}>
     <Icon className="w-3.5 h-3.5 flex-shrink-0" />
-    <span className="text-dark-400">{label}:</span>
-    <span className="text-white">{value}</span>
+    <span className="text-muted">{label}:</span>
+    <span className="text-foreground">{value}</span>
   </div>
 );
 
@@ -85,8 +85,8 @@ const BranchAnalysisChart = ({ demandData, visitsData }) => {
     return (
       <div className="card p-6 flex items-center justify-center h-full min-h-[320px]">
         <div className="text-center space-y-3">
-          <MapPin className="w-10 h-10 text-dark-600 mx-auto" />
-          <p className="text-dark-400 font-bold text-sm">لا توجد بيانات فروع بعد</p>
+          <MapPin className="w-10 h-10 text-muted mx-auto" />
+          <p className="text-muted font-bold text-sm">لا توجد بيانات فروع بعد</p>
         </div>
       </div>
     );
@@ -96,8 +96,8 @@ const BranchAnalysisChart = ({ demandData, visitsData }) => {
     <div className="card p-6 space-y-5">
       {/* Title */}
       <div>
-        <h3 className="text-lg font-bold text-dark-50">تحليل الفروع</h3>
-        <p className="text-dark-500 text-xs mt-0.5">مقارنة الطلبات مقابل الزيارات الفعلية</p>
+        <h3 className="text-lg font-bold text-foreground">تحليل الفروع</h3>
+        <p className="text-muted text-xs mt-0.5">مقارنة الطلبات مقابل الزيارات الفعلية</p>
       </div>
 
       {/* Insight chips */}
@@ -124,7 +124,7 @@ const BranchAnalysisChart = ({ demandData, visitsData }) => {
               icon={Star}
               label="أفضل تحويل"
               value={`${insights.bestConversion} (${insights.bestConvPct}%)`}
-              color="border-primary-500/20 bg-primary-500/5 text-primary-400"
+              color="border-accent/20 bg-accent/5 text-accent"
             />
           )}
         </div>
@@ -169,15 +169,15 @@ const BranchAnalysisChart = ({ demandData, visitsData }) => {
       </ResponsiveContainer>
 
       {/* Conversion rate mini table */}
-      <div className="border-t border-dark-800/60 pt-4">
-        <p className="text-dark-500 text-[10px] font-black uppercase tracking-widest mb-3">
+      <div className="border-t border-border/60 pt-4">
+        <p className="text-muted text-[10px] font-black uppercase tracking-widest mb-3">
           معدل تحويل الطلب → زيارة
         </p>
         <div className="space-y-2">
           {chartData.map(branch => (
             <div key={branch.branch} className="flex items-center gap-3">
-              <span className="text-dark-300 text-xs w-24 truncate flex-shrink-0">{branch.name}</span>
-              <div className="flex-1 h-2 bg-dark-800 rounded-full overflow-hidden">
+              <span className="text-foreground text-xs w-24 truncate flex-shrink-0">{branch.name}</span>
+              <div className="flex-1 h-2 bg-surface-secondary rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-700"
                   style={{
@@ -190,7 +190,7 @@ const BranchAnalysisChart = ({ demandData, visitsData }) => {
                   }}
                 />
               </div>
-              <span className="text-dark-300 text-[11px] font-black tabular-nums w-10 text-left">
+              <span className="text-foreground text-[11px] font-black tabular-nums w-10 text-left">
                 {branch.convPct}%
               </span>
             </div>

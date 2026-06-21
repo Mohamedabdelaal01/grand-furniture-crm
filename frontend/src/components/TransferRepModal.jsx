@@ -45,26 +45,26 @@ export default function TransferRepModal({ reps = [], onClose, onDone }) {
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" dir="rtl" onMouseDown={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-      <div className="relative w-full max-w-lg bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl"
+      <div className="relative w-full max-w-lg bg-surface border border-border rounded-2xl shadow-2xl"
            onMouseDown={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-dark-800">
-          <h3 className="text-white font-black text-lg flex items-center gap-2">
-            <ArrowRightLeft className="w-5 h-5 text-primary-400" />
+        <div className="flex items-center justify-between p-5 border-b border-border">
+          <h3 className="text-foreground font-black text-lg flex items-center gap-2">
+            <ArrowRightLeft className="w-5 h-5 text-accent" />
             نقل سيلز لفرع تاني
           </h3>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-dark-400 hover:text-white hover:bg-dark-800">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-secondary">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-5 space-y-4">
-          <p className="text-dark-400 text-xs">
-            السيلز هيتنقل <strong className="text-dark-200">فاضي</strong> — عملاءه القدام يفضلوا في فرعهم، والتاريخ زي ما هو.
+          <p className="text-muted text-xs">
+            السيلز هيتنقل <strong className="text-foreground">فاضي</strong> — عملاءه القدام يفضلوا في فرعهم، والتاريخ زي ما هو.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-dark-500 text-[11px] font-black">السيلز</label>
+              <label className="text-muted text-[11px] font-black">السيلز</label>
               <select value={repId} onChange={(e) => setRepId(e.target.value)} className="input-field w-full">
                 <option value="">— اختار سيلز —</option>
                 {reps.map((r) => (
@@ -73,7 +73,7 @@ export default function TransferRepModal({ reps = [], onClose, onDone }) {
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-dark-500 text-[11px] font-black">الفرع الجديد</label>
+              <label className="text-muted text-[11px] font-black">الفرع الجديد</label>
               <select value={branch} onChange={(e) => setBranch(e.target.value)} className="input-field w-full">
                 <option value="">— اختار فرع —</option>
                 {branches.filter((b) => !rep || b.id !== rep.branch).map((b) => (
@@ -84,13 +84,13 @@ export default function TransferRepModal({ reps = [], onClose, onDone }) {
           </div>
 
           {valid && (
-            <div className="rounded-xl bg-dark-950/50 border border-dark-800 p-4 text-sm space-y-2">
-              <div className="flex items-center gap-2 text-dark-200">
-                <span className="font-bold text-white">{rep.name}</span>
-                <ArrowRightLeft className="w-3.5 h-3.5 text-primary-400" />
-                <span>من <span className="text-dark-300 font-bold">{formatBranch(rep.branch) || '—'}</span> لـ <span className="text-primary-300 font-bold">{formatBranch(branch)}</span></span>
+            <div className="rounded-xl bg-background/50 border border-border p-4 text-sm space-y-2">
+              <div className="flex items-center gap-2 text-foreground">
+                <span className="font-bold text-foreground">{rep.name}</span>
+                <ArrowRightLeft className="w-3.5 h-3.5 text-accent" />
+                <span>من <span className="text-foreground font-bold">{formatBranch(rep.branch) || '—'}</span> لـ <span className="text-accent font-bold">{formatBranch(branch)}</span></span>
               </div>
-              <div className="flex items-start gap-1.5 text-amber-400/90 text-[11px] pt-1 border-t border-dark-800">
+              <div className="flex items-start gap-1.5 text-amber-400/90 text-[11px] pt-1 border-t border-border">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                 عملاءه قبل الزيارة في الفرع القديم هيرجعوا «مش متوزّع». التعاقدات ومتابعات بعد الزيارة بتفضل مع صاحبها.
               </div>

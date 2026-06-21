@@ -30,7 +30,7 @@ import CrossBranchTags from '../components/CrossBranchTags';
 
 const KPI = ({ icon: Icon, label, value, tone = 'primary' }) => {
   const tones = {
-    primary: 'text-primary-400 bg-primary-500/10',
+    primary: 'text-accent bg-accent/10',
     emerald: 'text-emerald-400 bg-emerald-500/10',
     amber:   'text-amber-400 bg-amber-500/10',
     sky:     'text-sky-400 bg-sky-500/10',
@@ -40,8 +40,8 @@ const KPI = ({ icon: Icon, label, value, tone = 'primary' }) => {
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${tones[tone]}`}>
         <Icon className="w-5 h-5" />
       </div>
-      <p className="text-2xl font-black text-white">{value}</p>
-      <p className="text-dark-500 text-xs mt-1">{label}</p>
+      <p className="text-2xl font-black text-foreground">{value}</p>
+      <p className="text-muted text-xs mt-1">{label}</p>
     </div>
   );
 };
@@ -103,17 +103,17 @@ function CallModal({ customer, onConfirm, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" dir="rtl" onClick={onClose}>
       <div className="card p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-black">متابعة العميل</h3>
-          <button onClick={onClose} className="text-dark-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <h3 className="text-foreground font-black">متابعة العميل</h3>
+          <button onClick={onClose} className="text-muted hover:text-foreground"><X className="w-5 h-5" /></button>
         </div>
-        <p className="text-dark-400 text-xs mb-3">{customerName(customer)}</p>
-        <label className="block text-dark-400 text-xs mb-1">ملخص المكالمة</label>
+        <p className="text-muted text-xs mb-3">{customerName(customer)}</p>
+        <label className="block text-muted text-xs mb-1">ملخص المكالمة</label>
         <textarea
           value={summary}
           onChange={e => setSummary(e.target.value)}
           rows={4}
           placeholder="اكتب اللي حصل في المكالمة مع العميل..."
-          className="w-full bg-dark-800 border border-dark-700 rounded-xl px-3 py-2.5 text-white text-sm mb-5 focus:outline-none focus:border-primary-500 resize-none"
+          className="w-full bg-surface-secondary border border-border rounded-xl px-3 py-2.5 text-foreground text-sm mb-5 focus:outline-none focus:border-accent resize-none"
         />
         <div className="flex gap-2">
           <button onClick={onClose} className="btn-secondary flex-1">إلغاء</button>
@@ -161,11 +161,11 @@ function FollowupHistory({ c }) {
     <div className="mt-2">
       <button
         onClick={toggle}
-        className="text-[11px] font-bold text-primary-400 hover:text-primary-300 flex items-center gap-1"
+        className="text-[11px] font-bold text-accent hover:text-accent flex items-center gap-1"
       >
         <MessageSquarePlus className="w-3.5 h-3.5" />
         {open ? 'إخفاء المتابعات' : 'متابعات / أضف تحديث'}
-        {log && log.length > 0 && <span className="text-dark-500">({log.length})</span>}
+        {log && log.length > 0 && <span className="text-muted">({log.length})</span>}
       </button>
       {open && (
         <div className="mt-2 space-y-2">
@@ -186,13 +186,13 @@ function FollowupHistory({ c }) {
             </button>
           </div>
           {loading ? (
-            <p className="text-dark-500 text-[11px]">جاري التحميل...</p>
+            <p className="text-muted text-[11px]">جاري التحميل...</p>
           ) : log && log.length > 0 ? (
             <div className="space-y-1.5">
               {log.map((item) => (
-                <div key={item.id} className="bg-dark-800/60 rounded-lg px-3 py-2 border-r-2 border-primary-500/30">
-                  <p className="text-[12px] text-dark-100 leading-relaxed">{item.call_summary || '—'}</p>
-                  <p className="text-[10px] text-dark-500 mt-1 flex items-center gap-2">
+                <div key={item.id} className="bg-surface-secondary/60 rounded-lg px-3 py-2 border-r-2 border-accent/30">
+                  <p className="text-[12px] text-foreground leading-relaxed">{item.call_summary || '—'}</p>
+                  <p className="text-[10px] text-muted mt-1 flex items-center gap-2">
                     <span>{item.sales || '—'}</span>
                     <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{timeAgo(item.followed_up_at)}</span>
                   </p>
@@ -200,7 +200,7 @@ function FollowupHistory({ c }) {
               ))}
             </div>
           ) : (
-            <p className="text-dark-600 text-[11px]">مفيش متابعات مسجّلة لسه — أضف أول تحديث</p>
+            <p className="text-muted text-[11px]">مفيش متابعات مسجّلة لسه — أضف أول تحديث</p>
           )}
         </div>
       )}
@@ -210,7 +210,7 @@ function FollowupHistory({ c }) {
 
 function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
   return (
-    <div className="px-4 py-3 flex items-start gap-3 hover:bg-dark-800/20 transition-colors">
+    <div className="px-4 py-3 flex items-start gap-3 hover:bg-surface-secondary/20 transition-colors">
       <div className="shrink-0 flex flex-col gap-1.5 mt-0.5 w-[78px]">
         {/* "بعت" — lightweight sent marker (separate from "تابعت"); persists. */}
         {mode === 'pending' && (
@@ -220,7 +220,7 @@ function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
             className={`flex items-center justify-center gap-1.5 text-xs font-bold rounded-full px-3 py-1.5 border transition-colors ${
               c.sent
                 ? 'bg-sky-500/15 text-sky-300 border-sky-500/30'
-                : 'bg-dark-800/60 text-dark-400 border-dark-700 hover:text-white hover:border-dark-600'
+                : 'bg-surface-secondary/60 text-muted border-border hover:text-foreground hover:border-border'
             }`}
           >
             {c.sent ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
@@ -244,7 +244,7 @@ function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-white font-bold text-sm truncate">{customerName(c)}</span>
+          <span className="text-foreground font-bold text-sm truncate">{customerName(c)}</span>
           <span className={`px-2 py-0.5 rounded-full border text-[10px] font-black ${getLeadBadgeClass(c.lead_class)}`}>
             {formatLeadClass(c.lead_class)}
           </span>
@@ -260,7 +260,7 @@ function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
           )}
           <CrossBranchTags c={c} />
         </div>
-        <div className="flex items-center gap-3 mt-0.5 text-[11px] text-dark-400 flex-wrap">
+        <div className="flex items-center gap-3 mt-0.5 text-[11px] text-muted flex-wrap">
           {c.phones && <span className="font-mono" dir="ltr">{c.phones}</span>}
           <span className="flex items-center gap-0.5"><Star className="w-3 h-3 text-amber-400" />{c.total_score}</span>
           <span className="flex items-center gap-0.5">
@@ -271,7 +271,7 @@ function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
         {mode !== 'pending' && (
           <>
             {c.call_summary && (
-              <p className="mt-1.5 text-[12px] text-dark-200 bg-dark-800/60 rounded-lg px-3 py-2 leading-relaxed">
+              <p className="mt-1.5 text-[12px] text-foreground bg-surface-secondary/60 rounded-lg px-3 py-2 leading-relaxed">
                 {c.call_summary}
               </p>
             )}
@@ -295,19 +295,19 @@ function FollowupRow({ c, mode, busy, onFollow, onToggleSent }) {
 function FollowupList({ icon: Icon, tone, title, rows, loading, mode, busy, onFollow, onToggleSent, emptyText }) {
   return (
     <div className="card overflow-hidden">
-      <div className="p-4 flex items-center gap-2 border-b border-dark-800">
+      <div className="p-4 flex items-center gap-2 border-b border-border">
         <Icon className={`w-4 h-4 ${tone}`} />
-        <h4 className="text-white font-black text-sm">{title}</h4>
-        <span className="text-xs text-dark-400 font-bold">({rows.length})</span>
+        <h4 className="text-foreground font-black text-sm">{title}</h4>
+        <span className="text-xs text-muted font-bold">({rows.length})</span>
       </div>
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <div className="w-6 h-6 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+          <div className="w-6 h-6 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : rows.length === 0 ? (
-        <p className="text-center text-dark-500 text-sm py-16">{emptyText}</p>
+        <p className="text-center text-muted text-sm py-16">{emptyText}</p>
       ) : (
-        <div className="divide-y divide-dark-800/60">
+        <div className="divide-y divide-border/60">
           {rows.map(c => (
             <FollowupRow key={c.user_id} c={c} mode={mode} busy={!!busy[c.user_id]} onFollow={onFollow} onToggleSent={onToggleSent} />
           ))}
@@ -425,14 +425,14 @@ export default function SalesDashboardView({ view = 'home' }) {
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">
+            <span className="w-6 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">
               مبيعات · {viewLabel}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">أهلاً، {user?.name || 'سيلز'}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground">أهلاً، {user?.name || 'سيلز'}</h1>
           {user?.branch && (
-            <p className="text-dark-400 text-sm mt-1">فرع {formatBranch(user.branch)}</p>
+            <p className="text-muted text-sm mt-1">فرع {formatBranch(user.branch)}</p>
           )}
         </div>
         <button onClick={refresh} disabled={refreshing} className="btn-secondary">
@@ -456,8 +456,8 @@ export default function SalesDashboardView({ view = 'home' }) {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3 text-emerald-400 bg-emerald-500/10">
                   <Wallet className="w-5 h-5" />
                 </div>
-                <p className="text-2xl font-black text-white">{myTarget?.contracts ?? (k.bought_month || 0)}</p>
-                <p className="text-dark-500 text-xs mt-1">تعاقداتي هذا الشهر</p>
+                <p className="text-2xl font-black text-foreground">{myTarget?.contracts ?? (k.bought_month || 0)}</p>
+                <p className="text-muted text-xs mt-1">تعاقداتي هذا الشهر</p>
                 <TargetProgress
                   target={myTarget?.target || 0}
                   percent={myTarget?.percent || 0}
@@ -481,7 +481,7 @@ export default function SalesDashboardView({ view = 'home' }) {
 
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="w-7 h-7 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+                <div className="w-7 h-7 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
               </div>
             ) : error ? (
               <div className="text-center py-10">
@@ -490,9 +490,9 @@ export default function SalesDashboardView({ view = 'home' }) {
               </div>
             ) : customers.length === 0 ? (
               <div className="text-center py-12">
-                <Users className="w-10 h-10 text-dark-700 mx-auto mb-3" />
-                <p className="text-dark-400 font-bold">لسه مفيش عملاء متحدّدين ليك</p>
-                <p className="text-dark-600 text-sm mt-1">
+                <Users className="w-10 h-10 text-muted mx-auto mb-3" />
+                <p className="text-muted font-bold">لسه مفيش عملاء متحدّدين ليك</p>
+                <p className="text-muted text-sm mt-1">
                   أول ما الاستقبال يحدّدك مع عميل وصل المعرض هيظهر هنا
                 </p>
               </div>
@@ -507,20 +507,20 @@ export default function SalesDashboardView({ view = 'home' }) {
                       className={`w-full text-right flex items-center gap-3 p-4 rounded-xl border transition-all ${
                         bought
                           ? 'bg-emerald-500/5 border-emerald-500/25'
-                          : 'bg-dark-800/40 border-dark-700 hover:border-dark-600'
+                          : 'bg-surface-secondary/40 border-border hover:border-border'
                       }`}
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-black text-sm truncate">{c.first_name || 'عميل'}</p>
+                        <p className="text-foreground font-black text-sm truncate">{c.first_name || 'عميل'}</p>
                         <div className="flex items-center gap-2 mt-1 flex-wrap text-[11px]">
                           <span className={`px-2 py-0.5 rounded-full border ${getLeadBadgeClass(c.lead_class)}`}>
                             {formatLeadClass(c.lead_class)}
                           </span>
                           <CrossBranchTags c={c} />
                           {c.phones && (
-                            <span className="text-dark-300 font-mono" dir="ltr">{c.phones}</span>
+                            <span className="text-muted font-mono" dir="ltr">{c.phones}</span>
                           )}
-                          <span className="text-dark-500 flex items-center gap-1">
+                          <span className="text-muted flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {c.visited_at ? String(c.visited_at).split(' ')[0] : ''}
                           </span>
@@ -531,7 +531,7 @@ export default function SalesDashboardView({ view = 'home' }) {
                           <CheckCircle2 className="w-4 h-4" /> اشترى{c.my_purchases > 1 ? ` • ${c.my_purchases} عقود` : ''}
                         </span>
                       ) : (
-                        <span className="text-primary-400 text-xs font-bold flex-shrink-0">
+                        <span className="text-accent text-xs font-bold flex-shrink-0">
                           سجّل البيع ←
                         </span>
                       )}
@@ -540,7 +540,7 @@ export default function SalesDashboardView({ view = 'home' }) {
                 })}
               </div>
             )}
-            <p className="text-dark-600 text-[11px] mt-4 text-center">
+            <p className="text-muted text-[11px] mt-4 text-center">
               اضغط على العميل عشان تسجّل بيع أو تضيف ملاحظة/تذكير من ملفه
             </p>
             </div>
@@ -559,7 +559,7 @@ export default function SalesDashboardView({ view = 'home' }) {
           <div className="space-y-4">
             {/* Phone search — type any format / just the last digits */}
             <div className="relative">
-              <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-dark-500 w-4 h-4 pointer-events-none" />
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-muted w-4 h-4 pointer-events-none" />
               <input
                 type="tel"
                 inputMode="tel"
@@ -567,12 +567,12 @@ export default function SalesDashboardView({ view = 'home' }) {
                 value={phoneQuery}
                 onChange={(e) => setPhoneQuery(e.target.value)}
                 placeholder="ابحث برقم العميل... (أي صيغة)"
-                className="w-full bg-dark-800/50 border border-dark-700 hover:border-dark-600 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/5 rounded-2xl py-2.5 pr-11 pl-10 text-sm text-dark-50 placeholder-dark-500 transition-all outline-none text-right"
+                className="w-full bg-surface-secondary/50 border border-border hover:border-border focus:border-accent focus:ring-4 focus:ring-accent/5 rounded-2xl py-2.5 pr-11 pl-10 text-sm text-foreground placeholder-muted transition-all outline-none text-right"
               />
               {phoneQuery && (
                 <button
                   onClick={() => setPhoneQuery('')}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500 hover:text-white transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground transition-colors"
                   aria-label="مسح البحث"
                 >
                   <X className="w-4 h-4" />
@@ -590,8 +590,8 @@ export default function SalesDashboardView({ view = 'home' }) {
                     onClick={() => setFupTab(t.id)}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-black transition-all ${
                       active
-                        ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                        : 'text-dark-400 hover:text-white hover:bg-dark-800/50 border border-transparent'
+                        ? 'bg-accent/20 text-accent border border-accent/30'
+                        : 'text-muted hover:text-foreground hover:bg-surface-secondary/50 border border-transparent'
                     }`}
                   >
                     <TabIcon className="w-4 h-4" />
@@ -602,8 +602,8 @@ export default function SalesDashboardView({ view = 'home' }) {
               })}
             </div>
             {normQuery && (
-              <p className="text-dark-400 text-xs px-1">
-                نتائج البحث عن <span className="font-mono text-dark-200" dir="ltr">{phoneQuery}</span>: {visibleRows.length} عميل
+              <p className="text-muted text-xs px-1">
+                نتائج البحث عن <span className="font-mono text-foreground" dir="ltr">{phoneQuery}</span>: {visibleRows.length} عميل
               </p>
             )}
             <FollowupList

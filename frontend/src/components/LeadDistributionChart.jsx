@@ -46,8 +46,8 @@ const LeadDistributionChart = ({ data }) => {
     if (active && payload && payload.length) {
       return (
         <div className="card p-3 shadow-premium">
-          <p className="text-dark-50 font-medium">{payload[0].name}</p>
-          <p className="text-primary-400 text-lg font-bold">{payload[0].value}</p>
+          <p className="text-foreground font-medium">{payload[0].name}</p>
+          <p className="text-accent text-lg font-bold">{payload[0].value}</p>
         </div>
       );
     }
@@ -56,7 +56,7 @@ const LeadDistributionChart = ({ data }) => {
 
   return (
     <div className="card p-6">
-      <h3 className="text-lg font-bold text-dark-50 mb-4">توزيع العملاء المحتملين</h3>
+      <h3 className="text-lg font-bold text-foreground mb-4">توزيع العملاء المحتملين</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -85,8 +85,8 @@ const LeadDistributionChart = ({ data }) => {
               className="w-3 h-3 rounded-full" 
               style={{ backgroundColor: COLORS[item.class] }}
             />
-            <span className="text-sm text-dark-300">{item.name}: </span>
-            <span className="text-sm font-bold text-dark-50">{item.value}</span>
+            <span className="text-sm text-foreground">{item.name}: </span>
+            <span className="text-sm font-bold text-foreground">{item.value}</span>
           </div>
         ))}
       </div>

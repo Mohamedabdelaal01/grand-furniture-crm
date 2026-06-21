@@ -109,32 +109,32 @@ export default function CommandPalette() {
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[12vh] px-4"
          dir="rtl" onMouseDown={() => setOpen(false)}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-      <div className="relative w-full max-w-xl bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl overflow-hidden"
+      <div className="relative w-full max-w-xl bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden"
            onMouseDown={(e) => e.stopPropagation()}>
         {/* Search input */}
-        <div className="flex items-center gap-3 px-4 border-b border-dark-800">
-          <Search className="w-5 h-5 text-dark-500 shrink-0" />
+        <div className="flex items-center gap-3 px-4 border-b border-border">
+          <Search className="w-5 h-5 text-muted shrink-0" />
           <input
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="ابحث عن عميل بالاسم أو الرقم، أو انتقل لصفحة..."
-            className="flex-1 bg-transparent py-4 text-white placeholder-dark-500 outline-none text-sm"
+            className="flex-1 bg-transparent py-4 text-foreground placeholder-muted outline-none text-sm"
           />
-          <kbd className="text-[10px] text-dark-500 bg-dark-800 px-1.5 py-0.5 rounded">ESC</kbd>
+          <kbd className="text-[10px] text-muted bg-surface-secondary px-1.5 py-0.5 rounded">ESC</kbd>
         </div>
 
         {/* Results */}
         <div className="max-h-[55vh] overflow-y-auto py-2">
           {items.length === 0 ? (
-            <div className="px-4 py-8 text-center text-dark-500 text-sm">
+            <div className="px-4 py-8 text-center text-muted text-sm">
               {q.trim().length >= 2 ? 'لا توجد نتائج' : 'اكتب حرفين على الأقل للبحث عن عميل'}
             </div>
           ) : (
             <>
               {pageMatches.length > 0 && (
-                <div className="px-4 pt-1 pb-1 text-[10px] font-black text-dark-500 uppercase tracking-wider">صفحات</div>
+                <div className="px-4 pt-1 pb-1 text-[10px] font-black text-muted uppercase tracking-wider">صفحات</div>
               )}
               {items.map((item, i) => {
                 const isActive = i === active;
@@ -143,31 +143,31 @@ export default function CommandPalette() {
                 return (
                   <div key={item.type === 'page' ? item.path : item.user_id}>
                     {isFirstLead && (
-                      <div className="px-4 pt-2 pb-1 text-[10px] font-black text-dark-500 uppercase tracking-wider">عملاء</div>
+                      <div className="px-4 pt-2 pb-1 text-[10px] font-black text-muted uppercase tracking-wider">عملاء</div>
                     )}
                     <button
                       onMouseEnter={() => setActive(i)}
                       onClick={() => go(item)}
                       className={`w-full flex items-center gap-3 px-4 py-2.5 text-right transition-colors ${
-                        isActive ? 'bg-primary-600/20' : 'hover:bg-dark-800/40'}`}
+                        isActive ? 'bg-accent/20' : 'hover:bg-surface-secondary/40'}`}
                     >
-                      <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-primary-300' : 'text-dark-400'}`} />
+                      <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent' : 'text-muted'}`} />
                       <div className="flex-1 min-w-0">
                         {item.type === 'page' ? (
-                          <span className="text-white text-sm font-bold">{item.label}</span>
+                          <span className="text-foreground text-sm font-bold">{item.label}</span>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <span className="text-white text-sm font-bold truncate">{customerName(item)}</span>
-                            {item.phone && <span className="text-dark-500 font-mono text-[11px]" dir="ltr">{item.phone}</span>}
+                            <span className="text-foreground text-sm font-bold truncate">{customerName(item)}</span>
+                            {item.phone && <span className="text-muted font-mono text-[11px]" dir="ltr">{item.phone}</span>}
                           </div>
                         )}
                       </div>
                       {item.type === 'lead' && item.lead_class && (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${CLASS_BADGE[item.lead_class] || 'bg-dark-800 text-dark-300'}`}>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${CLASS_BADGE[item.lead_class] || 'bg-surface-secondary text-foreground'}`}>
                           {CLASS_AR[item.lead_class] || item.lead_class}
                         </span>
                       )}
-                      {isActive && <CornerDownLeft className="w-3.5 h-3.5 text-dark-500 shrink-0" />}
+                      {isActive && <CornerDownLeft className="w-3.5 h-3.5 text-muted shrink-0" />}
                     </button>
                   </div>
                 );
@@ -177,10 +177,10 @@ export default function CommandPalette() {
         </div>
 
         {/* Footer hint */}
-        <div className="flex items-center gap-4 px-4 py-2 border-t border-dark-800 text-[10px] text-dark-500">
-          <span className="flex items-center gap-1"><kbd className="bg-dark-800 px-1 rounded">↑</kbd><kbd className="bg-dark-800 px-1 rounded">↓</kbd> تنقّل</span>
-          <span className="flex items-center gap-1"><kbd className="bg-dark-800 px-1 rounded">↵</kbd> فتح</span>
-          <span className="mr-auto flex items-center gap-1"><kbd className="bg-dark-800 px-1 rounded">⌘</kbd><kbd className="bg-dark-800 px-1 rounded">K</kbd></span>
+        <div className="flex items-center gap-4 px-4 py-2 border-t border-border text-[10px] text-muted">
+          <span className="flex items-center gap-1"><kbd className="bg-surface-secondary px-1 rounded">↑</kbd><kbd className="bg-surface-secondary px-1 rounded">↓</kbd> تنقّل</span>
+          <span className="flex items-center gap-1"><kbd className="bg-surface-secondary px-1 rounded">↵</kbd> فتح</span>
+          <span className="mr-auto flex items-center gap-1"><kbd className="bg-surface-secondary px-1 rounded">⌘</kbd><kbd className="bg-surface-secondary px-1 rounded">K</kbd></span>
         </div>
       </div>
     </div>

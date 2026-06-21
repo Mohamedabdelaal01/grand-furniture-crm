@@ -56,48 +56,48 @@ export default function SwapRepsModal({ reps = [], onClose, onDone }) {
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" dir="rtl"
          onMouseDown={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-      <div className="relative w-full max-w-lg bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl"
+      <div className="relative w-full max-w-lg bg-surface border border-border rounded-2xl shadow-2xl"
            onMouseDown={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-dark-800">
-          <h3 className="text-white font-black text-lg flex items-center gap-2">
-            <ArrowLeftRight className="w-5 h-5 text-primary-400" />
+        <div className="flex items-center justify-between p-5 border-b border-border">
+          <h3 className="text-foreground font-black text-lg flex items-center gap-2">
+            <ArrowLeftRight className="w-5 h-5 text-accent" />
             تبديل سيلزين
           </h3>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-dark-400 hover:text-white hover:bg-dark-800">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-secondary">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-5 space-y-4">
-          <p className="text-dark-400 text-xs">
-            كل سيلز هيروح فرع التاني وياخد عملاءه <strong className="text-dark-200">قبل الزيارة</strong>. العملاء بيفضلوا في فروعهم.
+          <p className="text-muted text-xs">
+            كل سيلز هيروح فرع التاني وياخد عملاءه <strong className="text-foreground">قبل الزيارة</strong>. العملاء بيفضلوا في فروعهم.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-dark-500 text-[11px] font-black">السيلز الأول</label>
+              <label className="text-muted text-[11px] font-black">السيلز الأول</label>
               <RepSelect value={aId} onChange={setAId} exclude={bId} />
             </div>
             <div className="space-y-1">
-              <label className="text-dark-500 text-[11px] font-black">السيلز التاني</label>
+              <label className="text-muted text-[11px] font-black">السيلز التاني</label>
               <RepSelect value={bId} onChange={setBId} exclude={aId} />
             </div>
           </div>
 
           {/* Preview */}
           {valid && (
-            <div className="rounded-xl bg-dark-950/50 border border-dark-800 p-4 space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-dark-200">
-                <span className="font-bold text-white">{a.name}</span>
-                <ArrowLeftRight className="w-3.5 h-3.5 text-primary-400" />
-                <span>فرع <span className="text-primary-300 font-bold">{formatBranch(b.branch) || '—'}</span></span>
+            <div className="rounded-xl bg-background/50 border border-border p-4 space-y-2 text-sm">
+              <div className="flex items-center gap-2 text-foreground">
+                <span className="font-bold text-foreground">{a.name}</span>
+                <ArrowLeftRight className="w-3.5 h-3.5 text-accent" />
+                <span>فرع <span className="text-accent font-bold">{formatBranch(b.branch) || '—'}</span></span>
               </div>
-              <div className="flex items-center gap-2 text-dark-200">
-                <span className="font-bold text-white">{b.name}</span>
-                <ArrowLeftRight className="w-3.5 h-3.5 text-primary-400" />
-                <span>فرع <span className="text-primary-300 font-bold">{formatBranch(a.branch) || '—'}</span></span>
+              <div className="flex items-center gap-2 text-foreground">
+                <span className="font-bold text-foreground">{b.name}</span>
+                <ArrowLeftRight className="w-3.5 h-3.5 text-accent" />
+                <span>فرع <span className="text-accent font-bold">{formatBranch(a.branch) || '—'}</span></span>
               </div>
-              <div className="flex items-start gap-1.5 text-amber-400/90 text-[11px] pt-1 border-t border-dark-800">
+              <div className="flex items-start gap-1.5 text-amber-400/90 text-[11px] pt-1 border-t border-border">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                 التبديل بيأثر على متابعات <strong>قبل الزيارة</strong> + الفرع. التعاقدات ومتابعات بعد الزيارة بتفضل مع صاحبها.
               </div>

@@ -11,8 +11,8 @@ const CONFIDENCE_LABEL = {
 
 const CONFIDENCE_COLOR = {
   high:   'text-emerald-400',
-  medium: 'text-primary-400',
-  low:    'text-dark-400',
+  medium: 'text-accent',
+  low:    'text-muted',
 };
 
 /**
@@ -48,16 +48,16 @@ export default function WeeklyForecast() {
   if (loading && !data) {
     return (
       <div className="card p-6 animate-pulse">
-        <div className="h-4 w-32 bg-dark-800 rounded mb-3" />
-        <div className="h-10 w-20 bg-dark-800 rounded mb-4" />
-        <div className="h-40 bg-dark-800/40 rounded" />
+        <div className="h-4 w-32 bg-surface-secondary rounded mb-3" />
+        <div className="h-10 w-20 bg-surface-secondary rounded mb-4" />
+        <div className="h-40 bg-surface-secondary/40 rounded" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="card p-6 text-sm text-dark-400">
+      <div className="card p-6 text-sm text-muted">
         تعذر تحميل التوقعات: {error || 'لا توجد بيانات'}
       </div>
     );
@@ -76,32 +76,32 @@ export default function WeeklyForecast() {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-1 bg-primary-600 rounded-full" />
-            <span className="text-primary-500 font-black text-[10px] uppercase tracking-[0.2em]">
+            <span className="w-6 h-1 bg-accent rounded-full" />
+            <span className="text-accent font-black text-[10px] uppercase tracking-[0.2em]">
               توقعات الأسبوع
             </span>
           </div>
-          <h2 className="text-lg font-black text-white">زيارات متوقعة (7 أيام)</h2>
-          <p className="text-[10px] text-dark-500 mt-1 leading-relaxed">
-            <b className="text-dark-300">اختار فرع + ساب رقم</b> × {data.weights?.with_phone ?? 80}%
+          <h2 className="text-lg font-black text-foreground">زيارات متوقعة (7 أيام)</h2>
+          <p className="text-[10px] text-muted mt-1 leading-relaxed">
+            <b className="text-foreground">اختار فرع + ساب رقم</b> × {data.weights?.with_phone ?? 80}%
             {' + '}
-            <b className="text-dark-300">طلب عنوان بدون رقم</b> × {data.weights?.without_phone ?? 35}%
+            <b className="text-foreground">طلب عنوان بدون رقم</b> × {data.weights?.without_phone ?? 35}%
           </p>
         </div>
-        <span className={`text-xs font-bold ${CONFIDENCE_COLOR[data.confidence] || 'text-dark-400'}`}>
+        <span className={`text-xs font-bold ${CONFIDENCE_COLOR[data.confidence] || 'text-muted'}`}>
           {CONFIDENCE_LABEL[data.confidence] || data.confidence}
         </span>
       </div>
 
       <div className="flex items-baseline gap-3">
-        <div className="text-4xl font-black text-white tabular-nums">
+        <div className="text-4xl font-black text-foreground tabular-nums">
           {data.expected_visits}
         </div>
         <div className={`flex items-center gap-1 text-xs font-bold ${trendColor}`}>
           <TrendIcon className="w-4 h-4" />
           <span>×{data.trend}</span>
         </div>
-        <div className="flex items-center gap-1 text-xs text-dark-400">
+        <div className="flex items-center gap-1 text-xs text-muted">
           <Activity className="w-3.5 h-3.5" />
           <span>{data.recent_avg_per_day} / يوم</span>
         </div>
@@ -142,17 +142,17 @@ export default function WeeklyForecast() {
       </div>
 
       {data.top_branches?.length > 0 && (
-        <div className="pt-4 border-t border-dark-800">
-          <div className="text-[10px] font-black uppercase tracking-wider text-dark-500 mb-2">
+        <div className="pt-4 border-t border-border">
+          <div className="text-[10px] font-black uppercase tracking-wider text-muted mb-2">
             أعلى الفروع زيارة (آخر 7 أيام)
           </div>
           <div className="flex flex-wrap gap-2">
             {data.top_branches.map((b) => (
               <span
                 key={b.branch}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dark-800/60 border border-dark-700 text-xs"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-secondary/60 border border-border text-xs"
               >
-                <span className="text-white font-bold">{formatBranch(b.branch)}</span>
+                <span className="text-foreground font-bold">{formatBranch(b.branch)}</span>
                 <span className="text-emerald-400 font-black tabular-nums">{b.visits}</span>
               </span>
             ))}

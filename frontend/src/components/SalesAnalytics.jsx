@@ -42,38 +42,38 @@ export default function SalesAnalytics() {
   return (
     <div className="space-y-6" dir="rtl">
       <div>
-        <h3 className="text-white font-black text-lg flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-primary-400" />
+        <h3 className="text-foreground font-black text-lg flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-accent" />
           تحليلات السيلز ومبيعات الفروع
         </h3>
-        <p className="text-dark-500 text-xs mt-1">
+        <p className="text-muted text-xs mt-1">
           أداء كل سيلز: وقف مع كام عميل، كام اشترى، نسبة التقفيل، وإجمالي مبيعاته
         </p>
       </div>
 
       {/* Filters */}
       <div className="card p-4 flex flex-wrap gap-3 items-end">
-        <Filter className="w-4 h-4 text-dark-500 self-center" />
+        <Filter className="w-4 h-4 text-muted self-center" />
         <div className="space-y-1">
-          <label className="text-dark-500 text-[10px] font-black uppercase">السيلز</label>
+          <label className="text-muted text-[10px] font-black uppercase">السيلز</label>
           <select value={sales} onChange={e => setSales(e.target.value)} className="input-field text-sm py-1.5 min-w-[140px]">
             <option value="">كل السيلز</option>
             {reps.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
           </select>
         </div>
         <div className="space-y-1">
-          <label className="text-dark-500 text-[10px] font-black uppercase">الفرع</label>
+          <label className="text-muted text-[10px] font-black uppercase">الفرع</label>
           <select value={branch} onChange={e => setBranch(e.target.value)} className="input-field text-sm py-1.5 min-w-[130px]">
             <option value="">كل الفروع</option>
             {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
           </select>
         </div>
         <div className="space-y-1">
-          <label className="text-dark-500 text-[10px] font-black uppercase">من</label>
+          <label className="text-muted text-[10px] font-black uppercase">من</label>
           <input type="date" value={from} onChange={e => setFrom(e.target.value)} className="input-field text-sm py-1.5" dir="ltr" />
         </div>
         <div className="space-y-1">
-          <label className="text-dark-500 text-[10px] font-black uppercase">إلى</label>
+          <label className="text-muted text-[10px] font-black uppercase">إلى</label>
           <input type="date" value={to} onChange={e => setTo(e.target.value)} className="input-field text-sm py-1.5" dir="ltr" />
         </div>
         <button onClick={load} disabled={loading} className="btn-primary self-end">
@@ -84,14 +84,14 @@ export default function SalesAnalytics() {
 
       {/* Per-salesperson */}
       <div className="card overflow-hidden">
-        <div className="p-4 flex items-center gap-2 border-b border-dark-800">
-          <UserCheck className="w-4 h-4 text-primary-400" />
-          <h4 className="text-white font-black text-sm">أداء كل سيلز</h4>
+        <div className="p-4 flex items-center gap-2 border-b border-border">
+          <UserCheck className="w-4 h-4 text-accent" />
+          <h4 className="text-foreground font-black text-sm">أداء كل سيلز</h4>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs whitespace-nowrap">
             <thead>
-              <tr className="bg-dark-800/60 text-dark-400 text-right font-black uppercase tracking-wider">
+              <tr className="bg-surface-secondary/60 text-muted text-right font-black uppercase tracking-wider">
                 <th className="py-3 px-4">السيلز</th>
                 <th className="py-3 px-4">الفرع</th>
                 <th className="py-3 px-4 text-center">وقف مع</th>
@@ -106,23 +106,23 @@ export default function SalesAnalytics() {
             </thead>
             <tbody>
               {bySales.length === 0 ? (
-                <tr><td colSpan={10} className="py-10 text-center text-dark-500">لا توجد بيانات</td></tr>
+                <tr><td colSpan={10} className="py-10 text-center text-muted">لا توجد بيانات</td></tr>
               ) : bySales.map((r, i) => (
-                <tr key={`${r.sales_rep}-${r.branch}-${i}`} className="border-t border-dark-800/60 hover:bg-dark-800/20">
-                  <td className="py-3 px-4 text-white font-bold">{r.sales_rep}</td>
-                  <td className="py-3 px-4 text-dark-400">{formatBranch(r.branch)}</td>
-                  <td className="py-3 px-4 text-center text-dark-200 font-bold">{r.served}</td>
+                <tr key={`${r.sales_rep}-${r.branch}-${i}`} className="border-t border-border/60 hover:bg-surface-secondary/20">
+                  <td className="py-3 px-4 text-foreground font-bold">{r.sales_rep}</td>
+                  <td className="py-3 px-4 text-muted">{formatBranch(r.branch)}</td>
+                  <td className="py-3 px-4 text-center text-foreground font-bold">{r.served}</td>
                   <td className="py-3 px-4 text-center text-emerald-400 font-bold">{r.bought}</td>
                   <td className="py-3 px-4 text-center text-rose-400 font-bold">{r.not_bought}</td>
                   <td className="py-3 px-4 text-center">
-                    <span className={`font-black ${r.close_rate >= 30 ? 'text-emerald-400' : r.close_rate >= 10 ? 'text-amber-400' : 'text-dark-500'}`}>
+                    <span className={`font-black ${r.close_rate >= 30 ? 'text-emerald-400' : r.close_rate >= 10 ? 'text-amber-400' : 'text-muted'}`}>
                       {r.close_rate}%
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-center text-primary-400 font-bold">{r.followed_up || 0}</td>
+                  <td className="py-3 px-4 text-center text-accent font-bold">{r.followed_up || 0}</td>
                   <td className="py-3 px-4 text-center text-emerald-400 font-bold">{r.fu_visited || 0}</td>
                   <td className="py-3 px-4 text-center text-amber-400 font-bold">{r.fu_not_visited || 0}</td>
-                  <td className="py-3 px-4 text-center text-primary-400 font-black">{r.contracts || 0}</td>
+                  <td className="py-3 px-4 text-center text-accent font-black">{r.contracts || 0}</td>
                 </tr>
               ))}
             </tbody>
@@ -132,14 +132,14 @@ export default function SalesAnalytics() {
 
       {/* Per-branch */}
       <div className="card overflow-hidden">
-        <div className="p-4 flex items-center gap-2 border-b border-dark-800">
-          <Building2 className="w-4 h-4 text-primary-400" />
-          <h4 className="text-white font-black text-sm">مبيعات الفروع</h4>
+        <div className="p-4 flex items-center gap-2 border-b border-border">
+          <Building2 className="w-4 h-4 text-accent" />
+          <h4 className="text-foreground font-black text-sm">مبيعات الفروع</h4>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs whitespace-nowrap">
             <thead>
-              <tr className="bg-dark-800/60 text-dark-400 text-right font-black uppercase tracking-wider">
+              <tr className="bg-surface-secondary/60 text-muted text-right font-black uppercase tracking-wider">
                 <th className="py-3 px-4">الفرع</th>
                 <th className="py-3 px-4 text-center">عملاء وقفوا مع سيلز</th>
                 <th className="py-3 px-4 text-center">اشتروا</th>
@@ -148,16 +148,16 @@ export default function SalesAnalytics() {
             </thead>
             <tbody>
               {byBranch.length === 0 ? (
-                <tr><td colSpan={4} className="py-10 text-center text-dark-500">لا توجد بيانات</td></tr>
+                <tr><td colSpan={4} className="py-10 text-center text-muted">لا توجد بيانات</td></tr>
               ) : byBranch.map((b, i) => {
                 const rate = b.served ? Math.round((b.bought / b.served) * 100) : 0;
                 return (
-                  <tr key={`${b.branch}-${i}`} className="border-t border-dark-800/60 hover:bg-dark-800/20">
-                    <td className="py-3 px-4 text-white font-bold">{formatBranch(b.branch)}</td>
-                    <td className="py-3 px-4 text-center text-dark-200 font-bold">{b.served}</td>
+                  <tr key={`${b.branch}-${i}`} className="border-t border-border/60 hover:bg-surface-secondary/20">
+                    <td className="py-3 px-4 text-foreground font-bold">{formatBranch(b.branch)}</td>
+                    <td className="py-3 px-4 text-center text-foreground font-bold">{b.served}</td>
                     <td className="py-3 px-4 text-center text-emerald-400 font-bold">{b.bought}</td>
                     <td className="py-3 px-4 text-center">
-                      <span className={`font-black ${rate >= 30 ? 'text-emerald-400' : rate >= 10 ? 'text-amber-400' : 'text-dark-500'}`}>
+                      <span className={`font-black ${rate >= 30 ? 'text-emerald-400' : rate >= 10 ? 'text-amber-400' : 'text-muted'}`}>
                         {rate}%
                       </span>
                     </td>
@@ -170,7 +170,7 @@ export default function SalesAnalytics() {
       </div>
 
       {/* Re-visit follow-up analytics */}
-      <div className="border-t border-dark-800 pt-6">
+      <div className="border-t border-border pt-6">
         <RevisitAnalytics />
       </div>
     </div>

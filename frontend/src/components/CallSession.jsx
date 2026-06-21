@@ -34,9 +34,9 @@ const ActionButton = ({ outcome, icon: Icon, onClick, disabled }) => {
 
 // ── Stat card في الـ summary ────────────────────────────────────────────────
 const StatCard = ({ label, value, color }) => (
-  <div className="bg-dark-900/60 border border-dark-800 rounded-xl p-4 text-center">
-    <p className="text-dark-500 text-[11px] font-bold uppercase tracking-wider mb-1">{label}</p>
-    <p className={`text-2xl font-black ${color || 'text-white'}`}>{value}</p>
+  <div className="bg-surface/60 border border-border rounded-xl p-4 text-center">
+    <p className="text-muted text-[11px] font-bold uppercase tracking-wider mb-1">{label}</p>
+    <p className={`text-2xl font-black ${color || 'text-foreground'}`}>{value}</p>
   </div>
 );
 
@@ -90,13 +90,13 @@ const CallSession = ({
 
   if (!queue || queue.length === 0) {
     return (
-      <div className="fixed inset-0 z-[200] bg-dark-950/95 backdrop-blur-xl flex items-center justify-center p-6">
+      <div className="fixed inset-0 z-[200] bg-background/95 backdrop-blur-xl flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center">
-          <div className="w-20 h-20 rounded-3xl bg-dark-800 border border-dark-700 flex items-center justify-center mx-auto mb-6">
-            <Phone className="w-9 h-9 text-dark-500" />
+          <div className="w-20 h-20 rounded-3xl bg-surface-secondary border border-border flex items-center justify-center mx-auto mb-6">
+            <Phone className="w-9 h-9 text-muted" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-2">لا توجد عملاء لنداء</h2>
-          <p className="text-dark-400 mb-8">
+          <h2 className="text-2xl font-black text-foreground mb-2">لا توجد عملاء لنداء</h2>
+          <p className="text-muted mb-8">
             {onlyAssignedToMe
               ? 'مفيش leads متعينين ليك أو متاحين دلوقتي'
               : 'مفيش عملاء في الطابور حالياً'}
@@ -163,24 +163,24 @@ const CallSession = ({
   if (showSummary) {
     const s = session.summary;
     return (
-      <div className="fixed inset-0 z-[200] bg-dark-950/95 backdrop-blur-xl overflow-y-auto">
+      <div className="fixed inset-0 z-[200] bg-background/95 backdrop-blur-xl overflow-y-auto">
         <div className="min-h-screen flex items-center justify-center p-6">
           <div className="max-w-2xl w-full">
             <div className="text-center mb-8">
               <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6">
                 <Trophy className="w-10 h-10 text-emerald-400" />
               </div>
-              <h2 className="text-3xl font-black text-white mb-2">جلسة ناجحة!</h2>
-              <p className="text-dark-400">ملخص نشاطك في الجلسة</p>
+              <h2 className="text-3xl font-black text-foreground mb-2">جلسة ناجحة!</h2>
+              <p className="text-muted">ملخص نشاطك في الجلسة</p>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
               <StatCard label="إجمالي" value={s.total} />
               <StatCard label="مهتم" value={s.interested} color="text-emerald-400" />
               <StatCard label="لم يرد" value={s.no_answer} color="text-amber-400" />
-              <StatCard label="غير مهتم" value={s.not_interested} color="text-dark-300" />
-              <StatCard label="تأجيل" value={s.reschedule} color="text-dark-300" />
-              <StatCard label="XP اليوم" value={s.xp} color="text-primary-400" />
+              <StatCard label="غير مهتم" value={s.not_interested} color="text-foreground" />
+              <StatCard label="تأجيل" value={s.reschedule} color="text-foreground" />
+              <StatCard label="XP اليوم" value={s.xp} color="text-accent" />
             </div>
 
             <div className="flex gap-3">
@@ -209,42 +209,42 @@ const CallSession = ({
   const explanation = generateLeadExplanation(lead);
 
   return (
-    <div className="fixed inset-0 z-[200] bg-dark-950/95 backdrop-blur-xl overflow-y-auto">
+    <div className="fixed inset-0 z-[200] bg-background/95 backdrop-blur-xl overflow-y-auto">
       <div className="min-h-screen flex flex-col p-4 sm:p-6">
 
         {/* ── Header ────────────────────────────────────── */}
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={onClose}
-            className="flex items-center gap-2 text-dark-400 hover:text-white transition-colors px-3 py-2"
+            className="flex items-center gap-2 text-muted hover:text-foreground transition-colors px-3 py-2"
           >
             <X className="w-5 h-5" />
             <span className="text-sm font-bold hidden sm:inline">إنهاء الجلسة</span>
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-primary-500/10 border border-primary-500/30 rounded-xl px-3 py-1.5">
-              <Award className="w-4 h-4 text-primary-400" />
-              <span className="text-primary-400 font-black text-sm">
+            <div className="flex items-center gap-2 bg-accent/10 border border-accent/30 rounded-xl px-3 py-1.5">
+              <Award className="w-4 h-4 text-accent" />
+              <span className="text-accent font-black text-sm">
                 {session.totalXp} XP
               </span>
             </div>
-            <div className="flex items-center gap-2 bg-dark-800 border border-dark-700 rounded-xl px-3 py-1.5">
+            <div className="flex items-center gap-2 bg-surface-secondary border border-border rounded-xl px-3 py-1.5">
               <CheckCheck className="w-4 h-4 text-emerald-400" />
-              <span className="text-white font-black text-sm">{session.summary.total}</span>
+              <span className="text-foreground font-black text-sm">{session.summary.total}</span>
             </div>
           </div>
         </div>
 
         {/* ── Progress ─────────────────────────────────── */}
         <div className="mb-6">
-          <div className="flex items-center justify-between text-xs text-dark-400 mb-2 font-bold">
+          <div className="flex items-center justify-between text-xs text-muted mb-2 font-bold">
             <span>عميل {idx + 1} من {queue.length}</span>
             <span>{progressPct}%</span>
           </div>
-          <div className="h-1.5 bg-dark-800 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-surface-secondary rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all"
+              className="h-full bg-gradient-to-r from-accent to-accent transition-all"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -257,14 +257,14 @@ const CallSession = ({
 
               {/* Avatar + name + behavior */}
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl sm:text-3xl font-black flex-shrink-0">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-accent to-accent flex items-center justify-center text-white text-2xl sm:text-3xl font-black flex-shrink-0">
                   {lead.first_name?.charAt(0) || '؟'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-2xl sm:text-3xl font-black text-white truncate">
+                  <h2 className="text-2xl sm:text-3xl font-black text-foreground truncate">
                     {lead.first_name || 'غير معروف'}
                   </h2>
-                  <p className="text-dark-400 text-sm mt-1">
+                  <p className="text-muted text-sm mt-1">
                     {formatBranch(lead.preferred_branch) || 'لم يحدد فرع'}
                   </p>
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -277,22 +277,22 @@ const CallSession = ({
               </div>
 
               {/* Explanation */}
-              <div className="bg-dark-950/50 border border-dark-800 rounded-xl p-4 mb-5">
-                <p className="text-primary-400 text-[11px] font-black uppercase tracking-wider mb-1.5">
+              <div className="bg-background/50 border border-border rounded-xl p-4 mb-5">
+                <p className="text-accent text-[11px] font-black uppercase tracking-wider mb-1.5">
                   ليه نتصل به؟
                 </p>
-                <p className="text-white text-sm leading-relaxed">{explanation}</p>
+                <p className="text-foreground text-sm leading-relaxed">{explanation}</p>
               </div>
 
               {/* Next action */}
-              <div className="bg-gradient-to-br from-primary-500/10 to-primary-600/5 border border-primary-500/30 rounded-xl p-4 mb-5">
-                <p className="text-primary-400 text-[11px] font-black uppercase tracking-wider mb-2 flex items-center gap-2">
+              <div className="bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/30 rounded-xl p-4 mb-5">
+                <p className="text-accent text-[11px] font-black uppercase tracking-wider mb-2 flex items-center gap-2">
                   <Target className="w-3.5 h-3.5" />
                   الإجراء المقترح
                 </p>
                 <div className="flex items-start gap-3">
                   <span className="text-2xl flex-shrink-0">{lead.next_action.icon}</span>
-                  <p className="text-white font-black leading-snug">
+                  <p className="text-foreground font-black leading-snug">
                     {lead.next_action.action}
                   </p>
                 </div>
@@ -306,7 +306,7 @@ const CallSession = ({
                   color="text-emerald-400"
                 />
                 <StatCard label="Urgency" value={lead.urgency_score} color="text-rose-400" />
-                <StatCard label="Priority" value={lead.priority_score} color="text-primary-400" />
+                <StatCard label="Priority" value={lead.priority_score} color="text-accent" />
               </div>
 
               {/* Current outcome (if already recorded) */}
@@ -350,28 +350,28 @@ const CallSession = ({
                 />
                 <button
                   onClick={handleViewProfile}
-                  className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-dark-800 hover:bg-dark-700 border border-dark-700 text-dark-200 font-black text-sm transition-all active:scale-95"
+                  className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-surface-secondary hover:bg-surface-tertiary border border-border text-foreground font-black text-sm transition-all active:scale-95"
                 >
                   الملف الكامل
                 </button>
               </div>
 
               {/* Nav */}
-              <div className="flex items-center justify-between pt-4 border-t border-dark-800">
+              <div className="flex items-center justify-between pt-4 border-t border-border">
                 <button
                   onClick={goPrev}
                   disabled={idx === 0}
-                  className="flex items-center gap-1.5 text-dark-400 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold"
+                  className="flex items-center gap-1.5 text-muted hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm font-bold"
                 >
                   <ChevronRight className="w-4 h-4" />
                   السابق
                 </button>
-                <span className="text-dark-500 text-[11px]">
+                <span className="text-muted text-[11px]">
                   اختصارات: 1-5 للإجراء • ← → للتنقل • Esc للإنهاء
                 </span>
                 <button
                   onClick={goNext}
-                  className="flex items-center gap-1.5 text-dark-400 hover:text-white transition-colors text-sm font-bold"
+                  className="flex items-center gap-1.5 text-muted hover:text-foreground transition-colors text-sm font-bold"
                 >
                   {idx >= queue.length - 1 ? 'إنهاء' : 'التالي'}
                   <ChevronLeft className="w-4 h-4" />
@@ -386,13 +386,13 @@ const CallSession = ({
       {reschedule && (
         <div className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
              role="dialog" aria-modal="true" aria-label="تذكير متابعة">
-          <div className="bg-dark-900 border border-dark-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl" dir="rtl">
-            <h3 className="text-white font-black text-lg mb-1">تذكير متابعة 🔔</h3>
-            <p className="text-dark-400 text-sm mb-5">
-              هتتصل بـ <span className="text-white font-bold">{lead?.first_name || lead?.user_id}</span> تاني إمتى؟
+          <div className="bg-surface border border-border rounded-2xl p-6 w-full max-w-sm shadow-2xl" dir="rtl">
+            <h3 className="text-foreground font-black text-lg mb-1">تذكير متابعة 🔔</h3>
+            <p className="text-muted text-sm mb-5">
+              هتتصل بـ <span className="text-foreground font-bold">{lead?.first_name || lead?.user_id}</span> تاني إمتى؟
             </p>
 
-            <label className="block text-dark-300 text-xs font-bold mb-1.5">تاريخ المتابعة</label>
+            <label className="block text-foreground text-xs font-bold mb-1.5">تاريخ المتابعة</label>
             <input
               type="date"
               value={reschedule.due}
@@ -402,7 +402,7 @@ const CallSession = ({
               dir="ltr"
             />
 
-            <label className="block text-dark-300 text-xs font-bold mb-1.5">ملاحظة (اختياري)</label>
+            <label className="block text-foreground text-xs font-bold mb-1.5">ملاحظة (اختياري)</label>
             <input
               type="text"
               value={reschedule.note}

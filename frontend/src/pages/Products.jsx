@@ -140,24 +140,24 @@ const Products = () => {
   return (
     <div className="max-w-[1400px] mx-auto pb-12" dir="rtl">
       <div className="mb-6">
-        <h1 className="text-3xl font-black text-white flex items-center gap-3">
-          <Package className="w-7 h-7 text-primary-400" />
+        <h1 className="text-3xl font-black text-foreground flex items-center gap-3">
+          <Package className="w-7 h-7 text-accent" />
           إدارة المنتجات
         </h1>
-        <p className="text-dark-400 text-sm mt-1">
+        <p className="text-muted text-sm mt-1">
           أضف الكاتيجوري والمنتجات اللي بيختار منها السيلز عند تسجيل العقد
         </p>
       </div>
 
       {loading ? (
-        <div className="card p-12 text-center text-dark-400">جاري التحميل…</div>
+        <div className="card p-12 text-center text-muted">جاري التحميل…</div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           {/* ── Categories pane ───────────────────────────────────── */}
           <div className="card p-5">
-            <h3 className="text-white font-black text-base mb-4 flex items-center gap-2">
-              <Tag className="w-4 h-4 text-primary-400" />
+            <h3 className="text-foreground font-black text-base mb-4 flex items-center gap-2">
+              <Tag className="w-4 h-4 text-accent" />
               الكاتيجوري ({categories.length})
             </h3>
 
@@ -173,7 +173,7 @@ const Products = () => {
               <button
                 onClick={handleAddCategory}
                 disabled={!newCatName.trim()}
-                className="px-3 rounded-xl bg-primary-500/20 hover:bg-primary-500/30 border border-primary-500/40 text-primary-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-3 rounded-xl bg-accent/20 hover:bg-accent/30 border border-accent/40 text-accent disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -182,7 +182,7 @@ const Products = () => {
             {/* Category list */}
             <div className="space-y-2">
               {categories.length === 0 ? (
-                <p className="text-dark-500 text-xs text-center py-6">
+                <p className="text-muted text-xs text-center py-6">
                   لسه مفيش كاتيجوري — أضف واحدة
                 </p>
               ) : (
@@ -191,8 +191,8 @@ const Products = () => {
                     key={cat.id}
                     className={`group flex items-center gap-2 p-3 rounded-xl border transition-colors cursor-pointer
                       ${activeCatId === cat.id
-                        ? 'bg-primary-500/10 border-primary-500/40'
-                        : 'bg-dark-900/40 border-dark-800 hover:border-dark-700'}`}
+                        ? 'bg-accent/10 border-accent/40'
+                        : 'bg-surface/40 border-border hover:border-border'}`}
                     onClick={() => editingCatId !== cat.id && setActiveCatId(cat.id)}
                   >
                     {editingCatId === cat.id ? (
@@ -216,15 +216,15 @@ const Products = () => {
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); setEditingCatId(null); }}
-                          className="text-dark-500 hover:text-white"
+                          className="text-muted hover:text-foreground"
                         >
                           <X className="w-4 h-4" />
                         </button>
                       </>
                     ) : (
                       <>
-                        <span className="flex-1 text-white font-bold text-sm">{cat.name}</span>
-                        <span className="text-dark-500 text-[10px] font-bold bg-dark-900 px-2 py-0.5 rounded-md">
+                        <span className="flex-1 text-foreground font-bold text-sm">{cat.name}</span>
+                        <span className="text-muted text-[10px] font-bold bg-surface px-2 py-0.5 rounded-md">
                           {cat.product_count}
                         </span>
                         <button
@@ -233,17 +233,17 @@ const Products = () => {
                             setEditingCatId(cat.id);
                             setEditingCatName(cat.name);
                           }}
-                          className="opacity-0 group-hover:opacity-100 text-dark-400 hover:text-white transition-opacity"
+                          className="opacity-0 group-hover:opacity-100 text-muted hover:text-foreground transition-opacity"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id, cat.name); }}
-                          className="opacity-0 group-hover:opacity-100 text-dark-400 hover:text-rose-400 transition-opacity"
+                          className="opacity-0 group-hover:opacity-100 text-muted hover:text-rose-400 transition-opacity"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
-                        <ChevronLeft className={`w-4 h-4 transition-transform ${activeCatId === cat.id ? 'text-primary-400' : 'text-dark-600'}`} />
+                        <ChevronLeft className={`w-4 h-4 transition-transform ${activeCatId === cat.id ? 'text-accent' : 'text-muted'}`} />
                       </>
                     )}
                   </div>
@@ -254,18 +254,18 @@ const Products = () => {
 
           {/* ── Products pane ─────────────────────────────────────── */}
           <div className="card p-5 lg:col-span-2">
-            <h3 className="text-white font-black text-base mb-4 flex items-center gap-2">
-              <Package className="w-4 h-4 text-primary-400" />
+            <h3 className="text-foreground font-black text-base mb-4 flex items-center gap-2">
+              <Package className="w-4 h-4 text-accent" />
               المنتجات
               {activeCat && (
-                <span className="text-dark-500 text-xs font-bold">
+                <span className="text-muted text-xs font-bold">
                   في {activeCat.name}
                 </span>
               )}
             </h3>
 
             {!activeCatId ? (
-              <p className="text-dark-500 text-sm text-center py-12">
+              <p className="text-muted text-sm text-center py-12">
                 اختار كاتيجوري من اليمين الأول
               </p>
             ) : (
@@ -282,7 +282,7 @@ const Products = () => {
                   <button
                     onClick={handleAddProduct}
                     disabled={!newProductName.trim()}
-                    className="px-4 rounded-xl bg-primary-500/20 hover:bg-primary-500/30 border border-primary-500/40 text-primary-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 text-sm font-bold"
+                    className="px-4 rounded-xl bg-accent/20 hover:bg-accent/30 border border-accent/40 text-accent disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 text-sm font-bold"
                   >
                     <Plus className="w-4 h-4" />
                     إضافة
@@ -292,14 +292,14 @@ const Products = () => {
                 {/* Product list */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {products.length === 0 ? (
-                    <p className="col-span-full text-dark-500 text-xs text-center py-6">
+                    <p className="col-span-full text-muted text-xs text-center py-6">
                       لسه مفيش منتجات في الكاتيجوري دي
                     </p>
                   ) : (
                     products.map(prod => (
                       <div
                         key={prod.id}
-                        className="group flex items-center gap-2 p-3 rounded-xl bg-dark-900/40 border border-dark-800 hover:border-dark-700 transition-colors"
+                        className="group flex items-center gap-2 p-3 rounded-xl bg-surface/40 border border-border hover:border-border transition-colors"
                       >
                         {editingProdId === prod.id ? (
                           <>
@@ -321,26 +321,26 @@ const Products = () => {
                             </button>
                             <button
                               onClick={() => setEditingProdId(null)}
-                              className="text-dark-500 hover:text-white"
+                              className="text-muted hover:text-foreground"
                             >
                               <X className="w-4 h-4" />
                             </button>
                           </>
                         ) : (
                           <>
-                            <span className="flex-1 text-white text-sm">{prod.name}</span>
+                            <span className="flex-1 text-foreground text-sm">{prod.name}</span>
                             <button
                               onClick={() => {
                                 setEditingProdId(prod.id);
                                 setEditingProdName(prod.name);
                               }}
-                              className="opacity-0 group-hover:opacity-100 text-dark-400 hover:text-white transition-opacity"
+                              className="opacity-0 group-hover:opacity-100 text-muted hover:text-foreground transition-opacity"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => handleDeleteProduct(prod.id, prod.name)}
-                              className="opacity-0 group-hover:opacity-100 text-dark-400 hover:text-rose-400 transition-opacity"
+                              className="opacity-0 group-hover:opacity-100 text-muted hover:text-rose-400 transition-opacity"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>

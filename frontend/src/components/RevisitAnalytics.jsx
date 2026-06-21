@@ -14,7 +14,7 @@ const fmt = (n) => new Intl.NumberFormat('en-US').format(n || 0);
 
 const StatTile = ({ icon: Icon, label, value, hint, tone = 'primary' }) => {
   const tones = {
-    primary: 'text-primary-400 bg-primary-500/10 border-primary-500/20',
+    primary: 'text-accent bg-accent/10 border-accent/20',
     emerald: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
     amber:   'text-amber-400 bg-amber-500/10 border-amber-500/20',
     rose:    'text-rose-400 bg-rose-500/10 border-rose-500/20',
@@ -23,10 +23,10 @@ const StatTile = ({ icon: Icon, label, value, hint, tone = 'primary' }) => {
     <div className={`rounded-xl border p-4 ${tones[tone]}`}>
       <div className="flex items-center gap-2 mb-2">
         <Icon className="w-4 h-4" />
-        <span className="text-dark-300 text-[11px] font-bold">{label}</span>
+        <span className="text-foreground text-[11px] font-bold">{label}</span>
       </div>
-      <p className="text-2xl font-black text-white leading-none">{value}</p>
-      {hint && <p className="text-dark-500 text-[10px] mt-1.5">{hint}</p>}
+      <p className="text-2xl font-black text-foreground leading-none">{value}</p>
+      {hint && <p className="text-muted text-[10px] mt-1.5">{hint}</p>}
     </div>
   );
 };
@@ -57,11 +57,11 @@ export default function RevisitAnalytics() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h3 className="text-white font-black text-lg flex items-center gap-2">
-            <Repeat className="w-5 h-5 text-primary-400" />
+          <h3 className="text-foreground font-black text-lg flex items-center gap-2">
+            <Repeat className="w-5 h-5 text-accent" />
             تحليلات متابعة الزيارات
           </h3>
-          <p className="text-dark-500 text-xs mt-1">
+          <p className="text-muted text-xs mt-1">
             العملاء اللي زاروا المعرض — مين اشترى، مين لسه بيتتابع، ومين اتقفل
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function RevisitAnalytics() {
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="w-7 h-7 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+          <div className="w-7 h-7 border-4 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : (
         <>
@@ -92,14 +92,14 @@ export default function RevisitAnalytics() {
 
           {/* Per-branch */}
           <div className="card overflow-hidden">
-            <div className="p-4 flex items-center gap-2 border-b border-dark-800">
-              <MapPin className="w-4 h-4 text-primary-400" />
-              <h4 className="text-white font-black text-sm">متابعة الزيارات حسب الفرع</h4>
+            <div className="p-4 flex items-center gap-2 border-b border-border">
+              <MapPin className="w-4 h-4 text-accent" />
+              <h4 className="text-foreground font-black text-sm">متابعة الزيارات حسب الفرع</h4>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs whitespace-nowrap">
                 <thead>
-                  <tr className="bg-dark-800/60 text-dark-400 text-right font-black uppercase tracking-wider">
+                  <tr className="bg-surface-secondary/60 text-muted text-right font-black uppercase tracking-wider">
                     <th className="py-3 px-4">الفرع</th>
                     <th className="py-3 px-4 text-center">محتاجين متابعة</th>
                     <th className="py-3 px-4 text-center">اشتروا</th>
@@ -110,16 +110,16 @@ export default function RevisitAnalytics() {
                 </thead>
                 <tbody>
                   {byBranch.length === 0 ? (
-                    <tr><td colSpan={6} className="py-10 text-center text-dark-500">لا توجد بيانات</td></tr>
+                    <tr><td colSpan={6} className="py-10 text-center text-muted">لا توجد بيانات</td></tr>
                   ) : byBranch.map((b, i) => (
-                    <tr key={`${b.branch}-${i}`} className="border-t border-dark-800/60 hover:bg-dark-800/20">
-                      <td className="py-3 px-4 text-white font-bold">{formatBranch(b.branch)}</td>
+                    <tr key={`${b.branch}-${i}`} className="border-t border-border/60 hover:bg-surface-secondary/20">
+                      <td className="py-3 px-4 text-foreground font-bold">{formatBranch(b.branch)}</td>
                       <td className="py-3 px-4 text-center text-amber-400 font-bold">{b.pending}</td>
                       <td className="py-3 px-4 text-center text-emerald-400 font-bold">{b.bought}</td>
                       <td className="py-3 px-4 text-center text-rose-400 font-bold">{b.lost}</td>
-                      <td className="py-3 px-4 text-center text-primary-400 font-bold">{b.followups}</td>
+                      <td className="py-3 px-4 text-center text-accent font-bold">{b.followups}</td>
                       <td className="py-3 px-4 text-center">
-                        <span className={`font-black ${b.conversion >= 30 ? 'text-emerald-400' : b.conversion >= 10 ? 'text-amber-400' : 'text-dark-500'}`}>
+                        <span className={`font-black ${b.conversion >= 30 ? 'text-emerald-400' : b.conversion >= 10 ? 'text-amber-400' : 'text-muted'}`}>
                           {b.conversion}%
                         </span>
                       </td>
@@ -132,14 +132,14 @@ export default function RevisitAnalytics() {
 
           {/* Per-salesperson */}
           <div className="card overflow-hidden">
-            <div className="p-4 flex items-center gap-2 border-b border-dark-800">
-              <ShoppingBag className="w-4 h-4 text-primary-400" />
-              <h4 className="text-white font-black text-sm">متابعة الزيارات حسب السيلز</h4>
+            <div className="p-4 flex items-center gap-2 border-b border-border">
+              <ShoppingBag className="w-4 h-4 text-accent" />
+              <h4 className="text-foreground font-black text-sm">متابعة الزيارات حسب السيلز</h4>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs whitespace-nowrap">
                 <thead>
-                  <tr className="bg-dark-800/60 text-dark-400 text-right font-black uppercase tracking-wider">
+                  <tr className="bg-surface-secondary/60 text-muted text-right font-black uppercase tracking-wider">
                     <th className="py-3 px-4">السيلز</th>
                     <th className="py-3 px-4">الفرع</th>
                     <th className="py-3 px-4 text-center">محتاجين متابعة</th>
@@ -151,17 +151,17 @@ export default function RevisitAnalytics() {
                 </thead>
                 <tbody>
                   {bySales.length === 0 ? (
-                    <tr><td colSpan={7} className="py-10 text-center text-dark-500">لا توجد بيانات</td></tr>
+                    <tr><td colSpan={7} className="py-10 text-center text-muted">لا توجد بيانات</td></tr>
                   ) : bySales.map((r, i) => (
-                    <tr key={`${r.sales_rep}-${r.branch}-${i}`} className="border-t border-dark-800/60 hover:bg-dark-800/20">
-                      <td className="py-3 px-4 text-white font-bold">{r.sales_rep}</td>
-                      <td className="py-3 px-4 text-dark-400">{formatBranch(r.branch)}</td>
+                    <tr key={`${r.sales_rep}-${r.branch}-${i}`} className="border-t border-border/60 hover:bg-surface-secondary/20">
+                      <td className="py-3 px-4 text-foreground font-bold">{r.sales_rep}</td>
+                      <td className="py-3 px-4 text-muted">{formatBranch(r.branch)}</td>
                       <td className="py-3 px-4 text-center text-amber-400 font-bold">{r.pending}</td>
                       <td className="py-3 px-4 text-center text-emerald-400 font-bold">{r.bought}</td>
                       <td className="py-3 px-4 text-center text-rose-400 font-bold">{r.lost}</td>
-                      <td className="py-3 px-4 text-center text-primary-400 font-bold">{r.followups}</td>
+                      <td className="py-3 px-4 text-center text-accent font-bold">{r.followups}</td>
                       <td className="py-3 px-4 text-center">
-                        <span className={`font-black ${r.conversion >= 30 ? 'text-emerald-400' : r.conversion >= 10 ? 'text-amber-400' : 'text-dark-500'}`}>
+                        <span className={`font-black ${r.conversion >= 30 ? 'text-emerald-400' : r.conversion >= 10 ? 'text-amber-400' : 'text-muted'}`}>
                           {r.conversion}%
                         </span>
                       </td>

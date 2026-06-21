@@ -38,7 +38,7 @@ const InfoButton = ({ explanation }) => {
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        className="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 transition-colors"
+        className="w-7 h-7 flex items-center justify-center rounded-lg bg-accent/10 hover:bg-accent/20 text-accent transition-colors"
         title="ليه العميل ده أولوية؟"
         aria-label="عرض سبب الأولوية"
       >
@@ -47,11 +47,11 @@ const InfoButton = ({ explanation }) => {
 
       {open && (
         <div
-          className="absolute z-40 mt-2 left-0 sm:left-auto sm:right-0 w-64 bg-dark-900 border border-primary-500/30 rounded-xl shadow-2xl p-3 text-right"
+          className="absolute z-40 mt-2 left-0 sm:left-auto sm:right-0 w-64 bg-surface border border-accent/30 rounded-xl shadow-2xl p-3 text-right"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-start justify-between mb-1.5">
-            <span className="text-primary-400 text-[10px] font-black uppercase tracking-wider">
+            <span className="text-accent text-[10px] font-black uppercase tracking-wider">
               ليه العميل ده أولوية؟
             </span>
             <button
@@ -59,12 +59,12 @@ const InfoButton = ({ explanation }) => {
                 e.stopPropagation();
                 setOpen(false);
               }}
-              className="text-dark-500 hover:text-white transition-colors"
+              className="text-muted hover:text-foreground transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          <p className="text-white text-xs leading-relaxed font-bold">
+          <p className="text-foreground text-xs leading-relaxed font-bold">
             {explanation}
           </p>
         </div>
@@ -87,7 +87,7 @@ const AssigneeSelect = ({ userId, assignee, onChange }) => {
       className={`text-xs font-bold rounded-lg px-2 py-1.5 border transition-colors cursor-pointer outline-none ${
         assignee
           ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-          : 'bg-dark-800 border-dark-700 text-dark-400 hover:text-white'
+          : 'bg-surface-secondary border-border text-muted hover:text-foreground'
       }`}
     >
       <option value="">بدون</option>
@@ -159,11 +159,11 @@ const HotLeadsTable = ({ leads }) => {
       {/* ── CALL NOW SECTION ─────────────────────────── */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-black text-white flex items-center gap-2">
+          <h2 className="text-lg font-black text-foreground flex items-center gap-2">
             <span className="text-rose-400">🔥</span>
             <span>اتصل حالاً</span>
           </h2>
-          <span className="text-dark-500 text-xs font-bold">أعلى 3 أولوية</span>
+          <span className="text-muted text-xs font-bold">أعلى 3 أولوية</span>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
@@ -177,7 +177,7 @@ const HotLeadsTable = ({ leads }) => {
                 onClick={() => goToLead(lead.user_id)}
               >
                 <div className="flex items-start justify-between mb-1">
-                  <p className="text-white font-black">{lead.first_name || 'غير معروف'}</p>
+                  <p className="text-foreground font-black">{lead.first_name || 'غير معروف'}</p>
                   {lead.recency_bonus === 30 && (
                     <span className="text-rose-400 text-[10px] font-black animate-pulse">
                       الآن 🔴
@@ -185,23 +185,23 @@ const HotLeadsTable = ({ leads }) => {
                   )}
                 </div>
 
-                <p className="text-dark-400 text-xs mb-2">
+                <p className="text-muted text-xs mb-2">
                   {formatBranch(lead.preferred_branch) || 'لم يحدد فرع'}
                 </p>
 
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   <BehaviorBadge behavior={lead.behavior} size="sm" withTooltip />
-                  <span className="text-[10px] px-2 py-0.5 rounded-lg bg-dark-900/60 border border-dark-800 text-dark-300 font-bold">
+                  <span className="text-[10px] px-2 py-0.5 rounded-lg bg-surface/60 border border-border text-foreground font-bold">
                     {lead.timing.label}
                   </span>
                 </div>
 
-                <p className="text-dark-300 text-xs leading-relaxed mb-3 min-h-[2.5rem]">
+                <p className="text-foreground text-xs leading-relaxed mb-3 min-h-[2.5rem]">
                   {explanation}
                 </p>
 
-                <div className="bg-dark-950/40 border border-dark-800/50 rounded-lg p-2 mb-3">
-                  <p className="text-[11px] text-white font-bold leading-snug">
+                <div className="bg-background/40 border border-border/50 rounded-lg p-2 mb-3">
+                  <p className="text-[11px] text-foreground font-bold leading-snug">
                     <span className="mr-1">{lead.next_action.icon}</span>
                     {lead.next_action.action}
                   </p>
@@ -212,7 +212,7 @@ const HotLeadsTable = ({ leads }) => {
                     <span className="text-emerald-400 font-black">
                       {lead.conversion_probability}%
                     </span>
-                    <span className="text-dark-500">U: {lead.urgency_score}</span>
+                    <span className="text-muted">U: {lead.urgency_score}</span>
                   </div>
                   {assignee && (
                     <span className="flex items-center gap-1 text-emerald-400 text-[10px] font-black">
@@ -233,7 +233,7 @@ const HotLeadsTable = ({ leads }) => {
           })}
 
           {topLeads.length === 0 && (
-            <div className="col-span-3 py-8 text-center text-dark-400 text-sm">
+            <div className="col-span-3 py-8 text-center text-muted text-sm">
               لا يوجد عملاء ساخنين حالياً
             </div>
           )}
@@ -241,7 +241,7 @@ const HotLeadsTable = ({ leads }) => {
       </div>
 
       {/* ── Filters ───────────────────────── */}
-      <div className="flex flex-wrap gap-3 pt-4 border-t border-dark-800">
+      <div className="flex flex-wrap gap-3 pt-4 border-t border-border">
         <input
           placeholder="بحث بالاسم..."
           value={searchTerm}
@@ -277,7 +277,7 @@ const HotLeadsTable = ({ leads }) => {
       <div className="overflow-x-auto -mx-6 px-6">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-dark-400 border-b border-dark-800 text-right text-[11px] uppercase font-black tracking-wider">
+            <tr className="text-muted border-b border-border text-right text-[11px] uppercase font-black tracking-wider">
               <th className="py-3 px-2 w-10">#</th>
               <th className="py-3 px-2">الاسم</th>
               <th className="py-3 px-2 hidden md:table-cell">الفرع</th>
@@ -303,20 +303,20 @@ const HotLeadsTable = ({ leads }) => {
               return (
                 <tr
                   key={lead.user_id}
-                  className={`cursor-pointer hover:bg-dark-800/40 transition-colors border-b border-dark-800/50 ${
+                  className={`cursor-pointer hover:bg-surface-secondary/40 transition-colors border-b border-border/50 ${
                     isUrgent ? 'bg-rose-500/[0.04]' : ''
                   }`}
                   onClick={() => goToLead(lead.user_id)}
                 >
-                  <td className="py-3 px-2 text-dark-500 font-bold">{globalIndex + 1}</td>
+                  <td className="py-3 px-2 text-muted font-bold">{globalIndex + 1}</td>
 
                   <td className="py-3 px-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-white font-bold">
+                      <span className="text-foreground font-bold">
                         {lead.first_name || 'غير معروف'}
                       </span>
                       {lead.location_requested ? (
-                        <span title="طلب موقع" className="text-primary-400">📍</span>
+                        <span title="طلب موقع" className="text-accent">📍</span>
                       ) : null}
                       {lead.visit_confirmed ? (
                         <span title="أكد زيارة" className="text-emerald-400">✅</span>
@@ -324,7 +324,7 @@ const HotLeadsTable = ({ leads }) => {
                     </div>
                   </td>
 
-                  <td className="py-3 px-2 hidden md:table-cell text-dark-300">
+                  <td className="py-3 px-2 hidden md:table-cell text-foreground">
                     {formatBranch(lead.preferred_branch) || '—'}
                   </td>
 
@@ -338,7 +338,7 @@ const HotLeadsTable = ({ leads }) => {
                     </span>
                   </td>
 
-                  <td className="py-3 px-2 hidden sm:table-cell text-xs text-dark-400">
+                  <td className="py-3 px-2 hidden sm:table-cell text-xs text-muted">
                     {lead.last_activity
                       ? formatDistanceToNow(parseSqliteDate(lead.last_activity), {
                           addSuffix: true,
@@ -354,13 +354,13 @@ const HotLeadsTable = ({ leads }) => {
                   </td>
 
                   <td className="py-3 px-2">
-                    <span className={`font-black ${isUrgent ? 'text-rose-400' : 'text-primary-400'}`}>
+                    <span className={`font-black ${isUrgent ? 'text-rose-400' : 'text-accent'}`}>
                       {lead.urgency_score}
                     </span>
                   </td>
 
                   <td className="py-3 px-2 hidden xl:table-cell max-w-[200px]">
-                    <span className="text-dark-300 text-xs leading-snug">
+                    <span className="text-foreground text-xs leading-snug">
                       <span className="mr-1">{lead.next_action.icon}</span>
                       {lead.next_action.action}
                     </span>
@@ -387,7 +387,7 @@ const HotLeadsTable = ({ leads }) => {
 
             {filteredLeads.length === 0 && (
               <tr>
-                <td colSpan={12} className="py-10 text-center text-dark-400">
+                <td colSpan={12} className="py-10 text-center text-muted">
                   لا توجد بيانات مطابقة
                 </td>
               </tr>
@@ -398,14 +398,14 @@ const HotLeadsTable = ({ leads }) => {
 
       {/* ── Pagination ─────────────────────────── */}
       {filteredLeads.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-dark-800">
-          <div className="flex items-center gap-2 text-xs text-dark-400">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border">
+          <div className="flex items-center gap-2 text-xs text-muted">
             <span>
               {pageStart + 1}–{Math.min(pageStart + pageSize, filteredLeads.length)}
               {' '}من{' '}
-              <span className="text-white font-bold">{filteredLeads.length}</span>
+              <span className="text-foreground font-bold">{filteredLeads.length}</span>
             </span>
-            <span className="w-1 h-1 rounded-full bg-dark-700" />
+            <span className="w-1 h-1 rounded-full bg-surface-tertiary" />
             <select
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
@@ -421,14 +421,14 @@ const HotLeadsTable = ({ leads }) => {
             <button
               onClick={() => setPage(1)}
               disabled={safePage === 1}
-              className="px-2 py-1.5 rounded-lg text-xs font-bold text-dark-400 hover:text-white hover:bg-dark-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-2 py-1.5 rounded-lg text-xs font-bold text-muted hover:text-foreground hover:bg-surface-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               «
             </button>
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage === 1}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold text-dark-400 hover:text-white hover:bg-dark-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 rounded-lg text-xs font-bold text-muted hover:text-foreground hover:bg-surface-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               ‹ السابق
             </button>
@@ -443,8 +443,8 @@ const HotLeadsTable = ({ leads }) => {
                   onClick={() => setPage(p)}
                   className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors ${
                     p === safePage
-                      ? 'bg-primary-500/20 text-primary-300 border border-primary-500/30'
-                      : 'text-dark-400 hover:text-white hover:bg-dark-800'
+                      ? 'bg-accent/20 text-accent border border-accent/30'
+                      : 'text-muted hover:text-foreground hover:bg-surface-secondary'
                   }`}
                 >
                   {p}
@@ -455,14 +455,14 @@ const HotLeadsTable = ({ leads }) => {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={safePage === totalPages}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold text-dark-400 hover:text-white hover:bg-dark-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 rounded-lg text-xs font-bold text-muted hover:text-foreground hover:bg-surface-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               التالي ›
             </button>
             <button
               onClick={() => setPage(totalPages)}
               disabled={safePage === totalPages}
-              className="px-2 py-1.5 rounded-lg text-xs font-bold text-dark-400 hover:text-white hover:bg-dark-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-2 py-1.5 rounded-lg text-xs font-bold text-muted hover:text-foreground hover:bg-surface-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               »
             </button>
